@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'agent/server.dart';
-import 'editor.dart';
-import 'network.dart';
+import 'editor/editor.dart';
+import 'network/network.dart';
 
 const Color backgroundColor = Color(0xFF1E1E1E);
 const Color textColor = Color(0xFFD4D4D4);

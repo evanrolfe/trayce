@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../common/flow_view.dart';
 import 'flow_table.dart';
-import 'flow_view.dart';
 
-const double minPaneWidth = 200.0;
+const double minPaneWidth = 300.0;
 const Color textColor = Color(0xFFD4D4D4);
 
 class Network extends StatefulWidget {
