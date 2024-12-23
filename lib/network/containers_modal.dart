@@ -6,7 +6,10 @@ import '../blocs/containers_cubit.dart';
 void showContainersModal(BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) => const ContainersModal(),
+    builder: (context) => BlocProvider.value(
+      value: context.read<ContainersCubit>(),
+      child: const ContainersModal(),
+    ),
   );
 }
 
@@ -19,6 +22,22 @@ class ContainersModal extends StatefulWidget {
 
 class _ContainersModalState extends State<ContainersModal> {
   final Map<String, bool> _interceptedStates = {};
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      final cubit = context.read<ContainersCubit>();
+      final state = cubit.state;
+      if (state is ContainersLoaded) {
+        for (var container in state.containers) {
+          _interceptedStates[container.id] = cubit.interceptedContainerIds.contains(container.id);
+        }
+      }
+      _initialized = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +180,15 @@ class _ContainersModalState extends State<ContainersModal> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          // TODO: Handle save
+                          // Get selected container IDs
+                          final selectedIds = state.containers
+                              .where((container) => _interceptedStates[container.id] ?? false)
+                              .map((container) => container.id)
+                              .toList();
+
+                          // Call interceptContainers on the cubit
+                          context.read<ContainersCubit>().interceptContainers(selectedIds);
+
                           Navigator.of(context).pop();
                         },
                         style: ElevatedButton.styleFrom(

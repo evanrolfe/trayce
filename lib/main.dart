@@ -31,6 +31,7 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
 void main() async {
   final containersCubit = ContainersCubit();
   final grpcService = TrayceAgentService(containersCubit: containersCubit);
+  containersCubit.agentService = grpcService;
 
   runApp(
     MultiBlocProvider(
@@ -45,8 +46,7 @@ void main() async {
 
   // Start the gRPC server
   final server = await Server.create(services: [grpcService]);
-  await server.serve(
-      address: InternetAddress.anyIPv4, port: 50051, shared: true);
+  await server.serve(address: InternetAddress.anyIPv4, port: 50051, shared: true);
   print('Server listening on port 50051');
 }
 
@@ -145,15 +145,11 @@ class _AppScaffoldState extends State<AppScaffold> {
                       decoration: BoxDecoration(
                         border: Border(
                           left: BorderSide(
-                            color: widget.selectedIndex == 0
-                                ? const Color(0xFF4DB6AC)
-                                : Colors.transparent,
+                            color: widget.selectedIndex == 0 ? const Color(0xFF4DB6AC) : Colors.transparent,
                             width: 2,
                           ),
                         ),
-                        color: widget.selectedIndex == 0 || isHovering0
-                            ? const Color(0xFF3A3A3A)
-                            : Colors.transparent,
+                        color: widget.selectedIndex == 0 || isHovering0 ? const Color(0xFF3A3A3A) : Colors.transparent,
                       ),
                       child: const Icon(
                         Icons.format_list_numbered,
@@ -172,15 +168,11 @@ class _AppScaffoldState extends State<AppScaffold> {
                       decoration: BoxDecoration(
                         border: Border(
                           left: BorderSide(
-                            color: widget.selectedIndex == 1
-                                ? const Color(0xFF4DB6AC)
-                                : Colors.transparent,
+                            color: widget.selectedIndex == 1 ? const Color(0xFF4DB6AC) : Colors.transparent,
                             width: 2,
                           ),
                         ),
-                        color: widget.selectedIndex == 1 || isHovering1
-                            ? const Color(0xFF3A3A3A)
-                            : Colors.transparent,
+                        color: widget.selectedIndex == 1 || isHovering1 ? const Color(0xFF3A3A3A) : Colors.transparent,
                       ),
                       child: const Icon(
                         Icons.edit,
