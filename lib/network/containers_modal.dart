@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../blocs/containers_bloc.dart';
+import '../blocs/containers_cubit.dart';
 
 void showContainersModal(BuildContext context) {
   showDialog(
@@ -31,7 +31,7 @@ class _ContainersModalState extends State<ContainersModal> {
         width: 800,
         height: 600,
         padding: const EdgeInsets.all(16),
-        child: BlocBuilder<ContainersBloc, ContainersState>(
+        child: BlocBuilder<ContainersCubit, ContainersState>(
           builder: (context, state) {
             if (state is ContainersLoaded) {
               print('ContainersLoaded state received with ${state.containers.length} containers');

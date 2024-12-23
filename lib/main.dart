@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grpc/grpc.dart';
 
 import 'agent/server.dart';
-import 'blocs/containers_bloc.dart';
+import 'blocs/containers_cubit.dart';
 import 'editor/editor.dart';
 import 'network/network.dart';
 
@@ -29,14 +29,14 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
 }
 
 void main() async {
-  final containersBloc = ContainersBloc();
-  final grpcService = TrayceAgentService(containersBloc: containersBloc);
+  final containersCubit = ContainersCubit();
+  final grpcService = TrayceAgentService(containersCubit: containersCubit);
 
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider<ContainersBloc>(
-          create: (context) => containersBloc,
+        BlocProvider<ContainersCubit>(
+          create: (context) => containersCubit,
         ),
       ],
       child: const MyApp(),
@@ -44,7 +44,7 @@ void main() async {
   );
 
   // Start the gRPC server
-  final server = Server.create(services: [grpcService]);
+  final server = await Server.create(services: [grpcService]);
   await server.serve(
       address: InternetAddress.anyIPv4, port: 50051, shared: true);
   print('Server listening on port 50051');

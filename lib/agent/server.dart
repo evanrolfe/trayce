@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 
-import '../blocs/containers_bloc.dart';
+import '../blocs/containers_cubit.dart';
 import 'gen/api.pbgrpc.dart';
 
 class TrayceAgentService extends TrayceAgentServiceBase {
   final _flows = <Flow>[];
   final _containers = <Container>[];
   final _commandStreamControllers = <StreamController<Command>>[];
-  final ContainersBloc containersBloc;
+  final ContainersCubit containersCubit;
 
-  TrayceAgentService({required this.containersBloc});
+  TrayceAgentService({required this.containersCubit});
 
   @override
   Future<Reply> sendFlowsObserved(ServiceCall call, Flows request) async {
@@ -25,7 +25,7 @@ class TrayceAgentService extends TrayceAgentServiceBase {
     _containers.clear();
     _containers.addAll(request.containers);
 
-    containersBloc.add(ContainersUpdated(_containers));
+    containersCubit.containersUpdated(_containers);
 
     return Reply()..status = 'ok';
   }
