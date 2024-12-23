@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:grpc/grpc.dart';
 
 import 'agent/server.dart';
+import 'blocs/containers_bloc.dart';
 import 'editor/editor.dart';
 import 'network/network.dart';
 
@@ -24,14 +29,25 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
 }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await EditorCache.preloadWidth();
+  final containersBloc = ContainersBloc();
+  final grpcService = TrayceAgentService(containersBloc: containersBloc);
+
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<ContainersBloc>(
+          create: (context) => containersBloc,
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 
   // Start the gRPC server
-  final server = GrpcServer();
-  await server.start();
-
-  runApp(const MyApp());
+  final server = Server.create(services: [grpcService]);
+  await server.serve(
+      address: InternetAddress.anyIPv4, port: 50051, shared: true);
+  print('Server listening on port 50051');
 }
 
 class MyApp extends StatelessWidget {
