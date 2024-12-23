@@ -6,7 +6,7 @@ import '../blocs/containers_cubit.dart';
 void showContainersModal(BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) => BlocProvider.value(
+    builder: (dialogContext) => BlocProvider.value(
       value: context.read<ContainersCubit>(),
       child: const ContainersModal(),
     ),

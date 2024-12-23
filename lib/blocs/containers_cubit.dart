@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../agent/command_sender.dart';
 import '../agent/gen/api.pb.dart';
-import '../agent/server.dart';
 
 // States
 abstract class ContainersState {}
@@ -15,13 +15,11 @@ class ContainersLoaded extends ContainersState {
 }
 
 class ContainersCubit extends Cubit<ContainersState> {
-  TrayceAgentService? _agentService;
+  final CommandSender _commandSender;
 
-  ContainersCubit() : super(ContainersInitial());
-
-  set agentService(TrayceAgentService service) {
-    _agentService = service;
-  }
+  ContainersCubit({required CommandSender commandSender})
+      : _commandSender = commandSender,
+        super(ContainersInitial());
 
   final Set<String> _interceptedContainerIds = {};
 
@@ -36,13 +34,11 @@ class ContainersCubit extends Cubit<ContainersState> {
     _interceptedContainerIds.clear();
     _interceptedContainerIds.addAll(containerIds);
 
-    if (_agentService != null) {
-      // Create and send command
-      final command = Command(
-        type: 'set_settings',
-        settings: Settings(containerIds: containerIds.toList()),
-      );
-      _agentService!.sendCommandToAll(command);
-    }
+    // Create and send command
+    final command = Command(
+      type: 'set_settings',
+      settings: Settings(containerIds: containerIds.toList()),
+    );
+    _commandSender.sendCommandToAll(command);
   }
 }

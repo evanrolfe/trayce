@@ -29,9 +29,14 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
 }
 
 void main() async {
-  final containersCubit = ContainersCubit();
-  final grpcService = TrayceAgentService(containersCubit: containersCubit);
-  containersCubit.agentService = grpcService;
+  // Create service first
+  final grpcService = TrayceAgentService();
+
+  // Create cubit with service
+  final containersCubit = ContainersCubit(commandSender: grpcService);
+
+  // Update service with cubit reference
+  grpcService.containersCubit = containersCubit;
 
   runApp(
     MultiBlocProvider(
