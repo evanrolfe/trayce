@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/containers_cubit.dart';
+import '../utils/network.dart';
 
 void showContainersModal(BuildContext context) {
   showDialog(
@@ -23,6 +24,17 @@ class ContainersModal extends StatefulWidget {
 class _ContainersModalState extends State<ContainersModal> {
   final Map<String, bool> _interceptedStates = {};
   bool _initialized = false;
+  String _machineIp = '127.0.0.1';
+
+  @override
+  void initState() {
+    super.initState();
+    getMachineIp().then((ip) {
+      setState(() {
+        _machineIp = ip;
+      });
+    });
+  }
 
   @override
   void didChangeDependencies() {
@@ -208,8 +220,59 @@ class _ContainersModalState extends State<ContainersModal> {
                 ],
               );
             }
-            return const Center(
-              child: CircularProgressIndicator(),
+            // Default case: show agent not running message
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Containers',
+                      style: TextStyle(
+                        color: Color(0xFFD4D4D4),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Color(0xFFD4D4D4),
+                        size: 20,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      splashRadius: 16,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Trayce Agent is not running! Start it by running this command in the terminal:',
+                  style: TextStyle(
+                    color: Color(0xFFD4D4D4),
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E1E1E),
+                    border: Border.all(color: const Color(0xFF474747)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: SelectableText(
+                    'docker run --pid=host --privileged -v /var/run/docker.sock:/var/run/docker.sock -t traycer/trayce_agent:latest -s $_machineIp:50051',
+                    style: const TextStyle(
+                      color: Color(0xFFD4D4D4),
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),

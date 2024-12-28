@@ -36,7 +36,7 @@ void main() async {
   final containersCubit = ContainersCubit(commandSender: grpcService);
 
   // Update service with cubit reference
-  grpcService.containersCubit = containersCubit;
+  grpcService.containerObserver = containersCubit;
 
   runApp(
     MultiBlocProvider(

@@ -2,20 +2,20 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 
-import '../blocs/containers_cubit.dart';
 import 'command_sender.dart';
+import 'container_observer.dart';
 import 'gen/api.pbgrpc.dart';
 
 class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender {
   final _flows = <Flow>[];
   final _containers = <Container>[];
   final _commandStreamControllers = <StreamController<Command>>[];
-  ContainersCubit? _containersCubit;
+  ContainerObserver? _containerObserver;
 
   TrayceAgentService();
 
-  set containersCubit(ContainersCubit cubit) {
-    _containersCubit = cubit;
+  set containerObserver(ContainerObserver observer) {
+    _containerObserver = observer;
   }
 
   @override
@@ -30,7 +30,7 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
     _containers.clear();
     _containers.addAll(request.containers);
 
-    _containersCubit?.containersUpdated(_containers);
+    _containerObserver?.containersUpdated(_containers);
 
     return Reply()..status = 'ok';
   }
