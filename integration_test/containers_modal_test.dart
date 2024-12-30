@@ -2,21 +2,26 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ftrayce/agent/gen/api.pb.dart' as pb;
+import 'package:ftrayce/agent/gen/api.pbgrpc.dart';
 import 'package:ftrayce/main.dart' as app;
+import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('ContainersModal Integration Tests', () {
-    testWidgets('opens containers modal when containers button is clicked', (tester) async {
-      // Create screenshots directory
-      final screenshotsDir = Directory('screenshots');
-      if (!screenshotsDir.existsSync()) {
-        screenshotsDir.createSync();
-      }
+  setUpAll(() async {
+    // Create screenshots directory
+    final screenshotsDir = Directory('screenshots');
+    if (!screenshotsDir.existsSync()) {
+      screenshotsDir.createSync();
+    }
+  });
 
-      // Start the real app
+  group('ContainersModal Integration Tests', () {
+    testWidgets('containers modal when no containers have been observed, then some are observed', (tester) async {
+      // Start the real app once for all tests
       app.main();
       await tester.pumpAndSettle();
 
@@ -37,6 +42,33 @@ void main() {
       // Verify the modal is shown
       expect(find.textContaining('Trayce Agent is not running!'), findsOneWidget);
       expect(find.textContaining('docker run'), findsOneWidget);
+
+      // Create the GRPC client
+      final channel = ClientChannel(
+        'localhost',
+        port: 50051,
+        options: const ChannelOptions(
+          credentials: ChannelCredentials.insecure(), // Use this for non-TLS connections
+        ),
+      );
+      final client = TrayceAgentClient(channel);
+
+      // Send containers observed
+      final containers = [
+        pb.Container(id: 'a2db0b', name: 'hello', ip: "127.0.0.1", image: 'image1', status: 'running'),
+        pb.Container(id: 'a3db0b', name: 'world', ip: "127.0.0.2", image: 'image1', status: 'running'),
+      ];
+      try {
+        final response = await client.sendContainersObserved(pb.Containers(containers: containers));
+        print('Response received: $response');
+      } catch (e) {
+        print('Error: $e');
+      }
+      await tester.pumpAndSettle();
+
+      // Verify the modal is shown
+      expect(find.text('hello'), findsOneWidget);
+      expect(find.text('world'), findsOneWidget);
     });
   });
 }

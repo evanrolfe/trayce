@@ -1,16 +1,20 @@
-# ftrayce
+# TrayceGUI
 
-A new Flutter project.
+TrayceGUI is a cross-platform desktop application which lets you interface with the TrayceAgent to monitor network requests in Docker containers.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Develop
 
-A few resources to get you started if this is your first Flutter project:
+Run the app:
+`flutter run`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Test
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Run widget tests:
+`flutter test ./test`
+
+Run integration tests:
+`flutter test ./integration_test`
+
+Update screenshots:
+`flutter test ./integration_test/ --update-goldens`
