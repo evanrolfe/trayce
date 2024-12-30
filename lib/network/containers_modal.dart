@@ -152,24 +152,41 @@ class _ContainersModalState extends State<ContainersModal> {
                                           width: 100,
                                           child: Row(
                                             children: [
-                                              Checkbox(
-                                                value: _interceptedStates[container.id] ?? false,
-                                                onChanged: (bool? value) {
-                                                  setState(() {
-                                                    _interceptedStates[container.id] = value ?? false;
-                                                  });
-                                                },
-                                                side: const BorderSide(color: Color(0xFFD4D4D4)),
-                                                fillColor: MaterialStateProperty.resolveWith(
-                                                  (states) => states.contains(MaterialState.selected)
-                                                      ? const Color(0xFF4DB6AC)
-                                                      : Colors.transparent,
-                                                ),
-                                              ),
-                                              Text(
-                                                _interceptedStates[container.id] ?? false ? 'Yes' : 'No',
-                                                style: const TextStyle(
-                                                  color: Color(0xFFD4D4D4),
+                                              Opacity(
+                                                opacity: container.image == 'trayce_agent:local' ? 0.25 : 1.0,
+                                                child: Container(
+                                                  padding: const EdgeInsets.only(left: 16),
+                                                  child: Row(
+                                                    children: [
+                                                      Checkbox(
+                                                        value: _interceptedStates[container.id] ?? false,
+                                                        onChanged: container.image == 'trayce_agent:local'
+                                                            ? null // null onChanged makes the checkbox disabled
+                                                            : (bool? value) {
+                                                                setState(() {
+                                                                  _interceptedStates[container.id] = value ?? false;
+                                                                });
+                                                              },
+                                                        side: const BorderSide(color: Color(0xFFD4D4D4)),
+                                                        fillColor: MaterialStateProperty.resolveWith(
+                                                          (states) {
+                                                            if (container.image == 'trayce_agent:local') {
+                                                              return Colors.grey; // greyed out when disabled
+                                                            }
+                                                            return states.contains(MaterialState.selected)
+                                                                ? const Color(0xFF4DB6AC)
+                                                                : Colors.transparent;
+                                                          },
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        _interceptedStates[container.id] ?? false ? 'Yes' : 'No',
+                                                        style: const TextStyle(
+                                                          color: Color(0xFFD4D4D4),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ],
