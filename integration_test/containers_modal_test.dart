@@ -31,7 +31,7 @@ void main() {
       await tester.pumpAndSettle();
       await expectLater(
         find.byType(MaterialApp),
-        matchesGoldenFile('integration_test/screenshots/containers_modal_01.png'),
+        matchesGoldenFile('screenshots/containers_modal_01.png'),
       );
 
       // Verify the modal is shown
