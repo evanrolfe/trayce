@@ -1,11 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ftrayce/db/database.dart';
 import 'package:grpc/grpc.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'agent/server.dart';
 import 'blocs/containers_cubit.dart';
+import 'blocs/flow_table_cubit.dart';
+import 'db/flow_repo.dart';
 import 'editor/editor.dart';
 import 'network/network.dart';
 
@@ -29,23 +34,51 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
 }
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load schema.sql file
+  final String schema = await rootBundle.loadString('schema.sql');
+
+  // Connect DB
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+  // see also: inMemoryDatabasePath
+  // this stores the file in .dart_tool/sqflite_common_ffi/databases/
+  var db = await databaseFactory.openDatabase('tmp.db',
+      options: OpenDatabaseOptions(
+        version: 1,
+        onCreate: initSchema(schema),
+      ));
+  final flowRepo = FlowRepo(db: db);
+
   // Create service first
   final grpcService = TrayceAgentService();
 
-  // Create cubit with service
+  // Create cubits
   final containersCubit = ContainersCubit(commandSender: grpcService);
+  final flowTableCubit = FlowTableCubit(flowRepo: flowRepo);
 
   // Update service with cubit reference
   grpcService.containerObserver = containersCubit;
 
   runApp(
-    MultiBlocProvider(
+    MultiRepositoryProvider(
       providers: [
-        BlocProvider<ContainersCubit>(
-          create: (context) => containersCubit,
+        RepositoryProvider<FlowRepo>(
+          create: (context) => flowRepo,
         ),
       ],
-      child: const MyApp(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<ContainersCubit>(
+            create: (context) => containersCubit,
+          ),
+          BlocProvider<FlowTableCubit>(
+            create: (context) => flowTableCubit,
+          ),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 
