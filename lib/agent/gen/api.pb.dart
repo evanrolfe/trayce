@@ -13,25 +13,40 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
+enum Flow_Request {
+  httpRequest, 
+  grpcRequest, 
+  notSet
+}
+
+enum Flow_Response {
+  httpResponse, 
+  grpcResponse, 
+  notSet
+}
+
 class Flow extends $pb.GeneratedMessage {
   factory Flow({
     $core.String? uuid,
-    $core.String? localAddr,
-    $core.String? remoteAddr,
+    $core.String? sourceAddr,
+    $core.String? destAddr,
     $core.String? l4Protocol,
     $core.String? l7Protocol,
-    $core.List<$core.int>? request,
-    $core.List<$core.int>? response,
+    $core.List<$core.int>? responseRaw,
+    HTTPRequest? httpRequest,
+    GRPCRequest? grpcRequest,
+    HTTPResponse? httpResponse,
+    GRPCResponse? grpcResponse,
   }) {
     final $result = create();
     if (uuid != null) {
       $result.uuid = uuid;
     }
-    if (localAddr != null) {
-      $result.localAddr = localAddr;
+    if (sourceAddr != null) {
+      $result.sourceAddr = sourceAddr;
     }
-    if (remoteAddr != null) {
-      $result.remoteAddr = remoteAddr;
+    if (destAddr != null) {
+      $result.destAddr = destAddr;
     }
     if (l4Protocol != null) {
       $result.l4Protocol = l4Protocol;
@@ -39,11 +54,20 @@ class Flow extends $pb.GeneratedMessage {
     if (l7Protocol != null) {
       $result.l7Protocol = l7Protocol;
     }
-    if (request != null) {
-      $result.request = request;
+    if (responseRaw != null) {
+      $result.responseRaw = responseRaw;
     }
-    if (response != null) {
-      $result.response = response;
+    if (httpRequest != null) {
+      $result.httpRequest = httpRequest;
+    }
+    if (grpcRequest != null) {
+      $result.grpcRequest = grpcRequest;
+    }
+    if (httpResponse != null) {
+      $result.httpResponse = httpResponse;
+    }
+    if (grpcResponse != null) {
+      $result.grpcResponse = grpcResponse;
     }
     return $result;
   }
@@ -51,14 +75,29 @@ class Flow extends $pb.GeneratedMessage {
   factory Flow.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory Flow.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
+  static const $core.Map<$core.int, Flow_Request> _Flow_RequestByTag = {
+    8 : Flow_Request.httpRequest,
+    9 : Flow_Request.grpcRequest,
+    0 : Flow_Request.notSet
+  };
+  static const $core.Map<$core.int, Flow_Response> _Flow_ResponseByTag = {
+    10 : Flow_Response.httpResponse,
+    11 : Flow_Response.grpcResponse,
+    0 : Flow_Response.notSet
+  };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Flow', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..oo(0, [8, 9])
+    ..oo(1, [10, 11])
     ..aOS(1, _omitFieldNames ? '' : 'uuid')
-    ..aOS(2, _omitFieldNames ? '' : 'localAddr')
-    ..aOS(3, _omitFieldNames ? '' : 'remoteAddr')
+    ..aOS(2, _omitFieldNames ? '' : 'sourceAddr')
+    ..aOS(3, _omitFieldNames ? '' : 'destAddr')
     ..aOS(4, _omitFieldNames ? '' : 'l4Protocol')
     ..aOS(5, _omitFieldNames ? '' : 'l7Protocol')
-    ..a<$core.List<$core.int>>(6, _omitFieldNames ? '' : 'request', $pb.PbFieldType.OY)
-    ..a<$core.List<$core.int>>(7, _omitFieldNames ? '' : 'response', $pb.PbFieldType.OY)
+    ..a<$core.List<$core.int>>(7, _omitFieldNames ? '' : 'responseRaw', $pb.PbFieldType.OY)
+    ..aOM<HTTPRequest>(8, _omitFieldNames ? '' : 'httpRequest', subBuilder: HTTPRequest.create)
+    ..aOM<GRPCRequest>(9, _omitFieldNames ? '' : 'grpcRequest', subBuilder: GRPCRequest.create)
+    ..aOM<HTTPResponse>(10, _omitFieldNames ? '' : 'httpResponse', subBuilder: HTTPResponse.create)
+    ..aOM<GRPCResponse>(11, _omitFieldNames ? '' : 'grpcResponse', subBuilder: GRPCResponse.create)
     ..hasRequiredFields = false
   ;
 
@@ -83,6 +122,12 @@ class Flow extends $pb.GeneratedMessage {
   static Flow getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Flow>(create);
   static Flow? _defaultInstance;
 
+  Flow_Request whichRequest() => _Flow_RequestByTag[$_whichOneof(0)]!;
+  void clearRequest() => clearField($_whichOneof(0));
+
+  Flow_Response whichResponse() => _Flow_ResponseByTag[$_whichOneof(1)]!;
+  void clearResponse() => clearField($_whichOneof(1));
+
   @$pb.TagNumber(1)
   $core.String get uuid => $_getSZ(0);
   @$pb.TagNumber(1)
@@ -93,22 +138,22 @@ class Flow extends $pb.GeneratedMessage {
   void clearUuid() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.String get localAddr => $_getSZ(1);
+  $core.String get sourceAddr => $_getSZ(1);
   @$pb.TagNumber(2)
-  set localAddr($core.String v) { $_setString(1, v); }
+  set sourceAddr($core.String v) { $_setString(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasLocalAddr() => $_has(1);
+  $core.bool hasSourceAddr() => $_has(1);
   @$pb.TagNumber(2)
-  void clearLocalAddr() => clearField(2);
+  void clearSourceAddr() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get remoteAddr => $_getSZ(2);
+  $core.String get destAddr => $_getSZ(2);
   @$pb.TagNumber(3)
-  set remoteAddr($core.String v) { $_setString(2, v); }
+  set destAddr($core.String v) { $_setString(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasRemoteAddr() => $_has(2);
+  $core.bool hasDestAddr() => $_has(2);
   @$pb.TagNumber(3)
-  void clearRemoteAddr() => clearField(3);
+  void clearDestAddr() => clearField(3);
 
   @$pb.TagNumber(4)
   $core.String get l4Protocol => $_getSZ(3);
@@ -128,23 +173,58 @@ class Flow extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   void clearL7Protocol() => clearField(5);
 
-  @$pb.TagNumber(6)
-  $core.List<$core.int> get request => $_getN(5);
-  @$pb.TagNumber(6)
-  set request($core.List<$core.int> v) { $_setBytes(5, v); }
-  @$pb.TagNumber(6)
-  $core.bool hasRequest() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearRequest() => clearField(6);
+  @$pb.TagNumber(7)
+  $core.List<$core.int> get responseRaw => $_getN(5);
+  @$pb.TagNumber(7)
+  set responseRaw($core.List<$core.int> v) { $_setBytes(5, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasResponseRaw() => $_has(5);
+  @$pb.TagNumber(7)
+  void clearResponseRaw() => clearField(7);
 
-  @$pb.TagNumber(7)
-  $core.List<$core.int> get response => $_getN(6);
-  @$pb.TagNumber(7)
-  set response($core.List<$core.int> v) { $_setBytes(6, v); }
-  @$pb.TagNumber(7)
-  $core.bool hasResponse() => $_has(6);
-  @$pb.TagNumber(7)
-  void clearResponse() => clearField(7);
+  @$pb.TagNumber(8)
+  HTTPRequest get httpRequest => $_getN(6);
+  @$pb.TagNumber(8)
+  set httpRequest(HTTPRequest v) { setField(8, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasHttpRequest() => $_has(6);
+  @$pb.TagNumber(8)
+  void clearHttpRequest() => clearField(8);
+  @$pb.TagNumber(8)
+  HTTPRequest ensureHttpRequest() => $_ensure(6);
+
+  @$pb.TagNumber(9)
+  GRPCRequest get grpcRequest => $_getN(7);
+  @$pb.TagNumber(9)
+  set grpcRequest(GRPCRequest v) { setField(9, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasGrpcRequest() => $_has(7);
+  @$pb.TagNumber(9)
+  void clearGrpcRequest() => clearField(9);
+  @$pb.TagNumber(9)
+  GRPCRequest ensureGrpcRequest() => $_ensure(7);
+
+  @$pb.TagNumber(10)
+  HTTPResponse get httpResponse => $_getN(8);
+  @$pb.TagNumber(10)
+  set httpResponse(HTTPResponse v) { setField(10, v); }
+  @$pb.TagNumber(10)
+  $core.bool hasHttpResponse() => $_has(8);
+  @$pb.TagNumber(10)
+  void clearHttpResponse() => clearField(10);
+  @$pb.TagNumber(10)
+  HTTPResponse ensureHttpResponse() => $_ensure(8);
+
+  @$pb.TagNumber(11)
+  GRPCResponse get grpcResponse => $_getN(9);
+  @$pb.TagNumber(11)
+  set grpcResponse(GRPCResponse v) { setField(11, v); }
+  @$pb.TagNumber(11)
+  $core.bool hasGrpcResponse() => $_has(9);
+  @$pb.TagNumber(11)
+  void clearGrpcResponse() => clearField(11);
+  @$pb.TagNumber(11)
+  GRPCResponse ensureGrpcResponse() => $_ensure(9);
 }
 
 class Flows extends $pb.GeneratedMessage {
@@ -189,6 +269,394 @@ class Flows extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.List<Flow> get flows => $_getList(0);
+}
+
+class StringList extends $pb.GeneratedMessage {
+  factory StringList({
+    $core.Iterable<$core.String>? values,
+  }) {
+    final $result = create();
+    if (values != null) {
+      $result.values.addAll(values);
+    }
+    return $result;
+  }
+  StringList._() : super();
+  factory StringList.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory StringList.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'StringList', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..pPS(1, _omitFieldNames ? '' : 'values')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  StringList clone() => StringList()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  StringList copyWith(void Function(StringList) updates) => super.copyWith((message) => updates(message as StringList)) as StringList;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static StringList create() => StringList._();
+  StringList createEmptyInstance() => create();
+  static $pb.PbList<StringList> createRepeated() => $pb.PbList<StringList>();
+  @$core.pragma('dart2js:noInline')
+  static StringList getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<StringList>(create);
+  static StringList? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$core.String> get values => $_getList(0);
+}
+
+class HTTPRequest extends $pb.GeneratedMessage {
+  factory HTTPRequest({
+    $core.String? method,
+    $core.String? host,
+    $core.String? path,
+    $core.String? httpVersion,
+    $core.Map<$core.String, StringList>? headers,
+    $core.List<$core.int>? payload,
+  }) {
+    final $result = create();
+    if (method != null) {
+      $result.method = method;
+    }
+    if (host != null) {
+      $result.host = host;
+    }
+    if (path != null) {
+      $result.path = path;
+    }
+    if (httpVersion != null) {
+      $result.httpVersion = httpVersion;
+    }
+    if (headers != null) {
+      $result.headers.addAll(headers);
+    }
+    if (payload != null) {
+      $result.payload = payload;
+    }
+    return $result;
+  }
+  HTTPRequest._() : super();
+  factory HTTPRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory HTTPRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'HTTPRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'method')
+    ..aOS(2, _omitFieldNames ? '' : 'host')
+    ..aOS(3, _omitFieldNames ? '' : 'path')
+    ..aOS(4, _omitFieldNames ? '' : 'httpVersion')
+    ..m<$core.String, StringList>(5, _omitFieldNames ? '' : 'headers', entryClassName: 'HTTPRequest.HeadersEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: StringList.create, valueDefaultOrMaker: StringList.getDefault, packageName: const $pb.PackageName('api'))
+    ..a<$core.List<$core.int>>(6, _omitFieldNames ? '' : 'payload', $pb.PbFieldType.OY)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  HTTPRequest clone() => HTTPRequest()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  HTTPRequest copyWith(void Function(HTTPRequest) updates) => super.copyWith((message) => updates(message as HTTPRequest)) as HTTPRequest;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static HTTPRequest create() => HTTPRequest._();
+  HTTPRequest createEmptyInstance() => create();
+  static $pb.PbList<HTTPRequest> createRepeated() => $pb.PbList<HTTPRequest>();
+  @$core.pragma('dart2js:noInline')
+  static HTTPRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<HTTPRequest>(create);
+  static HTTPRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get method => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set method($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasMethod() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearMethod() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get host => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set host($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasHost() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearHost() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get path => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set path($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasPath() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearPath() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get httpVersion => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set httpVersion($core.String v) { $_setString(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasHttpVersion() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearHttpVersion() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.Map<$core.String, StringList> get headers => $_getMap(4);
+
+  @$pb.TagNumber(6)
+  $core.List<$core.int> get payload => $_getN(5);
+  @$pb.TagNumber(6)
+  set payload($core.List<$core.int> v) { $_setBytes(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasPayload() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearPayload() => clearField(6);
+}
+
+class HTTPResponse extends $pb.GeneratedMessage {
+  factory HTTPResponse({
+    $core.String? httpVersion,
+    $core.int? status,
+    $core.String? statusMsg,
+    $core.Map<$core.String, StringList>? headers,
+    $core.List<$core.int>? payload,
+  }) {
+    final $result = create();
+    if (httpVersion != null) {
+      $result.httpVersion = httpVersion;
+    }
+    if (status != null) {
+      $result.status = status;
+    }
+    if (statusMsg != null) {
+      $result.statusMsg = statusMsg;
+    }
+    if (headers != null) {
+      $result.headers.addAll(headers);
+    }
+    if (payload != null) {
+      $result.payload = payload;
+    }
+    return $result;
+  }
+  HTTPResponse._() : super();
+  factory HTTPResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory HTTPResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'HTTPResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'httpVersion')
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'status', $pb.PbFieldType.O3)
+    ..aOS(3, _omitFieldNames ? '' : 'statusMsg')
+    ..m<$core.String, StringList>(4, _omitFieldNames ? '' : 'headers', entryClassName: 'HTTPResponse.HeadersEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: StringList.create, valueDefaultOrMaker: StringList.getDefault, packageName: const $pb.PackageName('api'))
+    ..a<$core.List<$core.int>>(5, _omitFieldNames ? '' : 'payload', $pb.PbFieldType.OY)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  HTTPResponse clone() => HTTPResponse()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  HTTPResponse copyWith(void Function(HTTPResponse) updates) => super.copyWith((message) => updates(message as HTTPResponse)) as HTTPResponse;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static HTTPResponse create() => HTTPResponse._();
+  HTTPResponse createEmptyInstance() => create();
+  static $pb.PbList<HTTPResponse> createRepeated() => $pb.PbList<HTTPResponse>();
+  @$core.pragma('dart2js:noInline')
+  static HTTPResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<HTTPResponse>(create);
+  static HTTPResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get httpVersion => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set httpVersion($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasHttpVersion() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearHttpVersion() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get status => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set status($core.int v) { $_setSignedInt32(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasStatus() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearStatus() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get statusMsg => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set statusMsg($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasStatusMsg() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearStatusMsg() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.Map<$core.String, StringList> get headers => $_getMap(3);
+
+  @$pb.TagNumber(5)
+  $core.List<$core.int> get payload => $_getN(4);
+  @$pb.TagNumber(5)
+  set payload($core.List<$core.int> v) { $_setBytes(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasPayload() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearPayload() => clearField(5);
+}
+
+class GRPCRequest extends $pb.GeneratedMessage {
+  factory GRPCRequest({
+    $core.String? path,
+    $core.Map<$core.String, StringList>? headers,
+    $core.List<$core.int>? payload,
+  }) {
+    final $result = create();
+    if (path != null) {
+      $result.path = path;
+    }
+    if (headers != null) {
+      $result.headers.addAll(headers);
+    }
+    if (payload != null) {
+      $result.payload = payload;
+    }
+    return $result;
+  }
+  GRPCRequest._() : super();
+  factory GRPCRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory GRPCRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'GRPCRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'path')
+    ..m<$core.String, StringList>(2, _omitFieldNames ? '' : 'headers', entryClassName: 'GRPCRequest.HeadersEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: StringList.create, valueDefaultOrMaker: StringList.getDefault, packageName: const $pb.PackageName('api'))
+    ..a<$core.List<$core.int>>(3, _omitFieldNames ? '' : 'payload', $pb.PbFieldType.OY)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  GRPCRequest clone() => GRPCRequest()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  GRPCRequest copyWith(void Function(GRPCRequest) updates) => super.copyWith((message) => updates(message as GRPCRequest)) as GRPCRequest;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static GRPCRequest create() => GRPCRequest._();
+  GRPCRequest createEmptyInstance() => create();
+  static $pb.PbList<GRPCRequest> createRepeated() => $pb.PbList<GRPCRequest>();
+  @$core.pragma('dart2js:noInline')
+  static GRPCRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<GRPCRequest>(create);
+  static GRPCRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get path => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set path($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasPath() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearPath() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.Map<$core.String, StringList> get headers => $_getMap(1);
+
+  @$pb.TagNumber(3)
+  $core.List<$core.int> get payload => $_getN(2);
+  @$pb.TagNumber(3)
+  set payload($core.List<$core.int> v) { $_setBytes(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasPayload() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearPayload() => clearField(3);
+}
+
+class GRPCResponse extends $pb.GeneratedMessage {
+  factory GRPCResponse({
+    $core.Map<$core.String, StringList>? headers,
+    $core.List<$core.int>? payload,
+  }) {
+    final $result = create();
+    if (headers != null) {
+      $result.headers.addAll(headers);
+    }
+    if (payload != null) {
+      $result.payload = payload;
+    }
+    return $result;
+  }
+  GRPCResponse._() : super();
+  factory GRPCResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory GRPCResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'GRPCResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..m<$core.String, StringList>(1, _omitFieldNames ? '' : 'headers', entryClassName: 'GRPCResponse.HeadersEntry', keyFieldType: $pb.PbFieldType.OS, valueFieldType: $pb.PbFieldType.OM, valueCreator: StringList.create, valueDefaultOrMaker: StringList.getDefault, packageName: const $pb.PackageName('api'))
+    ..a<$core.List<$core.int>>(2, _omitFieldNames ? '' : 'payload', $pb.PbFieldType.OY)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  GRPCResponse clone() => GRPCResponse()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  GRPCResponse copyWith(void Function(GRPCResponse) updates) => super.copyWith((message) => updates(message as GRPCResponse)) as GRPCResponse;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static GRPCResponse create() => GRPCResponse._();
+  GRPCResponse createEmptyInstance() => create();
+  static $pb.PbList<GRPCResponse> createRepeated() => $pb.PbList<GRPCResponse>();
+  @$core.pragma('dart2js:noInline')
+  static GRPCResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<GRPCResponse>(create);
+  static GRPCResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.Map<$core.String, StringList> get headers => $_getMap(0);
+
+  @$pb.TagNumber(2)
+  $core.List<$core.int> get payload => $_getN(1);
+  @$pb.TagNumber(2)
+  set payload($core.List<$core.int> v) { $_setBytes(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasPayload() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearPayload() => clearField(2);
 }
 
 class Reply extends $pb.GeneratedMessage {
@@ -242,12 +710,21 @@ class Reply extends $pb.GeneratedMessage {
 }
 
 class AgentStarted extends $pb.GeneratedMessage {
-  factory AgentStarted() => create();
+  factory AgentStarted({
+    $core.String? version,
+  }) {
+    final $result = create();
+    if (version != null) {
+      $result.version = version;
+    }
+    return $result;
+  }
   AgentStarted._() : super();
   factory AgentStarted.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory AgentStarted.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AgentStarted', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'version')
     ..hasRequiredFields = false
   ;
 
@@ -271,38 +748,15 @@ class AgentStarted extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static AgentStarted getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AgentStarted>(create);
   static AgentStarted? _defaultInstance;
-}
 
-class NooP extends $pb.GeneratedMessage {
-  factory NooP() => create();
-  NooP._() : super();
-  factory NooP.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory NooP.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
-
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'NooP', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
-    ..hasRequiredFields = false
-  ;
-
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-  'Will be removed in next major version')
-  NooP clone() => NooP()..mergeFromMessage(this);
-  @$core.Deprecated(
-  'Using this can add significant overhead to your binary. '
-  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-  'Will be removed in next major version')
-  NooP copyWith(void Function(NooP) updates) => super.copyWith((message) => updates(message as NooP)) as NooP;
-
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static NooP create() => NooP._();
-  NooP createEmptyInstance() => create();
-  static $pb.PbList<NooP> createRepeated() => $pb.PbList<NooP>();
-  @$core.pragma('dart2js:noInline')
-  static NooP getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NooP>(create);
-  static NooP? _defaultInstance;
+  @$pb.TagNumber(1)
+  $core.String get version => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set version($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasVersion() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearVersion() => clearField(1);
 }
 
 class Command extends $pb.GeneratedMessage {

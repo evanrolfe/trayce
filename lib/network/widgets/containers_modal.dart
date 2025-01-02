@@ -65,7 +65,6 @@ class _ContainersModalState extends State<ContainersModal> {
         child: BlocBuilder<ContainersCubit, ContainersState>(
           builder: (context, state) {
             if (state is ContainersLoaded) {
-              print('ContainersLoaded state received with ${state.containers.length} containers');
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

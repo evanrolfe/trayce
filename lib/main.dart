@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
 import 'package:ftrayce/db/database.dart';
 import 'package:grpc/grpc.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -39,6 +40,9 @@ void main() async {
   // Load schema.sql file
   final String schema = await rootBundle.loadString('schema.sql');
 
+  // Create bridge cubits
+  final agentNetworkBridge = AgentNetworkBridge();
+
   // Connect DB
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
@@ -51,15 +55,10 @@ void main() async {
       ));
   final flowRepo = FlowRepo(db: db);
 
-  // Create service first
-  final grpcService = TrayceAgentService();
-
-  // Create cubits
-  final containersCubit = ContainersCubit(commandSender: grpcService);
+  // Create Business logic cubits & services
+  final grpcService = TrayceAgentService(agentNetworkBridge: agentNetworkBridge);
+  final containersCubit = ContainersCubit(agentNetworkBridge: agentNetworkBridge);
   final flowTableCubit = FlowTableCubit(flowRepo: flowRepo);
-
-  // Update service with cubit reference
-  grpcService.containerObserver = containersCubit;
 
   runApp(
     MultiRepositoryProvider(

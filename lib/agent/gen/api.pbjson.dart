@@ -18,21 +18,32 @@ const Flow$json = {
   '1': 'Flow',
   '2': [
     {'1': 'uuid', '3': 1, '4': 1, '5': 9, '10': 'uuid'},
-    {'1': 'local_addr', '3': 2, '4': 1, '5': 9, '10': 'localAddr'},
-    {'1': 'remote_addr', '3': 3, '4': 1, '5': 9, '10': 'remoteAddr'},
+    {'1': 'source_addr', '3': 2, '4': 1, '5': 9, '10': 'sourceAddr'},
+    {'1': 'dest_addr', '3': 3, '4': 1, '5': 9, '10': 'destAddr'},
     {'1': 'l4_protocol', '3': 4, '4': 1, '5': 9, '10': 'l4Protocol'},
     {'1': 'l7_protocol', '3': 5, '4': 1, '5': 9, '10': 'l7Protocol'},
-    {'1': 'request', '3': 6, '4': 1, '5': 12, '10': 'request'},
-    {'1': 'response', '3': 7, '4': 1, '5': 12, '10': 'response'},
+    {'1': 'response_raw', '3': 7, '4': 1, '5': 12, '10': 'responseRaw'},
+    {'1': 'http_request', '3': 8, '4': 1, '5': 11, '6': '.api.HTTPRequest', '9': 0, '10': 'httpRequest'},
+    {'1': 'grpc_request', '3': 9, '4': 1, '5': 11, '6': '.api.GRPCRequest', '9': 0, '10': 'grpcRequest'},
+    {'1': 'http_response', '3': 10, '4': 1, '5': 11, '6': '.api.HTTPResponse', '9': 1, '10': 'httpResponse'},
+    {'1': 'grpc_response', '3': 11, '4': 1, '5': 11, '6': '.api.GRPCResponse', '9': 1, '10': 'grpcResponse'},
+  ],
+  '8': [
+    {'1': 'request'},
+    {'1': 'response'},
   ],
 };
 
 /// Descriptor for `Flow`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List flowDescriptor = $convert.base64Decode(
-    'CgRGbG93EhIKBHV1aWQYASABKAlSBHV1aWQSHQoKbG9jYWxfYWRkchgCIAEoCVIJbG9jYWxBZG'
-    'RyEh8KC3JlbW90ZV9hZGRyGAMgASgJUgpyZW1vdGVBZGRyEh8KC2w0X3Byb3RvY29sGAQgASgJ'
-    'UgpsNFByb3RvY29sEh8KC2w3X3Byb3RvY29sGAUgASgJUgpsN1Byb3RvY29sEhgKB3JlcXVlc3'
-    'QYBiABKAxSB3JlcXVlc3QSGgoIcmVzcG9uc2UYByABKAxSCHJlc3BvbnNl');
+    'CgRGbG93EhIKBHV1aWQYASABKAlSBHV1aWQSHwoLc291cmNlX2FkZHIYAiABKAlSCnNvdXJjZU'
+    'FkZHISGwoJZGVzdF9hZGRyGAMgASgJUghkZXN0QWRkchIfCgtsNF9wcm90b2NvbBgEIAEoCVIK'
+    'bDRQcm90b2NvbBIfCgtsN19wcm90b2NvbBgFIAEoCVIKbDdQcm90b2NvbBIhCgxyZXNwb25zZV'
+    '9yYXcYByABKAxSC3Jlc3BvbnNlUmF3EjUKDGh0dHBfcmVxdWVzdBgIIAEoCzIQLmFwaS5IVFRQ'
+    'UmVxdWVzdEgAUgtodHRwUmVxdWVzdBI1CgxncnBjX3JlcXVlc3QYCSABKAsyEC5hcGkuR1JQQ1'
+    'JlcXVlc3RIAFILZ3JwY1JlcXVlc3QSOAoNaHR0cF9yZXNwb25zZRgKIAEoCzIRLmFwaS5IVFRQ'
+    'UmVzcG9uc2VIAVIMaHR0cFJlc3BvbnNlEjgKDWdycGNfcmVzcG9uc2UYCyABKAsyES5hcGkuR1'
+    'JQQ1Jlc3BvbnNlSAFSDGdycGNSZXNwb25zZUIJCgdyZXF1ZXN0QgoKCHJlc3BvbnNl');
 
 @$core.Deprecated('Use flowsDescriptor instead')
 const Flows$json = {
@@ -45,6 +56,136 @@ const Flows$json = {
 /// Descriptor for `Flows`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List flowsDescriptor = $convert.base64Decode(
     'CgVGbG93cxIfCgVmbG93cxgBIAMoCzIJLmFwaS5GbG93UgVmbG93cw==');
+
+@$core.Deprecated('Use stringListDescriptor instead')
+const StringList$json = {
+  '1': 'StringList',
+  '2': [
+    {'1': 'values', '3': 1, '4': 3, '5': 9, '10': 'values'},
+  ],
+};
+
+/// Descriptor for `StringList`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List stringListDescriptor = $convert.base64Decode(
+    'CgpTdHJpbmdMaXN0EhYKBnZhbHVlcxgBIAMoCVIGdmFsdWVz');
+
+@$core.Deprecated('Use hTTPRequestDescriptor instead')
+const HTTPRequest$json = {
+  '1': 'HTTPRequest',
+  '2': [
+    {'1': 'method', '3': 1, '4': 1, '5': 9, '10': 'method'},
+    {'1': 'host', '3': 2, '4': 1, '5': 9, '10': 'host'},
+    {'1': 'path', '3': 3, '4': 1, '5': 9, '10': 'path'},
+    {'1': 'http_version', '3': 4, '4': 1, '5': 9, '10': 'httpVersion'},
+    {'1': 'headers', '3': 5, '4': 3, '5': 11, '6': '.api.HTTPRequest.HeadersEntry', '10': 'headers'},
+    {'1': 'payload', '3': 6, '4': 1, '5': 12, '10': 'payload'},
+  ],
+  '3': [HTTPRequest_HeadersEntry$json],
+};
+
+@$core.Deprecated('Use hTTPRequestDescriptor instead')
+const HTTPRequest_HeadersEntry$json = {
+  '1': 'HeadersEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.api.StringList', '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
+/// Descriptor for `HTTPRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List hTTPRequestDescriptor = $convert.base64Decode(
+    'CgtIVFRQUmVxdWVzdBIWCgZtZXRob2QYASABKAlSBm1ldGhvZBISCgRob3N0GAIgASgJUgRob3'
+    'N0EhIKBHBhdGgYAyABKAlSBHBhdGgSIQoMaHR0cF92ZXJzaW9uGAQgASgJUgtodHRwVmVyc2lv'
+    'bhI3CgdoZWFkZXJzGAUgAygLMh0uYXBpLkhUVFBSZXF1ZXN0LkhlYWRlcnNFbnRyeVIHaGVhZG'
+    'VycxIYCgdwYXlsb2FkGAYgASgMUgdwYXlsb2FkGksKDEhlYWRlcnNFbnRyeRIQCgNrZXkYASAB'
+    'KAlSA2tleRIlCgV2YWx1ZRgCIAEoCzIPLmFwaS5TdHJpbmdMaXN0UgV2YWx1ZToCOAE=');
+
+@$core.Deprecated('Use hTTPResponseDescriptor instead')
+const HTTPResponse$json = {
+  '1': 'HTTPResponse',
+  '2': [
+    {'1': 'http_version', '3': 1, '4': 1, '5': 9, '10': 'httpVersion'},
+    {'1': 'status', '3': 2, '4': 1, '5': 5, '10': 'status'},
+    {'1': 'status_msg', '3': 3, '4': 1, '5': 9, '10': 'statusMsg'},
+    {'1': 'headers', '3': 4, '4': 3, '5': 11, '6': '.api.HTTPResponse.HeadersEntry', '10': 'headers'},
+    {'1': 'payload', '3': 5, '4': 1, '5': 12, '10': 'payload'},
+  ],
+  '3': [HTTPResponse_HeadersEntry$json],
+};
+
+@$core.Deprecated('Use hTTPResponseDescriptor instead')
+const HTTPResponse_HeadersEntry$json = {
+  '1': 'HeadersEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.api.StringList', '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
+/// Descriptor for `HTTPResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List hTTPResponseDescriptor = $convert.base64Decode(
+    'CgxIVFRQUmVzcG9uc2USIQoMaHR0cF92ZXJzaW9uGAEgASgJUgtodHRwVmVyc2lvbhIWCgZzdG'
+    'F0dXMYAiABKAVSBnN0YXR1cxIdCgpzdGF0dXNfbXNnGAMgASgJUglzdGF0dXNNc2cSOAoHaGVh'
+    'ZGVycxgEIAMoCzIeLmFwaS5IVFRQUmVzcG9uc2UuSGVhZGVyc0VudHJ5UgdoZWFkZXJzEhgKB3'
+    'BheWxvYWQYBSABKAxSB3BheWxvYWQaSwoMSGVhZGVyc0VudHJ5EhAKA2tleRgBIAEoCVIDa2V5'
+    'EiUKBXZhbHVlGAIgASgLMg8uYXBpLlN0cmluZ0xpc3RSBXZhbHVlOgI4AQ==');
+
+@$core.Deprecated('Use gRPCRequestDescriptor instead')
+const GRPCRequest$json = {
+  '1': 'GRPCRequest',
+  '2': [
+    {'1': 'path', '3': 1, '4': 1, '5': 9, '10': 'path'},
+    {'1': 'headers', '3': 2, '4': 3, '5': 11, '6': '.api.GRPCRequest.HeadersEntry', '10': 'headers'},
+    {'1': 'payload', '3': 3, '4': 1, '5': 12, '10': 'payload'},
+  ],
+  '3': [GRPCRequest_HeadersEntry$json],
+};
+
+@$core.Deprecated('Use gRPCRequestDescriptor instead')
+const GRPCRequest_HeadersEntry$json = {
+  '1': 'HeadersEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.api.StringList', '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
+/// Descriptor for `GRPCRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List gRPCRequestDescriptor = $convert.base64Decode(
+    'CgtHUlBDUmVxdWVzdBISCgRwYXRoGAEgASgJUgRwYXRoEjcKB2hlYWRlcnMYAiADKAsyHS5hcG'
+    'kuR1JQQ1JlcXVlc3QuSGVhZGVyc0VudHJ5UgdoZWFkZXJzEhgKB3BheWxvYWQYAyABKAxSB3Bh'
+    'eWxvYWQaSwoMSGVhZGVyc0VudHJ5EhAKA2tleRgBIAEoCVIDa2V5EiUKBXZhbHVlGAIgASgLMg'
+    '8uYXBpLlN0cmluZ0xpc3RSBXZhbHVlOgI4AQ==');
+
+@$core.Deprecated('Use gRPCResponseDescriptor instead')
+const GRPCResponse$json = {
+  '1': 'GRPCResponse',
+  '2': [
+    {'1': 'headers', '3': 1, '4': 3, '5': 11, '6': '.api.GRPCResponse.HeadersEntry', '10': 'headers'},
+    {'1': 'payload', '3': 2, '4': 1, '5': 12, '10': 'payload'},
+  ],
+  '3': [GRPCResponse_HeadersEntry$json],
+};
+
+@$core.Deprecated('Use gRPCResponseDescriptor instead')
+const GRPCResponse_HeadersEntry$json = {
+  '1': 'HeadersEntry',
+  '2': [
+    {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    {'1': 'value', '3': 2, '4': 1, '5': 11, '6': '.api.StringList', '10': 'value'},
+  ],
+  '7': {'7': true},
+};
+
+/// Descriptor for `GRPCResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List gRPCResponseDescriptor = $convert.base64Decode(
+    'CgxHUlBDUmVzcG9uc2USOAoHaGVhZGVycxgBIAMoCzIeLmFwaS5HUlBDUmVzcG9uc2UuSGVhZG'
+    'Vyc0VudHJ5UgdoZWFkZXJzEhgKB3BheWxvYWQYAiABKAxSB3BheWxvYWQaSwoMSGVhZGVyc0Vu'
+    'dHJ5EhAKA2tleRgBIAEoCVIDa2V5EiUKBXZhbHVlGAIgASgLMg8uYXBpLlN0cmluZ0xpc3RSBX'
+    'ZhbHVlOgI4AQ==');
 
 @$core.Deprecated('Use replyDescriptor instead')
 const Reply$json = {
@@ -61,20 +202,14 @@ final $typed_data.Uint8List replyDescriptor = $convert.base64Decode(
 @$core.Deprecated('Use agentStartedDescriptor instead')
 const AgentStarted$json = {
   '1': 'AgentStarted',
+  '2': [
+    {'1': 'version', '3': 1, '4': 1, '5': 9, '10': 'version'},
+  ],
 };
 
 /// Descriptor for `AgentStarted`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List agentStartedDescriptor = $convert.base64Decode(
-    'CgxBZ2VudFN0YXJ0ZWQ=');
-
-@$core.Deprecated('Use nooPDescriptor instead')
-const NooP$json = {
-  '1': 'NooP',
-};
-
-/// Descriptor for `NooP`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List nooPDescriptor = $convert.base64Decode(
-    'CgROb29Q');
+    'CgxBZ2VudFN0YXJ0ZWQSGAoHdmVyc2lvbhgBIAEoCVIHdmVyc2lvbg==');
 
 @$core.Deprecated('Use commandDescriptor instead')
 const Command$json = {

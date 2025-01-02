@@ -33,9 +33,9 @@ class TrayceAgentClient extends $grpc.Client {
       '/api.TrayceAgent/SendAgentStarted',
       ($0.AgentStarted value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Reply.fromBuffer(value));
-  static final _$openCommandStream = $grpc.ClientMethod<$0.NooP, $0.Command>(
+  static final _$openCommandStream = $grpc.ClientMethod<$0.AgentStarted, $0.Command>(
       '/api.TrayceAgent/OpenCommandStream',
-      ($0.NooP value) => value.writeToBuffer(),
+      ($0.AgentStarted value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Command.fromBuffer(value));
 
   TrayceAgentClient($grpc.ClientChannel channel,
@@ -56,7 +56,7 @@ class TrayceAgentClient extends $grpc.Client {
     return $createUnaryCall(_$sendAgentStarted, request, options: options);
   }
 
-  $grpc.ResponseStream<$0.Command> openCommandStream($async.Stream<$0.NooP> request, {$grpc.CallOptions? options}) {
+  $grpc.ResponseStream<$0.Command> openCommandStream($async.Stream<$0.AgentStarted> request, {$grpc.CallOptions? options}) {
     return $createStreamingCall(_$openCommandStream, request, options: options);
   }
 }
@@ -87,12 +87,12 @@ abstract class TrayceAgentServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.AgentStarted.fromBuffer(value),
         ($0.Reply value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.NooP, $0.Command>(
+    $addMethod($grpc.ServiceMethod<$0.AgentStarted, $0.Command>(
         'OpenCommandStream',
         openCommandStream,
         true,
         true,
-        ($core.List<$core.int> value) => $0.NooP.fromBuffer(value),
+        ($core.List<$core.int> value) => $0.AgentStarted.fromBuffer(value),
         ($0.Command value) => value.writeToBuffer()));
   }
 
@@ -111,5 +111,5 @@ abstract class TrayceAgentServiceBase extends $grpc.Service {
   $async.Future<$0.Reply> sendFlowsObserved($grpc.ServiceCall call, $0.Flows request);
   $async.Future<$0.Reply> sendContainersObserved($grpc.ServiceCall call, $0.Containers request);
   $async.Future<$0.Reply> sendAgentStarted($grpc.ServiceCall call, $0.AgentStarted request);
-  $async.Stream<$0.Command> openCommandStream($grpc.ServiceCall call, $async.Stream<$0.NooP> request);
+  $async.Stream<$0.Command> openCommandStream($grpc.ServiceCall call, $async.Stream<$0.AgentStarted> request);
 }

@@ -2,20 +2,25 @@ import 'dart:async';
 
 import 'package:grpc/grpc.dart';
 
+import '../common/bloc/agent_network_bridge.dart';
 import 'command_sender.dart';
-import 'container_observer.dart';
 import 'gen/api.pbgrpc.dart';
 
 class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender {
   final _flows = <Flow>[];
   final _containers = <Container>[];
   final _commandStreamControllers = <StreamController<Command>>[];
-  ContainerObserver? _containerObserver;
+  final AgentNetworkBridge _agentNetworkBridge;
 
-  TrayceAgentService();
-
-  set containerObserver(ContainerObserver observer) {
-    _containerObserver = observer;
+  TrayceAgentService({
+    required AgentNetworkBridge agentNetworkBridge,
+  }) : _agentNetworkBridge = agentNetworkBridge {
+    // Listen for commands to send
+    _agentNetworkBridge.stream.listen((state) {
+      if (state is SendCommand) {
+        sendCommandToAll(state.command);
+      }
+    });
   }
 
   @override
@@ -26,11 +31,11 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
 
   @override
   Future<Reply> sendContainersObserved(ServiceCall call, Containers request) async {
-    print('Containers observed');
     _containers.clear();
     _containers.addAll(request.containers);
 
-    _containerObserver?.containersUpdated(_containers);
+    // _containerObserver?.containersUpdated(_containers);
+    _agentNetworkBridge.containersUpdated(_containers);
 
     return Reply()..status = 'ok';
   }
@@ -42,7 +47,7 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
   }
 
   @override
-  Stream<Command> openCommandStream(ServiceCall call, Stream<NooP> request) async* {
+  Stream<Command> openCommandStream(ServiceCall call, Stream<AgentStarted> request) async* {
     final controller = StreamController<Command>();
     _commandStreamControllers.add(controller);
 

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../agent/command_sender.dart';
 import '../../agent/container_observer.dart';
 import '../../agent/gen/api.pb.dart';
+import '../../common/bloc/agent_network_bridge.dart' as bridge;
 
 // States
 abstract class ContainersState {}
@@ -24,19 +24,27 @@ class AgentRunning extends ContainersState {
 }
 
 class ContainersCubit extends Cubit<ContainersState> implements ContainerObserver {
-  final CommandSender _commandSender;
+  final bridge.AgentNetworkBridge _agentNetworkBridge;
   bool _agentRunning = false;
   DateTime? _lastHeartbeatAt;
   Timer? _heartbeatCheckTimer;
 
-  ContainersCubit({required CommandSender commandSender})
-      : _commandSender = commandSender,
+  ContainersCubit({
+    required bridge.AgentNetworkBridge agentNetworkBridge,
+  })  : _agentNetworkBridge = agentNetworkBridge,
         super(ContainersInitial()) {
     // Start heartbeat check timer
     _heartbeatCheckTimer = Timer.periodic(
       const Duration(milliseconds: 100),
       (_) => _checkHeartbeat(),
     );
+
+    // Listen to AgentNetworkBridge state changes
+    _agentNetworkBridge.stream.listen((state) {
+      if (state is bridge.ContainersLoaded) {
+        containersUpdated(state.containers);
+      }
+    });
   }
 
   @override
@@ -86,6 +94,6 @@ class ContainersCubit extends Cubit<ContainersState> implements ContainerObserve
       type: 'set_settings',
       settings: Settings(containerIds: containerIds.toList()),
     );
-    _commandSender.sendCommandToAll(command);
+    _agentNetworkBridge.sendCommandToAll(command);
   }
 }

@@ -2,6 +2,9 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
+import '../../agent/gen/api.pb.dart' as pb;
+import 'flow_request.dart';
+
 class Flow {
   final int? id;
   final String uuid;
@@ -9,6 +12,7 @@ class Flow {
   final String destAddr;
   final String l4Protocol;
   final String l7Protocol;
+  final FlowRequest? request;
   final Uint8List requestRaw;
   final Uint8List? responseRaw;
   final DateTime createdAt;
@@ -23,20 +27,58 @@ class Flow {
     required this.requestRaw,
     this.responseRaw,
     required this.createdAt,
+    this.request,
   }) : uuid = uuid ?? const Uuid().v4();
+
+  // Create a Flow from an agent Flow protobuf message
+  factory Flow.fromProto(pb.Flow agentFlow) {
+    FlowRequest? request;
+    Uint8List requestRaw = Uint8List(0);
+
+    // Parse HTTP request if present
+    if (agentFlow.hasHttpRequest()) {
+      request = HttpRequest.fromProto(agentFlow.httpRequest);
+      requestRaw = request.toJson();
+    }
+
+    return Flow(
+      uuid: agentFlow.uuid,
+      sourceAddr: agentFlow.sourceAddr,
+      destAddr: agentFlow.destAddr,
+      l4Protocol: agentFlow.l4Protocol,
+      l7Protocol: agentFlow.l7Protocol,
+      request: request,
+      requestRaw: requestRaw,
+      createdAt: DateTime.now(),
+    );
+  }
 
   // Create a Flow from a Map (database row)
   factory Flow.fromMap(Map<String, dynamic> map) {
+    final l7Protocol = map['l7_protocol'] as String;
+    final requestRaw = map['request_raw'] as Uint8List;
+
+    // Parse HTTP requests
+    FlowRequest? request;
+    if (l7Protocol == 'http') {
+      try {
+        request = HttpRequest.fromJson(requestRaw);
+      } catch (e) {
+        print('Failed to parse HTTP request: $e');
+      }
+    }
+
     return Flow(
       id: map['id'] as int?,
       uuid: map['uuid'] as String,
       sourceAddr: map['source_addr'] as String,
       destAddr: map['dest_addr'] as String,
       l4Protocol: map['l4_protocol'] as String,
-      l7Protocol: map['l7_protocol'] as String,
-      requestRaw: map['request_raw'] as Uint8List,
+      l7Protocol: l7Protocol,
+      requestRaw: requestRaw,
       responseRaw: map['response_raw'] as Uint8List?,
       createdAt: DateTime.parse(map['created_at'] as String),
+      request: request,
     );
   }
 
@@ -66,6 +108,7 @@ class Flow {
     Uint8List? requestRaw,
     Uint8List? responseRaw,
     DateTime? createdAt,
+    FlowRequest? request,
   }) {
     return Flow(
       id: id ?? this.id,
@@ -77,6 +120,7 @@ class Flow {
       requestRaw: requestRaw ?? this.requestRaw,
       responseRaw: responseRaw ?? this.responseRaw,
       createdAt: createdAt ?? this.createdAt,
+      request: request ?? this.request,
     );
   }
 }
