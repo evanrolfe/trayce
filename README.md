@@ -8,6 +8,12 @@ TrayceGUI is a cross-platform desktop application which lets you interface with 
 Run the app:
 `flutter run`
 
+Generate protobuf files:
+```
+dart pub global activate protoc_plugin
+make generate
+```
+
 ## Test
 
 Run widget tests:

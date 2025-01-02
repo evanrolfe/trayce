@@ -71,6 +71,7 @@ class Flow {
   factory Flow.fromMap(Map<String, dynamic> map) {
     final l7Protocol = map['l7_protocol'] as String;
     final requestRaw = map['request_raw'] as Uint8List;
+    final responseRaw = map['response_raw'] as Uint8List;
 
     // Parse HTTP requests
     FlowRequest? request;
@@ -82,6 +83,16 @@ class Flow {
       }
     }
 
+    // Parse HTTP response
+    FlowResponse? response;
+    if (l7Protocol == 'http' && responseRaw.isNotEmpty) {
+      try {
+        response = HttpResponse.fromJson(responseRaw);
+      } catch (e) {
+        print('Failed to parse HTTP response: $e');
+      }
+    }
+
     return Flow(
       id: map['id'] as int?,
       uuid: map['uuid'] as String,
@@ -90,9 +101,10 @@ class Flow {
       l4Protocol: map['l4_protocol'] as String,
       l7Protocol: l7Protocol,
       requestRaw: requestRaw,
-      responseRaw: map['response_raw'] as Uint8List,
-      createdAt: DateTime.parse(map['created_at'] as String),
+      responseRaw: responseRaw,
       request: request,
+      response: response,
+      createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
 
