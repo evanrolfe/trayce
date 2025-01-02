@@ -1,0 +1,97 @@
+import 'dart:typed_data';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ftrayce/network/models/flow.dart';
+
+import '../../support/database.dart';
+import '../../support/flow_factory.dart';
+import '../../support/helpers.dart';
+
+void main() {
+  late TestDatabase db;
+
+  setUp(() async {
+    db = await TestDatabase.instance;
+  });
+
+  group('Flow', () {
+    final testTime = DateTime.parse('2024-01-01T12:00:00Z');
+    final testBytes = Uint8List.fromList([1, 2, 3, 4]);
+    final requestBytes = hexToBytes(requestHex);
+    // final responseBytes = hexToBytes(responseHex);
+
+    group('toMap()', () {
+      test('it converts to map correctly', () {
+        final flow = buildHttpReqFlow(id: 1, uuid: 'test-uuid');
+
+        final map = flow.toMap();
+
+        expect(map['id'], 1);
+        expect(map['uuid'], 'test-uuid');
+        expect(map['source_addr'], '192.168.0.1');
+        expect(map['dest_addr'], '192.168.0.2');
+        expect(map['l4_protocol'], 'tcp');
+        expect(map['l7_protocol'], 'http');
+        expect(map['request_raw'], requestBytes);
+        expect(map['response_raw'], null);
+        expect(map['created_at'], testTime.toIso8601String());
+      });
+    });
+
+    group('fromMap()', () {
+      test('it creates from map correctly', () {
+        final map = {
+          'id': 1,
+          'uuid': 'test-uuid',
+          'source_addr': '192.168.0.1',
+          'dest_addr': '192.168.0.2',
+          'l4_protocol': 'tcp',
+          'l7_protocol': 'http',
+          'request_raw': testBytes,
+          'response_raw': testBytes,
+          'created_at': testTime.toIso8601String(),
+        };
+
+        final flow = Flow.fromMap(map);
+
+        expect(flow.id, 1);
+        expect(flow.uuid, 'test-uuid');
+        expect(flow.sourceAddr, '192.168.0.1');
+        expect(flow.destAddr, '192.168.0.2');
+        expect(flow.l4Protocol, 'tcp');
+        expect(flow.l7Protocol, 'http');
+        expect(flow.requestRaw, testBytes);
+        expect(flow.responseRaw, testBytes);
+        expect(flow.createdAt, testTime);
+      });
+    });
+
+    group('copyWith()', () {
+      test('it copies only specified fields', () {
+        final original = buildHttpReqFlow(id: 1, uuid: 'test-uuid');
+
+        final newTime = DateTime.parse('2024-01-02T12:00:00Z');
+        final newBytes = Uint8List.fromList([5, 6, 7, 8]);
+
+        final copied = original.copyWith(
+          sourceAddr: '192.168.1.2',
+          responseRaw: newBytes,
+          createdAt: newTime,
+        );
+
+        // Changed fields
+        expect(copied.sourceAddr, '192.168.1.2');
+        expect(copied.responseRaw, newBytes);
+        expect(copied.createdAt, newTime);
+
+        // Unchanged fields
+        expect(copied.id, original.id);
+        expect(copied.uuid, original.uuid);
+        expect(copied.destAddr, original.destAddr);
+        expect(copied.l4Protocol, original.l4Protocol);
+        expect(copied.l7Protocol, original.l7Protocol);
+        expect(copied.requestRaw, original.requestRaw);
+      });
+    });
+  });
+}
