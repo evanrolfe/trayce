@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:ftrayce/network/models/flow.dart';
-
-import 'helpers.dart';
+import 'package:ftrayce/network/models/flow_request.dart';
+import 'package:ftrayce/network/models/flow_response.dart';
 
 const requestHex = """00000000  47 45 54 20 2f 20 48 54  54 50 2f 31 2e 31 0d 0a  |GET / HTTP/1.1..|
 00000010  48 6f 73 74 3a 20 31 37  32 2e 31 37 2e 30 2e 33  |Host: 172.17.0.3|
@@ -30,18 +30,21 @@ Flow buildHttpReqFlow({
   String? destAddr,
   String? l4Protocol,
   String? l7Protocol,
-  Uint8List? requestRaw,
-  Uint8List? responseRaw,
+  HttpRequest? request,
   DateTime? createdAt,
 }) {
-  return buildFlow(
+  request ??= HttpRequest(method: 'GET', host: '172.17.0.3', path: '/', httpVersion: 'HTTP/1.1', headers: {}, body: '');
+
+  return Flow(
     id: id,
     uuid: uuid,
     sourceAddr: sourceAddr ?? '192.168.0.1',
     destAddr: destAddr ?? '192.168.0.2',
     l4Protocol: l4Protocol ?? 'tcp',
     l7Protocol: l7Protocol ?? 'http',
-    requestRaw: requestRaw ?? hexToBytes(requestHex),
+    request: request,
+    requestRaw: request.toJson(),
+    responseRaw: Uint8List(0),
     createdAt: createdAt ?? DateTime.parse('2024-01-01T12:00:00Z'),
   );
 }
@@ -53,33 +56,11 @@ Flow buildHttpRespFlow({
   String? destAddr,
   String? l4Protocol,
   String? l7Protocol,
-  Uint8List? requestRaw,
-  Uint8List? responseRaw,
+  HttpResponse? response,
   DateTime? createdAt,
 }) {
-  return buildFlow(
-    id: id,
-    uuid: uuid,
-    sourceAddr: sourceAddr ?? '192.168.0.1',
-    destAddr: destAddr ?? '192.168.0.2',
-    l4Protocol: l4Protocol ?? 'tcp',
-    l7Protocol: l7Protocol ?? 'http',
-    responseRaw: responseRaw ?? hexToBytes(responseHex),
-    createdAt: createdAt ?? DateTime.parse('2024-01-01T12:00:00Z'),
-  );
-}
+  response ??= HttpResponse(httpVersion: 'HTTP/1.1', status: 200, statusMsg: 'OK', headers: {}, body: 'Hello World!');
 
-Flow buildFlow({
-  int? id,
-  String? uuid,
-  String? sourceAddr,
-  String? destAddr,
-  String? l4Protocol,
-  String? l7Protocol,
-  Uint8List? requestRaw,
-  Uint8List? responseRaw,
-  DateTime? createdAt,
-}) {
   return Flow(
     id: id,
     uuid: uuid,
@@ -87,8 +68,9 @@ Flow buildFlow({
     destAddr: destAddr ?? '192.168.0.2',
     l4Protocol: l4Protocol ?? 'tcp',
     l7Protocol: l7Protocol ?? 'http',
-    requestRaw: requestRaw ?? hexToBytes(requestHex),
-    // responseRaw: responseRaw ?? hexToBytes(responseHex),
+    response: response,
+    requestRaw: Uint8List(0),
+    responseRaw: response.toJson(),
     createdAt: createdAt ?? DateTime.parse('2024-01-01T12:00:00Z'),
   );
 }

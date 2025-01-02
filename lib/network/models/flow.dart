@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:ftrayce/network/models/flow_response.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
@@ -13,8 +14,9 @@ class Flow {
   final String l4Protocol;
   final String l7Protocol;
   final FlowRequest? request;
+  final FlowResponse? response;
   final Uint8List requestRaw;
-  final Uint8List? responseRaw;
+  final Uint8List responseRaw;
   final DateTime createdAt;
 
   Flow({
@@ -25,9 +27,10 @@ class Flow {
     required this.l4Protocol,
     required this.l7Protocol,
     required this.requestRaw,
-    this.responseRaw,
+    required this.responseRaw,
     required this.createdAt,
     this.request,
+    this.response,
   }) : uuid = uuid ?? const Uuid().v4();
 
   // Create a Flow from an agent Flow protobuf message
@@ -35,10 +38,19 @@ class Flow {
     FlowRequest? request;
     Uint8List requestRaw = Uint8List(0);
 
+    FlowResponse? response;
+    Uint8List responseRaw = Uint8List(0);
+
     // Parse HTTP request if present
     if (agentFlow.hasHttpRequest()) {
       request = HttpRequest.fromProto(agentFlow.httpRequest);
       requestRaw = request.toJson();
+    }
+
+    // Parse HTTP response if present
+    if (agentFlow.hasHttpResponse()) {
+      response = HttpResponse.fromProto(agentFlow.httpResponse);
+      responseRaw = response.toJson();
     }
 
     return Flow(
@@ -48,7 +60,9 @@ class Flow {
       l4Protocol: agentFlow.l4Protocol,
       l7Protocol: agentFlow.l7Protocol,
       request: request,
+      response: response,
       requestRaw: requestRaw,
+      responseRaw: responseRaw,
       createdAt: DateTime.now(),
     );
   }
@@ -60,7 +74,7 @@ class Flow {
 
     // Parse HTTP requests
     FlowRequest? request;
-    if (l7Protocol == 'http') {
+    if (l7Protocol == 'http' && requestRaw.isNotEmpty) {
       try {
         request = HttpRequest.fromJson(requestRaw);
       } catch (e) {
@@ -76,7 +90,7 @@ class Flow {
       l4Protocol: map['l4_protocol'] as String,
       l7Protocol: l7Protocol,
       requestRaw: requestRaw,
-      responseRaw: map['response_raw'] as Uint8List?,
+      responseRaw: map['response_raw'] as Uint8List,
       createdAt: DateTime.parse(map['created_at'] as String),
       request: request,
     );

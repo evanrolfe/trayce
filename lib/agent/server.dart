@@ -25,8 +25,8 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
 
   @override
   Future<Reply> sendFlowsObserved(ServiceCall call, Flows request) async {
-    _flows.addAll(request.flows);
-    return Reply()..status = 'ok';
+    _agentNetworkBridge.flowsObserved(request.flows);
+    return Reply(status: 'success');
   }
 
   @override
@@ -37,13 +37,13 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
     // _containerObserver?.containersUpdated(_containers);
     _agentNetworkBridge.containersUpdated(_containers);
 
-    return Reply()..status = 'ok';
+    return Reply(status: 'success');
   }
 
   @override
   Future<Reply> sendAgentStarted(ServiceCall call, AgentStarted request) async {
     print('Agent started');
-    return Reply()..status = 'ok';
+    return Reply(status: 'success');
   }
 
   @override

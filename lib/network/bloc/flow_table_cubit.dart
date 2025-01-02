@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../agent/gen/api.pb.dart' as pb;
+import '../../common/bloc/agent_network_bridge.dart' as bridge;
 import '../models/flow.dart';
 import '../repo/flow_repo.dart';
 
@@ -16,10 +18,30 @@ class DisplayFlows extends FlowTableState {
 
 class FlowTableCubit extends Cubit<FlowTableState> {
   final FlowRepo _flowRepo;
+  final bridge.AgentNetworkBridge _agentNetworkBridge;
 
-  FlowTableCubit({required FlowRepo flowRepo})
-      : _flowRepo = flowRepo,
-        super(FlowTableInitial());
+  FlowTableCubit({
+    required FlowRepo flowRepo,
+    required bridge.AgentNetworkBridge agentNetworkBridge,
+  })  : _flowRepo = flowRepo,
+        _agentNetworkBridge = agentNetworkBridge,
+        super(FlowTableInitial()) {
+    // Listen to AgentNetworkBridge state changes
+    _agentNetworkBridge.stream.listen((state) {
+      if (state is bridge.FlowsObserved) {
+        print('Received ${state.flows.length} flows');
+        saveFlows(state.flows);
+      }
+    });
+  }
+
+  Future<void> saveFlows(List<pb.Flow> agentFlows) async {
+    for (final agentFlow in agentFlows) {
+      final flow = Flow.fromProto(agentFlow);
+      await _flowRepo.save(flow);
+    }
+    reloadFlows();
+  }
 
   Future<void> reloadFlows() async {
     final flows = await _flowRepo.getAllFlows();

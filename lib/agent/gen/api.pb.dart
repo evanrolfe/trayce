@@ -16,12 +16,14 @@ import 'package:protobuf/protobuf.dart' as $pb;
 enum Flow_Request {
   httpRequest, 
   grpcRequest, 
+  sqlQuery, 
   notSet
 }
 
 enum Flow_Response {
   httpResponse, 
   grpcResponse, 
+  sqlResponse, 
   notSet
 }
 
@@ -32,11 +34,12 @@ class Flow extends $pb.GeneratedMessage {
     $core.String? destAddr,
     $core.String? l4Protocol,
     $core.String? l7Protocol,
-    $core.List<$core.int>? responseRaw,
     HTTPRequest? httpRequest,
     GRPCRequest? grpcRequest,
+    SQLQuery? sqlQuery,
     HTTPResponse? httpResponse,
     GRPCResponse? grpcResponse,
+    SQLResponse? sqlResponse,
   }) {
     final $result = create();
     if (uuid != null) {
@@ -54,20 +57,23 @@ class Flow extends $pb.GeneratedMessage {
     if (l7Protocol != null) {
       $result.l7Protocol = l7Protocol;
     }
-    if (responseRaw != null) {
-      $result.responseRaw = responseRaw;
-    }
     if (httpRequest != null) {
       $result.httpRequest = httpRequest;
     }
     if (grpcRequest != null) {
       $result.grpcRequest = grpcRequest;
     }
+    if (sqlQuery != null) {
+      $result.sqlQuery = sqlQuery;
+    }
     if (httpResponse != null) {
       $result.httpResponse = httpResponse;
     }
     if (grpcResponse != null) {
       $result.grpcResponse = grpcResponse;
+    }
+    if (sqlResponse != null) {
+      $result.sqlResponse = sqlResponse;
     }
     return $result;
   }
@@ -76,28 +82,31 @@ class Flow extends $pb.GeneratedMessage {
   factory Flow.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static const $core.Map<$core.int, Flow_Request> _Flow_RequestByTag = {
-    8 : Flow_Request.httpRequest,
-    9 : Flow_Request.grpcRequest,
+    6 : Flow_Request.httpRequest,
+    7 : Flow_Request.grpcRequest,
+    8 : Flow_Request.sqlQuery,
     0 : Flow_Request.notSet
   };
   static const $core.Map<$core.int, Flow_Response> _Flow_ResponseByTag = {
-    10 : Flow_Response.httpResponse,
-    11 : Flow_Response.grpcResponse,
+    9 : Flow_Response.httpResponse,
+    10 : Flow_Response.grpcResponse,
+    11 : Flow_Response.sqlResponse,
     0 : Flow_Response.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Flow', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
-    ..oo(0, [8, 9])
-    ..oo(1, [10, 11])
+    ..oo(0, [6, 7, 8])
+    ..oo(1, [9, 10, 11])
     ..aOS(1, _omitFieldNames ? '' : 'uuid')
     ..aOS(2, _omitFieldNames ? '' : 'sourceAddr')
     ..aOS(3, _omitFieldNames ? '' : 'destAddr')
     ..aOS(4, _omitFieldNames ? '' : 'l4Protocol')
     ..aOS(5, _omitFieldNames ? '' : 'l7Protocol')
-    ..a<$core.List<$core.int>>(7, _omitFieldNames ? '' : 'responseRaw', $pb.PbFieldType.OY)
-    ..aOM<HTTPRequest>(8, _omitFieldNames ? '' : 'httpRequest', subBuilder: HTTPRequest.create)
-    ..aOM<GRPCRequest>(9, _omitFieldNames ? '' : 'grpcRequest', subBuilder: GRPCRequest.create)
-    ..aOM<HTTPResponse>(10, _omitFieldNames ? '' : 'httpResponse', subBuilder: HTTPResponse.create)
-    ..aOM<GRPCResponse>(11, _omitFieldNames ? '' : 'grpcResponse', subBuilder: GRPCResponse.create)
+    ..aOM<HTTPRequest>(6, _omitFieldNames ? '' : 'httpRequest', subBuilder: HTTPRequest.create)
+    ..aOM<GRPCRequest>(7, _omitFieldNames ? '' : 'grpcRequest', subBuilder: GRPCRequest.create)
+    ..aOM<SQLQuery>(8, _omitFieldNames ? '' : 'sqlQuery', subBuilder: SQLQuery.create)
+    ..aOM<HTTPResponse>(9, _omitFieldNames ? '' : 'httpResponse', subBuilder: HTTPResponse.create)
+    ..aOM<GRPCResponse>(10, _omitFieldNames ? '' : 'grpcResponse', subBuilder: GRPCResponse.create)
+    ..aOM<SQLResponse>(11, _omitFieldNames ? '' : 'sqlResponse', subBuilder: SQLResponse.create)
     ..hasRequiredFields = false
   ;
 
@@ -173,58 +182,71 @@ class Flow extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   void clearL7Protocol() => clearField(5);
 
+  @$pb.TagNumber(6)
+  HTTPRequest get httpRequest => $_getN(5);
+  @$pb.TagNumber(6)
+  set httpRequest(HTTPRequest v) { setField(6, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasHttpRequest() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearHttpRequest() => clearField(6);
+  @$pb.TagNumber(6)
+  HTTPRequest ensureHttpRequest() => $_ensure(5);
+
   @$pb.TagNumber(7)
-  $core.List<$core.int> get responseRaw => $_getN(5);
+  GRPCRequest get grpcRequest => $_getN(6);
   @$pb.TagNumber(7)
-  set responseRaw($core.List<$core.int> v) { $_setBytes(5, v); }
+  set grpcRequest(GRPCRequest v) { setField(7, v); }
   @$pb.TagNumber(7)
-  $core.bool hasResponseRaw() => $_has(5);
+  $core.bool hasGrpcRequest() => $_has(6);
   @$pb.TagNumber(7)
-  void clearResponseRaw() => clearField(7);
+  void clearGrpcRequest() => clearField(7);
+  @$pb.TagNumber(7)
+  GRPCRequest ensureGrpcRequest() => $_ensure(6);
 
   @$pb.TagNumber(8)
-  HTTPRequest get httpRequest => $_getN(6);
+  SQLQuery get sqlQuery => $_getN(7);
   @$pb.TagNumber(8)
-  set httpRequest(HTTPRequest v) { setField(8, v); }
+  set sqlQuery(SQLQuery v) { setField(8, v); }
   @$pb.TagNumber(8)
-  $core.bool hasHttpRequest() => $_has(6);
+  $core.bool hasSqlQuery() => $_has(7);
   @$pb.TagNumber(8)
-  void clearHttpRequest() => clearField(8);
+  void clearSqlQuery() => clearField(8);
   @$pb.TagNumber(8)
-  HTTPRequest ensureHttpRequest() => $_ensure(6);
+  SQLQuery ensureSqlQuery() => $_ensure(7);
 
   @$pb.TagNumber(9)
-  GRPCRequest get grpcRequest => $_getN(7);
-  @$pb.TagNumber(9)
-  set grpcRequest(GRPCRequest v) { setField(9, v); }
-  @$pb.TagNumber(9)
-  $core.bool hasGrpcRequest() => $_has(7);
-  @$pb.TagNumber(9)
-  void clearGrpcRequest() => clearField(9);
-  @$pb.TagNumber(9)
-  GRPCRequest ensureGrpcRequest() => $_ensure(7);
-
-  @$pb.TagNumber(10)
   HTTPResponse get httpResponse => $_getN(8);
-  @$pb.TagNumber(10)
-  set httpResponse(HTTPResponse v) { setField(10, v); }
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(9)
+  set httpResponse(HTTPResponse v) { setField(9, v); }
+  @$pb.TagNumber(9)
   $core.bool hasHttpResponse() => $_has(8);
-  @$pb.TagNumber(10)
-  void clearHttpResponse() => clearField(10);
-  @$pb.TagNumber(10)
+  @$pb.TagNumber(9)
+  void clearHttpResponse() => clearField(9);
+  @$pb.TagNumber(9)
   HTTPResponse ensureHttpResponse() => $_ensure(8);
 
-  @$pb.TagNumber(11)
+  @$pb.TagNumber(10)
   GRPCResponse get grpcResponse => $_getN(9);
-  @$pb.TagNumber(11)
-  set grpcResponse(GRPCResponse v) { setField(11, v); }
-  @$pb.TagNumber(11)
+  @$pb.TagNumber(10)
+  set grpcResponse(GRPCResponse v) { setField(10, v); }
+  @$pb.TagNumber(10)
   $core.bool hasGrpcResponse() => $_has(9);
-  @$pb.TagNumber(11)
-  void clearGrpcResponse() => clearField(11);
-  @$pb.TagNumber(11)
+  @$pb.TagNumber(10)
+  void clearGrpcResponse() => clearField(10);
+  @$pb.TagNumber(10)
   GRPCResponse ensureGrpcResponse() => $_ensure(9);
+
+  @$pb.TagNumber(11)
+  SQLResponse get sqlResponse => $_getN(10);
+  @$pb.TagNumber(11)
+  set sqlResponse(SQLResponse v) { setField(11, v); }
+  @$pb.TagNumber(11)
+  $core.bool hasSqlResponse() => $_has(10);
+  @$pb.TagNumber(11)
+  void clearSqlResponse() => clearField(11);
+  @$pb.TagNumber(11)
+  SQLResponse ensureSqlResponse() => $_ensure(10);
 }
 
 class Flows extends $pb.GeneratedMessage {
@@ -657,6 +679,132 @@ class GRPCResponse extends $pb.GeneratedMessage {
   $core.bool hasPayload() => $_has(1);
   @$pb.TagNumber(2)
   void clearPayload() => clearField(2);
+}
+
+class SQLQuery extends $pb.GeneratedMessage {
+  factory SQLQuery({
+    $core.String? query,
+    StringList? params,
+  }) {
+    final $result = create();
+    if (query != null) {
+      $result.query = query;
+    }
+    if (params != null) {
+      $result.params = params;
+    }
+    return $result;
+  }
+  SQLQuery._() : super();
+  factory SQLQuery.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SQLQuery.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SQLQuery', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'query')
+    ..aOM<StringList>(2, _omitFieldNames ? '' : 'params', subBuilder: StringList.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  SQLQuery clone() => SQLQuery()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  SQLQuery copyWith(void Function(SQLQuery) updates) => super.copyWith((message) => updates(message as SQLQuery)) as SQLQuery;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SQLQuery create() => SQLQuery._();
+  SQLQuery createEmptyInstance() => create();
+  static $pb.PbList<SQLQuery> createRepeated() => $pb.PbList<SQLQuery>();
+  @$core.pragma('dart2js:noInline')
+  static SQLQuery getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SQLQuery>(create);
+  static SQLQuery? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get query => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set query($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasQuery() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearQuery() => clearField(1);
+
+  @$pb.TagNumber(2)
+  StringList get params => $_getN(1);
+  @$pb.TagNumber(2)
+  set params(StringList v) { setField(2, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasParams() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearParams() => clearField(2);
+  @$pb.TagNumber(2)
+  StringList ensureParams() => $_ensure(1);
+}
+
+class SQLResponse extends $pb.GeneratedMessage {
+  factory SQLResponse({
+    StringList? columns,
+    $core.Iterable<StringList>? rows,
+  }) {
+    final $result = create();
+    if (columns != null) {
+      $result.columns = columns;
+    }
+    if (rows != null) {
+      $result.rows.addAll(rows);
+    }
+    return $result;
+  }
+  SQLResponse._() : super();
+  factory SQLResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory SQLResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SQLResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOM<StringList>(1, _omitFieldNames ? '' : 'columns', subBuilder: StringList.create)
+    ..pc<StringList>(2, _omitFieldNames ? '' : 'rows', $pb.PbFieldType.PM, subBuilder: StringList.create)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  SQLResponse clone() => SQLResponse()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  SQLResponse copyWith(void Function(SQLResponse) updates) => super.copyWith((message) => updates(message as SQLResponse)) as SQLResponse;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SQLResponse create() => SQLResponse._();
+  SQLResponse createEmptyInstance() => create();
+  static $pb.PbList<SQLResponse> createRepeated() => $pb.PbList<SQLResponse>();
+  @$core.pragma('dart2js:noInline')
+  static SQLResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<SQLResponse>(create);
+  static SQLResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  StringList get columns => $_getN(0);
+  @$pb.TagNumber(1)
+  set columns(StringList v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasColumns() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearColumns() => clearField(1);
+  @$pb.TagNumber(1)
+  StringList ensureColumns() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  $core.List<StringList> get rows => $_getList(1);
 }
 
 class Reply extends $pb.GeneratedMessage {

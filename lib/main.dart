@@ -56,25 +56,21 @@ void main() async {
   final flowRepo = FlowRepo(db: db);
 
   // Create Business logic cubits & services
+  // Agent
   final grpcService = TrayceAgentService(agentNetworkBridge: agentNetworkBridge);
+  // Network
   final containersCubit = ContainersCubit(agentNetworkBridge: agentNetworkBridge);
-  final flowTableCubit = FlowTableCubit(flowRepo: flowRepo);
+  final flowTableCubit = FlowTableCubit(agentNetworkBridge: agentNetworkBridge, flowRepo: flowRepo);
 
   runApp(
     MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<FlowRepo>(
-          create: (context) => flowRepo,
-        ),
+        RepositoryProvider<FlowRepo>(create: (context) => flowRepo),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<ContainersCubit>(
-            create: (context) => containersCubit,
-          ),
-          BlocProvider<FlowTableCubit>(
-            create: (context) => flowTableCubit,
-          ),
+          BlocProvider<ContainersCubit>(create: (context) => containersCubit),
+          BlocProvider<FlowTableCubit>(create: (context) => flowTableCubit),
         ],
         child: const MyApp(),
       ),

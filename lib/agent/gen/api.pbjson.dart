@@ -22,11 +22,12 @@ const Flow$json = {
     {'1': 'dest_addr', '3': 3, '4': 1, '5': 9, '10': 'destAddr'},
     {'1': 'l4_protocol', '3': 4, '4': 1, '5': 9, '10': 'l4Protocol'},
     {'1': 'l7_protocol', '3': 5, '4': 1, '5': 9, '10': 'l7Protocol'},
-    {'1': 'response_raw', '3': 7, '4': 1, '5': 12, '10': 'responseRaw'},
-    {'1': 'http_request', '3': 8, '4': 1, '5': 11, '6': '.api.HTTPRequest', '9': 0, '10': 'httpRequest'},
-    {'1': 'grpc_request', '3': 9, '4': 1, '5': 11, '6': '.api.GRPCRequest', '9': 0, '10': 'grpcRequest'},
-    {'1': 'http_response', '3': 10, '4': 1, '5': 11, '6': '.api.HTTPResponse', '9': 1, '10': 'httpResponse'},
-    {'1': 'grpc_response', '3': 11, '4': 1, '5': 11, '6': '.api.GRPCResponse', '9': 1, '10': 'grpcResponse'},
+    {'1': 'http_request', '3': 6, '4': 1, '5': 11, '6': '.api.HTTPRequest', '9': 0, '10': 'httpRequest'},
+    {'1': 'grpc_request', '3': 7, '4': 1, '5': 11, '6': '.api.GRPCRequest', '9': 0, '10': 'grpcRequest'},
+    {'1': 'sql_query', '3': 8, '4': 1, '5': 11, '6': '.api.SQLQuery', '9': 0, '10': 'sqlQuery'},
+    {'1': 'http_response', '3': 9, '4': 1, '5': 11, '6': '.api.HTTPResponse', '9': 1, '10': 'httpResponse'},
+    {'1': 'grpc_response', '3': 10, '4': 1, '5': 11, '6': '.api.GRPCResponse', '9': 1, '10': 'grpcResponse'},
+    {'1': 'sql_response', '3': 11, '4': 1, '5': 11, '6': '.api.SQLResponse', '9': 1, '10': 'sqlResponse'},
   ],
   '8': [
     {'1': 'request'},
@@ -38,12 +39,14 @@ const Flow$json = {
 final $typed_data.Uint8List flowDescriptor = $convert.base64Decode(
     'CgRGbG93EhIKBHV1aWQYASABKAlSBHV1aWQSHwoLc291cmNlX2FkZHIYAiABKAlSCnNvdXJjZU'
     'FkZHISGwoJZGVzdF9hZGRyGAMgASgJUghkZXN0QWRkchIfCgtsNF9wcm90b2NvbBgEIAEoCVIK'
-    'bDRQcm90b2NvbBIfCgtsN19wcm90b2NvbBgFIAEoCVIKbDdQcm90b2NvbBIhCgxyZXNwb25zZV'
-    '9yYXcYByABKAxSC3Jlc3BvbnNlUmF3EjUKDGh0dHBfcmVxdWVzdBgIIAEoCzIQLmFwaS5IVFRQ'
-    'UmVxdWVzdEgAUgtodHRwUmVxdWVzdBI1CgxncnBjX3JlcXVlc3QYCSABKAsyEC5hcGkuR1JQQ1'
-    'JlcXVlc3RIAFILZ3JwY1JlcXVlc3QSOAoNaHR0cF9yZXNwb25zZRgKIAEoCzIRLmFwaS5IVFRQ'
-    'UmVzcG9uc2VIAVIMaHR0cFJlc3BvbnNlEjgKDWdycGNfcmVzcG9uc2UYCyABKAsyES5hcGkuR1'
-    'JQQ1Jlc3BvbnNlSAFSDGdycGNSZXNwb25zZUIJCgdyZXF1ZXN0QgoKCHJlc3BvbnNl');
+    'bDRQcm90b2NvbBIfCgtsN19wcm90b2NvbBgFIAEoCVIKbDdQcm90b2NvbBI1CgxodHRwX3JlcX'
+    'Vlc3QYBiABKAsyEC5hcGkuSFRUUFJlcXVlc3RIAFILaHR0cFJlcXVlc3QSNQoMZ3JwY19yZXF1'
+    'ZXN0GAcgASgLMhAuYXBpLkdSUENSZXF1ZXN0SABSC2dycGNSZXF1ZXN0EiwKCXNxbF9xdWVyeR'
+    'gIIAEoCzINLmFwaS5TUUxRdWVyeUgAUghzcWxRdWVyeRI4Cg1odHRwX3Jlc3BvbnNlGAkgASgL'
+    'MhEuYXBpLkhUVFBSZXNwb25zZUgBUgxodHRwUmVzcG9uc2USOAoNZ3JwY19yZXNwb25zZRgKIA'
+    'EoCzIRLmFwaS5HUlBDUmVzcG9uc2VIAVIMZ3JwY1Jlc3BvbnNlEjUKDHNxbF9yZXNwb25zZRgL'
+    'IAEoCzIQLmFwaS5TUUxSZXNwb25zZUgBUgtzcWxSZXNwb25zZUIJCgdyZXF1ZXN0QgoKCHJlc3'
+    'BvbnNl');
 
 @$core.Deprecated('Use flowsDescriptor instead')
 const Flows$json = {
@@ -186,6 +189,34 @@ final $typed_data.Uint8List gRPCResponseDescriptor = $convert.base64Decode(
     'Vyc0VudHJ5UgdoZWFkZXJzEhgKB3BheWxvYWQYAiABKAxSB3BheWxvYWQaSwoMSGVhZGVyc0Vu'
     'dHJ5EhAKA2tleRgBIAEoCVIDa2V5EiUKBXZhbHVlGAIgASgLMg8uYXBpLlN0cmluZ0xpc3RSBX'
     'ZhbHVlOgI4AQ==');
+
+@$core.Deprecated('Use sQLQueryDescriptor instead')
+const SQLQuery$json = {
+  '1': 'SQLQuery',
+  '2': [
+    {'1': 'query', '3': 1, '4': 1, '5': 9, '10': 'query'},
+    {'1': 'params', '3': 2, '4': 1, '5': 11, '6': '.api.StringList', '10': 'params'},
+  ],
+};
+
+/// Descriptor for `SQLQuery`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List sQLQueryDescriptor = $convert.base64Decode(
+    'CghTUUxRdWVyeRIUCgVxdWVyeRgBIAEoCVIFcXVlcnkSJwoGcGFyYW1zGAIgASgLMg8uYXBpLl'
+    'N0cmluZ0xpc3RSBnBhcmFtcw==');
+
+@$core.Deprecated('Use sQLResponseDescriptor instead')
+const SQLResponse$json = {
+  '1': 'SQLResponse',
+  '2': [
+    {'1': 'columns', '3': 1, '4': 1, '5': 11, '6': '.api.StringList', '10': 'columns'},
+    {'1': 'rows', '3': 2, '4': 3, '5': 11, '6': '.api.StringList', '10': 'rows'},
+  ],
+};
+
+/// Descriptor for `SQLResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List sQLResponseDescriptor = $convert.base64Decode(
+    'CgtTUUxSZXNwb25zZRIpCgdjb2x1bW5zGAEgASgLMg8uYXBpLlN0cmluZ0xpc3RSB2NvbHVtbn'
+    'MSIwoEcm93cxgCIAMoCzIPLmFwaS5TdHJpbmdMaXN0UgRyb3dz');
 
 @$core.Deprecated('Use replyDescriptor instead')
 const Reply$json = {

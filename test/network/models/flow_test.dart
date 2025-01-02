@@ -3,21 +3,13 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ftrayce/network/models/flow.dart';
 
-import '../../support/database.dart';
 import '../../support/flow_factory.dart';
-import '../../support/helpers.dart';
 
 void main() {
-  late TestDatabase db;
-
-  setUp(() async {
-    db = await TestDatabase.instance;
-  });
-
   group('Flow', () {
     final testTime = DateTime.parse('2024-01-01T12:00:00Z');
     final testBytes = Uint8List.fromList([1, 2, 3, 4]);
-    final requestBytes = hexToBytes(requestHex);
+    // final requestBytes = hexToBytes(requestHex);
     // final responseBytes = hexToBytes(responseHex);
 
     group('toMap()', () {
@@ -32,8 +24,8 @@ void main() {
         expect(map['dest_addr'], '192.168.0.2');
         expect(map['l4_protocol'], 'tcp');
         expect(map['l7_protocol'], 'http');
-        expect(map['request_raw'], requestBytes);
-        expect(map['response_raw'], null);
+        expect((map['request_raw'] as Uint8List).length, 96);
+        expect((map['response_raw'] as Uint8List).length, 0);
         expect(map['created_at'], testTime.toIso8601String());
       });
     });

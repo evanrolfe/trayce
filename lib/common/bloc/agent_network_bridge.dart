@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../agent/container_observer.dart';
 import '../../agent/gen/api.pb.dart';
 
 // States
@@ -26,12 +25,21 @@ class SendCommand extends AgentNetwork {
   SendCommand(this.command);
 }
 
-class AgentNetworkBridge extends Cubit<AgentNetwork> implements ContainerObserver {
+class FlowsObserved extends AgentNetwork {
+  final List<Flow> flows;
+
+  FlowsObserved(this.flows);
+}
+
+class AgentNetworkBridge extends Cubit<AgentNetwork> {
   AgentNetworkBridge() : super(AgentNetworkInitial());
 
-  @override
   void containersUpdated(List<Container> containers) {
     emit(ContainersLoaded(containers));
+  }
+
+  void flowsObserved(List<Flow> flows) {
+    emit(FlowsObserved(flows));
   }
 
   void sendCommandToAll(Command command) {
