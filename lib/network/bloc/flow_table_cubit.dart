@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../db/flow.dart';
-import '../db/flow_repo.dart';
+import '../models/flow.dart';
+import '../repo/flow_repo.dart';
 
 // States
 abstract class FlowTableState {}

@@ -1,6 +1,6 @@
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-import 'flow.dart';
+import '../models/flow.dart';
 
 class FlowRepo {
   final Database db;

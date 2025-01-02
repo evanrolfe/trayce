@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../agent/command_sender.dart';
-import '../agent/container_observer.dart';
-import '../agent/gen/api.pb.dart';
+import '../../agent/command_sender.dart';
+import '../../agent/container_observer.dart';
+import '../../agent/gen/api.pb.dart';
 
 // States
 abstract class ContainersState {}

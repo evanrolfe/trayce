@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../blocs/flow_table_cubit.dart';
+import '../bloc/flow_table_cubit.dart';
 import 'containers_modal.dart';
 
 class FlowTable extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../blocs/containers_cubit.dart';
-import '../common/network_utils.dart';
+import '../../common/network_utils.dart';
+import '../bloc/containers_cubit.dart';
 
 void showContainersModal(BuildContext context) {
   showDialog(

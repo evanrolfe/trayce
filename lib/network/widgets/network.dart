@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../common/flow_view.dart';
+import '../../common/flow_view.dart';
 import 'flow_table.dart';
 
 const double minPaneWidth = 300.0;
@@ -75,13 +75,10 @@ class _NetworkState extends State<Network> {
                 child: GestureDetector(
                   onPanUpdate: (details) {
                     setState(() {
-                      double newLeftWidth =
-                          _leftPaneWidth * totalWidth + details.delta.dx;
-                      double newRightWidth =
-                          (1 - _leftPaneWidth) * totalWidth - details.delta.dx;
+                      double newLeftWidth = _leftPaneWidth * totalWidth + details.delta.dx;
+                      double newRightWidth = (1 - _leftPaneWidth) * totalWidth - details.delta.dx;
 
-                      if (newLeftWidth >= minPaneWidth &&
-                          newRightWidth >= minPaneWidth) {
+                      if (newLeftWidth >= minPaneWidth && newRightWidth >= minPaneWidth) {
                         _leftPaneWidth = newLeftWidth / totalWidth;
                       }
                     });
@@ -98,9 +95,7 @@ class _NetworkState extends State<Network> {
                         bottom: 0,
                         child: Container(
                           width: 1,
-                          color: isDividerHovered
-                              ? const Color(0xFF4DB6AC)
-                              : const Color(0xFF474747),
+                          color: isDividerHovered ? const Color(0xFF4DB6AC) : const Color(0xFF474747),
                         ),
                       ),
                     ],

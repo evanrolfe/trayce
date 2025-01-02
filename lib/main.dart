@@ -8,11 +8,11 @@ import 'package:grpc/grpc.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'agent/server.dart';
-import 'blocs/containers_cubit.dart';
-import 'blocs/flow_table_cubit.dart';
-import 'db/flow_repo.dart';
 import 'editor/editor.dart';
-import 'network/network.dart';
+import 'network/bloc/containers_cubit.dart';
+import 'network/bloc/flow_table_cubit.dart';
+import 'network/repo/flow_repo.dart';
+import 'network/widgets/network.dart';
 
 const Color backgroundColor = Color(0xFF1E1E1E);
 const Color textColor = Color(0xFFD4D4D4);
