@@ -1,18 +1,15 @@
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:ftrayce/agent/command_sender.dart';
-// import 'package:ftrayce/agent/gen/api.pb.dart' as pb;
-// import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
-// import 'package:ftrayce/network/bloc/containers_cubit.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ftrayce/agent/gen/api.pb.dart' as pb;
+import 'package:ftrayce/common/bloc/agent_network_bridge.dart' as bridge;
+import 'package:ftrayce/network/bloc/containers_cubit.dart';
 
-void main() {}
-/*
 void main() {
   group('ContainersCubit', () {
+    late bridge.AgentNetworkBridge agentNetworkBridge;
     late ContainersCubit cubit;
-    late MockCommandSender commandSender;
 
     setUp(() {
-      final agentNetworkBridge = AgentNetworkBridge();
+      agentNetworkBridge = bridge.AgentNetworkBridge();
       cubit = ContainersCubit(agentNetworkBridge: agentNetworkBridge);
     });
 
@@ -20,7 +17,7 @@ void main() {
       cubit.close();
     });
 
-    group('containersUpdated()', () {
+    group('receiving ContainersLoaded from the bridge', () {
       test('it emits AgentRunning(true) and ContainersLoaded with the containers', () async {
         final containers = [
           pb.Container(
@@ -35,7 +32,7 @@ void main() {
         // Start listening to the stream before emitting
         final states = cubit.stream.take(2).toList();
 
-        cubit.containersUpdated(containers);
+        agentNetworkBridge.containersUpdated(containers);
 
         final emittedStates = await states;
         expect(emittedStates[0], isA<AgentRunning>().having((state) => state.running, 'running', true));
@@ -62,4 +59,3 @@ void main() {
     });
   });
 }
-*/
