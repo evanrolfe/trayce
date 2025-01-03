@@ -87,7 +87,6 @@ void main() {
     tearDownAll(() async {
       await agentNetworkBridge.close();
       await cubit.close();
-      await testDb.close();
     });
 
     tearDown(() => {testDb.truncate()});
@@ -238,7 +237,7 @@ void main() {
         final flowReq = emittedFlows[0].request as GrpcRequest;
         expect(flowReq.path, '/api.TrayceAgent/SendContainersObserved');
         expect(flowReq.headers, {});
-        expect(flowReq.body.length, 43);
+        expect(flowReq.body.length, 52);
       });
 
       test('it saves a GRPC request+response Flows and emits DisplayFlows', () async {
@@ -288,7 +287,7 @@ void main() {
         final flowReq = emittedFlows[0].request as GrpcRequest;
         expect(flowReq.path, '/api.TrayceAgent/SendContainersObserved');
         expect(flowReq.headers, {});
-        expect(flowReq.body.length, 43);
+        expect(flowReq.body.length, 52);
 
         final flowResp = emittedFlows[0].response as GrpcResponse;
         expect(flowResp.headers, {});

@@ -8,20 +8,38 @@ class FlowRepo {
   FlowRepo({required this.db});
 
   Future<Flow> save(Flow flow) async {
-    final id = await db.rawInsert('''
-      INSERT INTO flows (uuid, source_addr, dest_addr, l4_protocol, l7_protocol, request_raw, response_raw, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(uuid) DO UPDATE SET response_raw = excluded.response_raw;
-    ''', [
-      flow.uuid,
-      flow.sourceAddr,
-      flow.destAddr,
-      flow.l4Protocol,
-      flow.l7Protocol,
-      flow.requestRaw,
-      flow.responseRaw,
-      flow.createdAt.toIso8601String(),
-    ]);
+    // First check if flow exists
+    final existing = await db.query(
+      'flows',
+      where: 'uuid = ?',
+      whereArgs: [flow.uuid],
+      limit: 1,
+    );
+
+    if (existing.isNotEmpty) {
+      // Update existing flow
+      await db.update(
+        'flows',
+        {
+          'response_raw': flow.responseRaw,
+        },
+        where: 'uuid = ?',
+        whereArgs: [flow.uuid],
+      );
+      return flow.copyWith(id: existing.first['id'] as int);
+    }
+
+    // Insert new flow
+    final id = await db.insert('flows', {
+      'uuid': flow.uuid,
+      'source_addr': flow.sourceAddr,
+      'dest_addr': flow.destAddr,
+      'l4_protocol': flow.l4Protocol,
+      'l7_protocol': flow.l7Protocol,
+      'request_raw': flow.requestRaw,
+      'response_raw': flow.responseRaw,
+      'created_at': flow.createdAt.toIso8601String(),
+    });
 
     return flow.copyWith(id: id);
   }

@@ -15,9 +15,7 @@ void main() {
     flowRepo = FlowRepo(db: testDb.db);
   });
 
-  tearDownAll(() async {
-    await testDb.close();
-  });
+  tearDownAll(() async {});
 
   tearDown(() => testDb.truncate());
 
