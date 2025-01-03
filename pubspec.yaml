@@ -42,6 +42,7 @@ dependencies:
   flutter_bloc: ^8.1.4
   sqflite: ^2.4.1
   sqflite_common_ffi: ^2.3.2+1
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:

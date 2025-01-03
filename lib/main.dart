@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
 import 'package:ftrayce/db/database.dart';
 import 'package:grpc/grpc.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'agent/server.dart';
 import 'editor/editor.dart';
@@ -37,23 +36,12 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load schema.sql file
-  final String schema = await rootBundle.loadString('schema.sql');
+  // Connect DB and create repos
+  final db = await connectDB(rootBundle);
+  final flowRepo = FlowRepo(db: db);
 
   // Create bridge cubits
   final agentNetworkBridge = AgentNetworkBridge();
-
-  // Connect DB
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
-  // see also: inMemoryDatabasePath
-  // this stores the file in .dart_tool/sqflite_common_ffi/databases/
-  var db = await databaseFactory.openDatabase('tmp.db',
-      options: OpenDatabaseOptions(
-        version: 1,
-        onCreate: initSchema(schema),
-      ));
-  final flowRepo = FlowRepo(db: db);
 
   // Create Business logic cubits & services
   // Agent
