@@ -48,3 +48,7 @@ class FlowTableCubit extends Cubit<FlowTableState> {
     emit(DisplayFlows(flows));
   }
 }
+
+// String bytesToHexString(List<int> bytes) {
+//   return bytes.map((byte) => '0x${byte.toRadixString(16).padLeft(2, '0')}').join(', ');
+// }
