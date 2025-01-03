@@ -46,6 +46,20 @@ void main() {
       });
     });
 
+    group('heartbeat timeout', () {
+      test('it emits AgentRunning(false) after 200ms of no updates', () async {
+        // Send empty containers list to trigger heartbeat
+        cubit.containersUpdated([]);
+
+        // Wait for heartbeat timeout
+        final states = cubit.stream.take(1).toList();
+        await Future.delayed(const Duration(milliseconds: 200));
+        final emittedStates = await states;
+
+        expect(emittedStates[0], isA<AgentRunning>().having((state) => state.running, 'running', false));
+      });
+    });
+
     group('agentStopped()', () {
       test('it emits AgentRunning(false)', () async {
         // Start listening to the stream before emitting
@@ -55,6 +69,25 @@ void main() {
 
         final state = await future;
         expect(state, isA<AgentRunning>().having((state) => state.running, 'running', false));
+      });
+    });
+
+    group('interceptContainers()', () {
+      test('it emits SendCommand with the container IDs', () async {
+        final containerIds = ['abc123', 'def456'];
+
+        // Listen to the bridge stream
+        final bridgeState = agentNetworkBridge.stream.first;
+
+        cubit.interceptContainers(containerIds);
+
+        final state = await bridgeState;
+        expect(
+          state,
+          isA<bridge.SendCommand>()
+              .having((s) => s.command.type, 'command type', 'set_settings')
+              .having((s) => s.command.settings.containerIds, 'container IDs', containerIds),
+        );
       });
     });
   });

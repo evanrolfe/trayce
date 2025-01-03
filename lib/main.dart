@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
-import 'package:ftrayce/db/database.dart';
+import 'package:ftrayce/common/database.dart';
 import 'package:grpc/grpc.dart';
 
 import 'agent/server.dart';
@@ -37,7 +37,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Connect DB and create repos
-  final db = await connectDB(rootBundle);
+  final db = await connectDB(rootBundle, 'tmp.db');
   final flowRepo = FlowRepo(db: db);
 
   // Create bridge cubits
