@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ftrayce/network/models/flow.dart';
-import 'package:ftrayce/network/models/flow_request.dart';
-import 'package:ftrayce/network/models/flow_response.dart';
+import 'package:ftrayce/network/models/http_request.dart';
+import 'package:ftrayce/network/models/http_response.dart';
 
 import '../../support/flow_factory.dart';
 

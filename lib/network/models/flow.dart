@@ -1,6 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:ftrayce/network/models/flow_response.dart';
+import 'package:ftrayce/network/models/grpc_request.dart';
+import 'package:ftrayce/network/models/grpc_response.dart';
+import 'package:ftrayce/network/models/http_request.dart';
+import 'package:ftrayce/network/models/http_response.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
@@ -47,9 +51,21 @@ class Flow {
       requestRaw = request.toJson();
     }
 
+    // Parse GRPC request if present
+    if (agentFlow.hasGrpcRequest()) {
+      request = GrpcRequest.fromProto(agentFlow.grpcRequest);
+      requestRaw = request.toJson();
+    }
+
     // Parse HTTP response if present
     if (agentFlow.hasHttpResponse()) {
       response = HttpResponse.fromProto(agentFlow.httpResponse);
+      responseRaw = response.toJson();
+    }
+
+    // Parse GRPC response if present
+    if (agentFlow.hasGrpcResponse()) {
+      response = GrpcResponse.fromProto(agentFlow.grpcResponse);
       responseRaw = response.toJson();
     }
 
@@ -83,6 +99,15 @@ class Flow {
       }
     }
 
+    // Parse GRPC request
+    if (l7Protocol == 'grpc' && requestRaw.isNotEmpty) {
+      try {
+        request = GrpcRequest.fromJson(requestRaw);
+      } catch (e) {
+        print('Failed to parse GRPC request: $e');
+      }
+    }
+
     // Parse HTTP response
     FlowResponse? response;
     if (l7Protocol == 'http' && responseRaw.isNotEmpty) {
@@ -90,6 +115,15 @@ class Flow {
         response = HttpResponse.fromJson(responseRaw);
       } catch (e) {
         print('Failed to parse HTTP response: $e');
+      }
+    }
+
+    // Parse GRPC response
+    if (l7Protocol == 'grpc' && responseRaw.isNotEmpty) {
+      try {
+        response = GrpcResponse.fromJson(responseRaw);
+      } catch (e) {
+        print('Failed to parse GRPC response: $e');
       }
     }
 

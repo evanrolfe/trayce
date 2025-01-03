@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ftrayce/network/models/flow_request.dart';
-import 'package:ftrayce/network/models/flow_response.dart';
+import 'package:ftrayce/network/models/http_request.dart';
+import 'package:ftrayce/network/models/http_response.dart';
 import 'package:ftrayce/network/repo/flow_repo.dart';
 
 import '../../support/database.dart';
@@ -10,9 +10,13 @@ void main() {
   late TestDatabase testDb;
   late FlowRepo flowRepo;
 
-  setUp(() async {
+  setUpAll(() async {
     testDb = await TestDatabase.instance;
     flowRepo = FlowRepo(db: testDb.db);
+  });
+
+  tearDownAll(() async {
+    await testDb.close();
   });
 
   tearDown(() => testDb.truncate());
