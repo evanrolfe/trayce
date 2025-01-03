@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ftrayce/common/utils.dart';
 import 'package:ftrayce/network/models/flow_request.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
@@ -75,10 +76,7 @@ class HttpRequest extends FlowRequest {
   String toString() {
     var out = '$method $path HTTP/$httpVersion\n';
 
-    for (var entry in headers.entries) {
-      final value = entry.value.join(',');
-      out += '${entry.key}: $value\n';
-    }
+    out += formatSortedHeaders(headers);
 
     out += '\r\n';
     if (body.isNotEmpty) {

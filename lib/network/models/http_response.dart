@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ftrayce/common/utils.dart';
 import 'package:ftrayce/network/models/flow_response.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
@@ -71,10 +72,7 @@ class HttpResponse extends FlowResponse {
   String toString() {
     var out = 'HTTP/$httpVersion $status $statusMsg\n';
 
-    for (var entry in headers.entries) {
-      final value = entry.value.join(',');
-      out += '${entry.key}: $value\n';
-    }
+    out += formatSortedHeaders(headers);
 
     out += '\r\n';
     if (body.isNotEmpty) {

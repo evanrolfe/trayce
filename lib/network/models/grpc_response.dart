@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ftrayce/common/utils.dart';
+
 import '../../agent/gen/api.pb.dart' as pb;
 import 'flow_response.dart';
 
@@ -50,22 +52,13 @@ class GrpcResponse extends FlowResponse {
 
   @override
   String toString() {
-    var out = headerStr();
+    var out = formatSortedHeaders(headers);
 
     out += '\r\n';
     if (body.isNotEmpty) {
       out += body.toString();
     }
 
-    return out;
-  }
-
-  String headerStr() {
-    var out = '';
-    for (var entry in headers.entries) {
-      final value = entry.value.join(',');
-      out += '${entry.key}: $value\n';
-    }
     return out;
   }
 }

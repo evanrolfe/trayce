@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:ftrayce/common/utils.dart';
+
 import '../../agent/gen/api.pb.dart' as pb;
 import 'flow_request.dart';
 
@@ -55,22 +57,15 @@ class GrpcRequest extends FlowRequest {
 
   @override
   String toString() {
-    var out = headerStr();
+    var out = 'GRPC $path\n';
+
+    out += formatSortedHeaders(headers);
 
     out += '\r\n';
     if (body.isNotEmpty) {
       out += body.toString();
     }
 
-    return out;
-  }
-
-  String headerStr() {
-    var out = 'GRPC $path\n';
-    for (var entry in headers.entries) {
-      final value = entry.value.join(',');
-      out += '${entry.key}: $value\n';
-    }
     return out;
   }
 }

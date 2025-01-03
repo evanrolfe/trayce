@@ -21,3 +21,10 @@ Future<String> getMachineIp() async {
   }
   return '127.0.0.1'; // Fallback to localhost
 }
+
+// list the min alphabetical order
+String formatSortedHeaders(Map<String, List<String>> headers) {
+  final sortedHeaders = headers.entries.toList()..sort((a, b) => a.key.toLowerCase().compareTo(b.key.toLowerCase()));
+
+  return sortedHeaders.map((entry) => '${entry.key}: ${entry.value.join(',')}').join('\n');
+}
