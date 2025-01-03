@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../network/models/flow.dart' as models;
+
 const Color textColor = Color(0xFFD4D4D4);
 
 class FlowView extends StatefulWidget {
-  const FlowView({super.key});
+  final models.Flow? selectedFlow;
+
+  const FlowView({
+    super.key,
+    this.selectedFlow,
+  });
 
   @override
   State<FlowView> createState() => _FlowViewState();
@@ -16,9 +23,33 @@ class _FlowViewState extends State<FlowView> {
   int _selectedBottomTab = 0;
   int? _hoveredTabIndex;
   int? _hoveredBottomTabIndex;
+  final TextEditingController _topController = TextEditingController();
+  final TextEditingController _bottomController = TextEditingController();
 
-  Widget _buildTabs(
-      int selectedIndex, Function(int) onTabChanged, bool isTopTabs) {
+  @override
+  void didUpdateWidget(FlowView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedFlow?.request != null) {
+      _topController.text = widget.selectedFlow!.request.toString();
+    } else {
+      _topController.text = '';
+    }
+
+    if (widget.selectedFlow?.response != null) {
+      _bottomController.text = widget.selectedFlow!.response.toString();
+    } else {
+      _bottomController.text = '';
+    }
+  }
+
+  @override
+  void dispose() {
+    _topController.dispose();
+    _bottomController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildTabs(int selectedIndex, Function(int) onTabChanged, bool isTopTabs) {
     return Container(
       height: 30,
       decoration: const BoxDecoration(
@@ -29,19 +60,15 @@ class _FlowViewState extends State<FlowView> {
       ),
       child: Row(
         children: [
-          _buildTab(
-              'Tab 1', 0, selectedIndex == 0, () => onTabChanged(0), isTopTabs),
-          _buildTab(
-              'Tab 2', 1, selectedIndex == 1, () => onTabChanged(1), isTopTabs),
+          _buildTab('Tab 1', 0, selectedIndex == 0, () => onTabChanged(0), isTopTabs),
+          _buildTab('Tab 2', 1, selectedIndex == 1, () => onTabChanged(1), isTopTabs),
         ],
       ),
     );
   }
 
-  Widget _buildTab(String text, int index, bool isSelected, VoidCallback onTap,
-      bool isTopTabs) {
-    final isHovered =
-        isTopTabs ? _hoveredTabIndex == index : _hoveredBottomTabIndex == index;
+  Widget _buildTab(String text, int index, bool isSelected, VoidCallback onTap, bool isTopTabs) {
+    final isHovered = isTopTabs ? _hoveredTabIndex == index : _hoveredBottomTabIndex == index;
     return MouseRegion(
       onEnter: (_) => setState(() {
         if (isTopTabs) {
@@ -63,13 +90,10 @@ class _FlowViewState extends State<FlowView> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           constraints: const BoxConstraints(minWidth: 125),
           decoration: BoxDecoration(
-            color: isSelected || isHovered
-                ? const Color(0xFF2D2D2D)
-                : const Color(0xFF252526),
+            color: isSelected || isHovered ? const Color(0xFF2D2D2D) : const Color(0xFF252526),
             border: Border(
               top: BorderSide(
-                color:
-                    isSelected ? const Color(0xFF4DB6AC) : Colors.transparent,
+                color: isSelected ? const Color(0xFF4DB6AC) : Colors.transparent,
                 width: 1,
               ),
               right: const BorderSide(
@@ -115,20 +139,21 @@ class _FlowViewState extends State<FlowView> {
                       Expanded(
                         child: Container(
                           padding: EdgeInsets.zero,
-                          child: const TextField(
+                          child: TextField(
+                            controller: _topController,
                             maxLines: null,
                             expands: true,
+                            readOnly: true,
                             textAlignVertical: TextAlignVertical.top,
-                            style: TextStyle(color: textColor),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              hintText: 'Enter text here...',
-                              contentPadding: EdgeInsets.zero,
+                            style: const TextStyle(
+                              color: textColor,
+                              fontFamily: 'monospace',
+                            ),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(borderSide: BorderSide.none),
+                              focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                              enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                              contentPadding: EdgeInsets.all(8),
                             ),
                           ),
                         ),
@@ -150,20 +175,21 @@ class _FlowViewState extends State<FlowView> {
                       Expanded(
                         child: Container(
                           padding: EdgeInsets.zero,
-                          child: const TextField(
+                          child: TextField(
+                            controller: _bottomController,
                             maxLines: null,
                             expands: true,
+                            readOnly: true,
                             textAlignVertical: TextAlignVertical.top,
-                            style: TextStyle(color: textColor),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide.none),
-                              hintText: 'Enter text here...',
-                              contentPadding: EdgeInsets.zero,
+                            style: const TextStyle(
+                              color: textColor,
+                              fontFamily: 'monospace',
+                            ),
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(borderSide: BorderSide.none),
+                              focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                              enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                              contentPadding: EdgeInsets.all(8),
                             ),
                           ),
                         ),
@@ -184,8 +210,7 @@ class _FlowViewState extends State<FlowView> {
                 child: GestureDetector(
                   onPanUpdate: (details) {
                     setState(() {
-                      final newTopHeight =
-                          _topPaneHeight + (details.delta.dy / totalHeight);
+                      final newTopHeight = _topPaneHeight + (details.delta.dy / totalHeight);
                       if (newTopHeight > 0.1 && newTopHeight < 0.9) {
                         _topPaneHeight = newTopHeight;
                       }
@@ -203,9 +228,7 @@ class _FlowViewState extends State<FlowView> {
                         right: 0,
                         child: Container(
                           height: 1,
-                          color: isDividerHovered
-                              ? const Color(0xFF4DB6AC)
-                              : const Color(0xFF474747),
+                          color: isDividerHovered ? const Color(0xFF4DB6AC) : const Color(0xFF474747),
                         ),
                       ),
                     ],

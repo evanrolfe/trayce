@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../common/flow_view.dart';
+import '../models/flow.dart' as models;
 import 'flow_table.dart';
 
 const double minPaneWidth = 300.0;
@@ -25,6 +26,7 @@ class _NetworkState extends State<Network> {
   ];
   double _leftPaneWidth = 0.5;
   bool isDividerHovered = false;
+  models.Flow? _selectedFlow;
 
   void _handleColumnResize(int index, double delta) {
     setState(() {
@@ -38,6 +40,12 @@ class _NetworkState extends State<Network> {
         _columnWidths[index] += adjustment;
         _columnWidths[index + 1] += adjustment;
       }
+    });
+  }
+
+  void _handleFlowSelected(models.Flow? flow) {
+    setState(() {
+      _selectedFlow = flow;
     });
   }
 
@@ -56,11 +64,12 @@ class _NetworkState extends State<Network> {
                     controller: _controller,
                     columnWidths: _columnWidths,
                     onColumnResize: _handleColumnResize,
+                    onFlowSelected: _handleFlowSelected,
                   ),
                 ),
                 SizedBox(
                   width: totalWidth * (1 - _leftPaneWidth),
-                  child: const FlowView(),
+                  child: FlowView(selectedFlow: _selectedFlow),
                 ),
               ],
             ),

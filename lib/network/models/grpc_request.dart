@@ -52,4 +52,25 @@ class GrpcRequest extends FlowRequest {
     };
     return utf8.encode(json.encode(map));
   }
+
+  @override
+  String toString() {
+    var out = headerStr();
+
+    out += '\r\n';
+    if (body.isNotEmpty) {
+      out += body.toString();
+    }
+
+    return out;
+  }
+
+  String headerStr() {
+    var out = 'GRPC $path\n';
+    for (var entry in headers.entries) {
+      final value = entry.value.join(',');
+      out += '${entry.key}: $value\n';
+    }
+    return out;
+  }
 }

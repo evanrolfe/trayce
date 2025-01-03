@@ -11,4 +11,7 @@ abstract class FlowResponse {
 
   /// Converts the response to JSON bytes
   Uint8List toJson();
+
+  @override
+  String toString();
 }

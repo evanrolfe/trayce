@@ -70,4 +70,21 @@ class HttpRequest extends FlowRequest {
     };
     return utf8.encode(json.encode(map));
   }
+
+  @override
+  String toString() {
+    var out = '$method $path HTTP/$httpVersion\n';
+
+    for (var entry in headers.entries) {
+      final value = entry.value.join(',');
+      out += '${entry.key}: $value\n';
+    }
+
+    out += '\r\n';
+    if (body.isNotEmpty) {
+      out += body;
+    }
+
+    return out;
+  }
 }

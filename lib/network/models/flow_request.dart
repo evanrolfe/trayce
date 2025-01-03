@@ -11,4 +11,7 @@ abstract class FlowRequest {
 
   /// Converts the request to JSON bytes
   Uint8List toJson();
+
+  @override
+  String toString();
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ftrayce/agent/gen/api.pb.dart' as pb;
@@ -37,23 +39,56 @@ Future<void> test(WidgetTester tester) async {
   );
   final client = TrayceAgentClient(channel);
 
+  // Open command stream and receive the commands sent to it
+  final agentStarted = pb.AgentStarted(version: '1.0.0');
+  final controller = StreamController<pb.AgentStarted>();
+  final commandStream = client.openCommandStream(controller.stream);
+  final commandsReceived = <pb.Command>[];
+  final subscription = commandStream.listen((command) {
+    commandsReceived.add(command);
+  });
+  controller.add(agentStarted);
+
   // Send containers observed
   final containers = [
     pb.Container(id: 'a2db0b', name: 'hello', ip: "127.0.0.1", image: 'image1', status: 'running'),
     pb.Container(id: 'a3db0b', name: 'world', ip: "127.0.0.2", image: 'image1', status: 'running'),
   ];
-  try {
-    final response = await client.sendContainersObserved(pb.Containers(containers: containers));
-    print('Response received: $response');
-  } catch (e) {
-    print('Error: $e');
-  }
+  await client.sendContainersObserved(pb.Containers(containers: containers));
   await tester.pumpAndSettle();
 
   // Verify the modal is shown
   expect(find.text('hello'), findsOneWidget);
   expect(find.text('world'), findsOneWidget);
 
-  // Close the modal by tapping outside
-  await tester.tapAt(const Offset(20, 20)); // Tap in top-left corner, outside modal
+  // Find and click the checkbox for container a3db0b
+  final containerRow = find.text('a3db0b');
+  final checkbox = find
+      .descendant(
+        of: find.ancestor(
+          of: containerRow,
+          matching: find.byType(Row),
+        ),
+        matching: find.byType(Checkbox),
+      )
+      .first;
+  await tester.tap(checkbox);
+  await tester.pumpAndSettle();
+
+  // Click save button
+  expect(find.text('Save'), findsOneWidget);
+  final saveButton = find.text('Save');
+  await tester.tap(saveButton);
+  await tester.pumpAndSettle();
+
+  // Verify the command was sent to intercept the container selected
+  expect(commandsReceived.length, 1);
+  final cmd = commandsReceived[0];
+  expect(cmd.type, 'set_settings');
+  expect(cmd.settings.containerIds, ['a3db0b']);
+
+  // Cleanup
+  await subscription.cancel();
+  await controller.close();
+  await channel.shutdown();
 }

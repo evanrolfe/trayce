@@ -66,4 +66,21 @@ class HttpResponse extends FlowResponse {
     };
     return utf8.encode(json.encode(map));
   }
+
+  @override
+  String toString() {
+    var out = 'HTTP/$httpVersion $status $statusMsg\n';
+
+    for (var entry in headers.entries) {
+      final value = entry.value.join(',');
+      out += '${entry.key}: $value\n';
+    }
+
+    out += '\r\n';
+    if (body.isNotEmpty) {
+      out += body;
+    }
+
+    return out;
+  }
 }

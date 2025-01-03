@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/flow_table_cubit.dart';
+import '../models/flow.dart' as models;
 import 'containers_modal.dart';
 
 class FlowTable extends StatefulWidget {
   final ScrollController controller;
   final List<double> columnWidths;
   final Function(int, double) onColumnResize;
+  final Function(models.Flow?) onFlowSelected;
   static const int totalItems = 10000;
   static const double minColumnWidth = 10.0;
 
@@ -16,6 +18,7 @@ class FlowTable extends StatefulWidget {
     required this.controller,
     required this.columnWidths,
     required this.onColumnResize,
+    required this.onFlowSelected,
   });
 
   @override
@@ -160,8 +163,10 @@ class _FlowTableState extends State<FlowTable> {
                                     this.setState(() {
                                       if (selectedRow == index) {
                                         selectedRow = null;
+                                        widget.onFlowSelected(null);
                                       } else {
                                         selectedRow = index;
+                                        widget.onFlowSelected(flow);
                                       }
                                     });
                                   },
