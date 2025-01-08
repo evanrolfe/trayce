@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:ftrayce/common/utils.dart';
+import 'package:ftrayce/network/models/proto_def.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
 import 'flow_response.dart';
@@ -56,7 +57,27 @@ class GrpcResponse extends FlowResponse {
 
     out += '\r\n';
     if (body.isNotEmpty) {
-      out += body.toString();
+      out += utf8.decode(body);
+    }
+
+    return out;
+  }
+
+  String toStringParsed(ProtoDef protoDef, String grpcMsgPath) {
+    var out = formatSortedHeaders(headers);
+
+    out += '\r\n';
+    if (body.isNotEmpty) {
+      try {
+        final parsedBody = protoDef.parseGRPCMessage(body, grpcMsgPath, true);
+        // Try to parse the body as JSON and format it with indentation
+        final jsonObj = json.decode(parsedBody);
+        final prettyJson = const JsonEncoder.withIndent('  ').convert(jsonObj);
+        out += '\n$prettyJson';
+      } catch (e) {
+        print(e);
+        out += '\nFailed to parse using ${protoDef.name}';
+      }
     }
 
     return out;

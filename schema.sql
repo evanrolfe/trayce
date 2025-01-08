@@ -14,6 +14,6 @@ CREATE TABLE IF NOT EXISTS proto_defs(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     file_path TEXT NOT NULL,
-    raw BLOB NOT NULL,
+    proto_file TEXT NOT NULL,
     created_at TEXT NOT NULL
 );

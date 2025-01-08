@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
 import 'package:ftrayce/common/database.dart';
+import 'package:ftrayce/network/repo/proto_def_repo.dart';
 import 'package:grpc/grpc.dart';
 
 import 'agent/server.dart';
@@ -39,6 +40,7 @@ void main() async {
   // Connect DB and create repos
   final db = await connectDB(rootBundle, 'tmp.db');
   final flowRepo = FlowRepo(db: db);
+  final protoDefRepo = ProtoDefRepo(db: db);
 
   // Create bridge cubits
   final agentNetworkBridge = AgentNetworkBridge();
@@ -54,6 +56,7 @@ void main() async {
     MultiRepositoryProvider(
       providers: [
         RepositoryProvider<FlowRepo>(create: (context) => flowRepo),
+        RepositoryProvider<ProtoDefRepo>(create: (context) => protoDefRepo),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -78,6 +81,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Trayce',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.tealAccent),
         useMaterial3: true,

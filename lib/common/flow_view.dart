@@ -1,6 +1,13 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../network/models/flow.dart' as models;
+import '../network/models/grpc_request.dart';
+import '../network/models/grpc_response.dart';
+import '../network/models/proto_def.dart';
+import '../network/repo/proto_def_repo.dart';
+import '../network/widgets/proto_def_modal.dart';
 
 const Color textColor = Color(0xFFD4D4D4);
 
@@ -25,18 +32,57 @@ class _FlowViewState extends State<FlowView> {
   int? _hoveredBottomTabIndex;
   final TextEditingController _topController = TextEditingController();
   final TextEditingController _bottomController = TextEditingController();
+  List<ProtoDef> _protoDefs = [];
+  String? _selectedProtoDefName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProtoDefs();
+    _selectedProtoDefName = 'select';
+  }
+
+  Future<void> _loadProtoDefs() async {
+    final protoDefRepo = context.read<ProtoDefRepo>();
+    final protoDefs = await protoDefRepo.getAll();
+    setState(() {
+      _protoDefs = protoDefs;
+    });
+  }
 
   @override
   void didUpdateWidget(FlowView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.selectedFlow?.request != null) {
-      _topController.text = widget.selectedFlow!.request.toString();
+      if (widget.selectedFlow?.l7Protocol == 'grpc' &&
+          widget.selectedFlow!.request is GrpcRequest &&
+          _selectedProtoDefName != null &&
+          _selectedProtoDefName != 'select' &&
+          _selectedProtoDefName != 'import') {
+        final grpcRequest = widget.selectedFlow!.request as GrpcRequest;
+        final selectedProtoDef = _protoDefs.firstWhere((def) => def.name == _selectedProtoDefName);
+        _topController.text = grpcRequest.toStringParsed(selectedProtoDef);
+      } else {
+        _topController.text = widget.selectedFlow!.request.toString();
+      }
     } else {
       _topController.text = '';
     }
 
     if (widget.selectedFlow?.response != null) {
-      _bottomController.text = widget.selectedFlow!.response.toString();
+      if (widget.selectedFlow?.l7Protocol == 'grpc' &&
+          widget.selectedFlow!.response is GrpcResponse &&
+          widget.selectedFlow!.request is GrpcRequest &&
+          _selectedProtoDefName != null &&
+          _selectedProtoDefName != 'select' &&
+          _selectedProtoDefName != 'import') {
+        final grpcRequest = widget.selectedFlow!.request as GrpcRequest;
+        final grpcResponse = widget.selectedFlow!.response as GrpcResponse;
+        final selectedProtoDef = _protoDefs.firstWhere((def) => def.name == _selectedProtoDefName);
+        _bottomController.text = grpcResponse.toStringParsed(selectedProtoDef, grpcRequest.path);
+      } else {
+        _bottomController.text = widget.selectedFlow!.response.toString();
+      }
     } else {
       _bottomController.text = '';
     }
@@ -62,6 +108,107 @@ class _FlowViewState extends State<FlowView> {
         children: [
           _buildTab('Tab 1', 0, selectedIndex == 0, () => onTabChanged(0), isTopTabs),
           _buildTab('Tab 2', 1, selectedIndex == 1, () => onTabChanged(1), isTopTabs),
+          const Spacer(),
+          if (isTopTabs && widget.selectedFlow?.l7Protocol == 'grpc') // Only show dropdown for gRPC flows
+            Container(
+              height: 22,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              margin: const EdgeInsets.only(right: 5),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color(0xFF474747),
+                  width: 1,
+                ),
+              ),
+              child: DropdownButton2<String>(
+                value: _selectedProtoDefName,
+                underline: Container(),
+                dropdownStyleData: DropdownStyleData(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E1E1E),
+                    border: Border.all(color: const Color(0xFF474747)),
+                  ),
+                  elevation: 0,
+                  padding: EdgeInsets.zero,
+                  useRootNavigator: true,
+                  width: 200,
+                ),
+                buttonStyleData: const ButtonStyleData(
+                  height: 22,
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                ),
+                menuItemStyleData: MenuItemStyleData(
+                  height: 24,
+                  padding: EdgeInsets.zero,
+                ),
+                iconStyleData: const IconStyleData(
+                  icon: Icon(Icons.arrow_drop_down, size: 16),
+                  iconEnabledColor: textColor,
+                ),
+                style: const TextStyle(
+                  color: textColor,
+                  fontSize: 12,
+                ),
+                items: [
+                  const DropdownMenuItem(
+                    value: 'select',
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('Select .proto file'),
+                    ),
+                  ),
+                  ..._protoDefs.map((def) => DropdownMenuItem(
+                        value: def.name,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(def.name),
+                        ),
+                      )),
+                  const DropdownMenuItem(
+                    value: 'import',
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('Import .proto file'),
+                    ),
+                  ),
+                ],
+                onChanged: (String? newValue) {
+                  if (newValue == 'import') {
+                    showProtoDefModal(context).then((_) {
+                      // Refresh proto definitions after modal is closed
+                      _loadProtoDefs();
+                    });
+                  } else {
+                    setState(() {
+                      _selectedProtoDefName = newValue;
+                      // Trigger a refresh of the text by calling didUpdateWidget's logic
+                      if (widget.selectedFlow?.request != null) {
+                        if (widget.selectedFlow?.l7Protocol == 'grpc' &&
+                            widget.selectedFlow!.request is GrpcRequest &&
+                            newValue != null &&
+                            newValue != 'select' &&
+                            newValue != 'import') {
+                          final grpcRequest = widget.selectedFlow!.request as GrpcRequest;
+                          final selectedProtoDef = _protoDefs.firstWhere((def) => def.name == newValue);
+                          _topController.text = grpcRequest.toStringParsed(selectedProtoDef);
+
+                          // Also update response if it's a gRPC response
+                          if (widget.selectedFlow?.response != null && widget.selectedFlow!.response is GrpcResponse) {
+                            final grpcResponse = widget.selectedFlow!.response as GrpcResponse;
+                            _bottomController.text = grpcResponse.toStringParsed(selectedProtoDef, grpcRequest.path);
+                          }
+                        } else {
+                          _topController.text = widget.selectedFlow!.request.toString();
+                          if (widget.selectedFlow?.response != null) {
+                            _bottomController.text = widget.selectedFlow!.response.toString();
+                          }
+                        }
+                      }
+                    });
+                  }
+                },
+              ),
+            ),
         ],
       ),
     );
