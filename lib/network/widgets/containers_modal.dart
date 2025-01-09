@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../common/style.dart';
 import '../../common/utils.dart';
 import '../bloc/containers_cubit.dart';
 
@@ -25,15 +27,35 @@ class _ContainersModalState extends State<ContainersModal> {
   final Map<String, bool> _interceptedStates = {};
   bool _initialized = false;
   String _machineIp = '127.0.0.1';
+  late final TextEditingController _commandController = TextEditingController();
+  bool _showCopyCheck = false;
 
   @override
   void initState() {
     super.initState();
+    _updateCommandText();
     getMachineIp().then((ip) {
       setState(() {
         _machineIp = ip;
+        _updateCommandText();
       });
     });
+  }
+
+  void _updateCommandText() {
+    final text =
+        'docker run --pid=host --privileged -v /var/run/docker.sock:/var/run/docker.sock -t traycer/trayce_agent:latest -s $_machineIp:50051';
+    _commandController.text = text;
+    _commandController.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: text.length,
+    );
+  }
+
+  @override
+  void dispose() {
+    _commandController.dispose();
+    super.dispose();
   }
 
   @override
@@ -219,17 +241,8 @@ class _ContainersModalState extends State<ContainersModal> {
 
                           Navigator.of(context).pop();
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4DB6AC),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Text('Save'),
-                        ),
+                        style: commonButtonStyle,
+                        child: const Text('Save'),
                       ),
                     ],
                   ),
@@ -275,16 +288,37 @@ class _ContainersModalState extends State<ContainersModal> {
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E1E1E),
-                    border: Border.all(color: const Color(0xFF474747)),
-                    borderRadius: BorderRadius.circular(4),
+                  height: 70, // Enough height for two lines plus padding
+                  child: TextField(
+                    readOnly: true,
+                    maxLines: null,
+                    expands: true,
+                    controller: _commandController,
+                    style: textFieldStyle,
+                    decoration: textFieldDecor,
                   ),
-                  child: SelectableText(
-                    'docker run --pid=host --privileged -v /var/run/docker.sock:/var/run/docker.sock -t traycer/trayce_agent:latest -s $_machineIp:50051',
-                    style: const TextStyle(
-                      color: Color(0xFFD4D4D4),
-                      fontFamily: 'monospace',
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    width: 70,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: _commandController.text));
+                        setState(() {
+                          _showCopyCheck = true;
+                        });
+                        Future.delayed(const Duration(seconds: 2), () {
+                          if (mounted) {
+                            setState(() {
+                              _showCopyCheck = false;
+                            });
+                          }
+                        });
+                      },
+                      style: commonButtonStyle,
+                      child: _showCopyCheck ? const Icon(Icons.check, size: 16) : const Text('Copy'),
                     ),
                   ),
                 ),

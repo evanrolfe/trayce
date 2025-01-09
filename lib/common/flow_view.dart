@@ -106,8 +106,8 @@ class _FlowViewState extends State<FlowView> {
       ),
       child: Row(
         children: [
-          _buildTab('Tab 1', 0, selectedIndex == 0, () => onTabChanged(0), isTopTabs),
-          _buildTab('Tab 2', 1, selectedIndex == 1, () => onTabChanged(1), isTopTabs),
+          _buildTab(isTopTabs ? 'Request' : 'Response', 0, selectedIndex == 0, () => onTabChanged(0), isTopTabs),
+          // _buildTab('Tab 2', 1, selectedIndex == 1, () => onTabChanged(1), isTopTabs),
           const Spacer(),
           if (isTopTabs && widget.selectedFlow?.l7Protocol == 'grpc') // Only show dropdown for gRPC flows
             Container(
@@ -132,6 +132,7 @@ class _FlowViewState extends State<FlowView> {
                   padding: EdgeInsets.zero,
                   useRootNavigator: true,
                   width: 200,
+                  openInterval: const Interval(0, 0),
                 ),
                 buttonStyleData: const ButtonStyleData(
                   height: 22,
@@ -294,6 +295,7 @@ class _FlowViewState extends State<FlowView> {
                             textAlignVertical: TextAlignVertical.top,
                             style: const TextStyle(
                               color: textColor,
+                              fontSize: 13,
                               fontFamily: 'monospace',
                             ),
                             decoration: const InputDecoration(
@@ -330,6 +332,7 @@ class _FlowViewState extends State<FlowView> {
                             textAlignVertical: TextAlignVertical.top,
                             style: const TextStyle(
                               color: textColor,
+                              fontSize: 13,
                               fontFamily: 'monospace',
                             ),
                             decoration: const InputDecoration(

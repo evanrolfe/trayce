@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../common/style.dart';
 import '../bloc/flow_table_cubit.dart';
 import '../models/flow.dart' as models;
 import 'containers_modal.dart';
@@ -55,43 +56,14 @@ class _FlowTableState extends State<FlowTable> {
             children: [
               const Expanded(
                 child: TextField(
-                  style: TextStyle(
-                    color: Color(0xFFD4D4D4),
-                    fontSize: 13,
-                  ),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Search...',
-                    hintStyle: TextStyle(
-                      color: Color(0xFF808080),
-                      fontSize: 13,
-                    ),
-                    filled: true,
-                    fillColor: Color(0xFF2E2E2E),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 11),
-                    constraints: BoxConstraints(
-                      maxHeight: 30,
-                      minHeight: 30,
-                    ),
-                  ),
+                  style: textFieldStyle,
+                  decoration: textFieldDecor,
                 ),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () => showContainersModal(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4DB6AC),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  minimumSize: const Size(0, 30),
-                  maximumSize: const Size(double.infinity, 30),
-                  textStyle: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFFD4D4D4),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
+                style: commonButtonStyle,
                 child: const Text('Containers'),
               ),
             ],

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as path;
 
+import '../../common/style.dart';
 import '../bloc/proto_def_cubit.dart';
 import '../models/proto_def.dart';
 import '../repo/proto_def_repo.dart';
@@ -114,19 +115,7 @@ class _ProtoDefModalState extends State<ProtoDefModal> {
                           context.read<ProtoDefCubit>().loadProtoDefs();
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4DB6AC),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        minimumSize: const Size(0, 30),
-                        maximumSize: const Size(double.infinity, 30),
-                        textStyle: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFFD4D4D4),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
+                      style: commonButtonStyle,
                       child: const Text('Upload'),
                     ),
                   ],
@@ -207,19 +196,7 @@ class _ProtoDefModalState extends State<ProtoDefModal> {
                           children: [
                             ElevatedButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF4DB6AC),
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                minimumSize: const Size(0, 30),
-                                maximumSize: const Size(double.infinity, 30),
-                                textStyle: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFFD4D4D4),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
+                              style: commonButtonStyle,
                               child: const Text('Ok'),
                             ),
                           ],
