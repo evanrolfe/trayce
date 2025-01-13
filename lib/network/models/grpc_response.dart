@@ -82,4 +82,9 @@ class GrpcResponse extends FlowResponse {
 
     return out;
   }
+
+  @override
+  String responseCol() {
+    return "ok";
+  }
 }

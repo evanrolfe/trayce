@@ -85,4 +85,9 @@ class HttpRequest extends FlowRequest {
 
     return out;
   }
+
+  @override
+  String operationCol() {
+    return "$method $path";
+  }
 }

@@ -81,4 +81,9 @@ class HttpResponse extends FlowResponse {
 
     return out;
   }
+
+  @override
+  String responseCol() {
+    return status.toString();
+  }
 }

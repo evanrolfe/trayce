@@ -91,4 +91,9 @@ class GrpcRequest extends FlowRequest {
 
     return out;
   }
+
+  @override
+  String operationCol() {
+    return path;
+  }
 }

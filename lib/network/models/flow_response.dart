@@ -14,4 +14,6 @@ abstract class FlowResponse {
 
   @override
   String toString();
+
+  String responseCol();
 }

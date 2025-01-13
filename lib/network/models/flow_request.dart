@@ -14,4 +14,6 @@ abstract class FlowRequest {
 
   @override
   String toString();
+
+  String operationCol();
 }

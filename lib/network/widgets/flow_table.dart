@@ -198,8 +198,10 @@ class _FlowTableState extends State<FlowTable> {
                                                   _buildCell(totalWidth * widget.columnWidths[1], flow.l7Protocol),
                                                   _buildCell(totalWidth * widget.columnWidths[2], flow.sourceAddr),
                                                   _buildCell(totalWidth * widget.columnWidths[3], flow.destAddr),
-                                                  _buildCell(totalWidth * widget.columnWidths[4], 'GET'),
-                                                  _buildCell(totalWidth * widget.columnWidths[5], '200 OK'),
+                                                  _buildCell(totalWidth * widget.columnWidths[4],
+                                                      flow.request?.operationCol() ?? ''),
+                                                  _buildCell(totalWidth * widget.columnWidths[5],
+                                                      flow.response?.responseCol() ?? '', true),
                                                 ],
                                               ),
                                               ...List.generate(5, (i) {
@@ -231,19 +233,65 @@ class _FlowTableState extends State<FlowTable> {
     );
   }
 
-  Widget _buildCell(double width, String text) {
+  Color _getStatusColor(String text) {
+    if (text.isEmpty) return Colors.transparent;
+
+    final green = const Color(0xFF3B6118);
+
+    if (text.toLowerCase() == 'ok') return green;
+
+    switch (text[0]) {
+      case '1':
+        return const Color(0xFF514779);
+      case '2':
+        return green;
+      case '3':
+        return const Color(0xFF205A6D);
+      case '4':
+        return const Color(0xFF7A4C15);
+      case '5':
+        return const Color(0xFF7A3435);
+      default:
+        return Colors.transparent;
+    }
+  }
+
+  Widget _buildCell(double width, String text, [bool isResponse = false]) {
     return SizedBox(
       width: width,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 13,
-            color: Color(0xFFD4D4D4),
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
+        child: isResponse && text.isNotEmpty
+            ? Align(
+                alignment: Alignment.centerLeft,
+                child: IntrinsicWidth(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(text),
+                      border: Border.all(
+                        color: const Color(0xFF1E1E1E),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      text,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFFD4D4D4),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFFD4D4D4),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
       ),
     );
   }
