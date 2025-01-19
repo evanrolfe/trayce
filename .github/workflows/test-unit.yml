@@ -11,4 +11,7 @@ jobs:
         with:
           channel: stable
           flutter-version: 3.27.1
+      - run: |
+          sudo apt update -y
+          sudo apt install -y sqlite3 libsqlite3-dev
       - run: flutter test ./test -r github
