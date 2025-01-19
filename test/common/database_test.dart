@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ftrayce/common/database.dart';
 
@@ -7,7 +6,7 @@ void main() {
 
   group('connectDB', () {
     test('it creates the flows table in memory', () async {
-      final db = await connectDB(rootBundle, 'dbTest.db');
+      final db = await connectDB('dbTest.db');
 
       final tables = await db.query(
         'sqlite_master',
