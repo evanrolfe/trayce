@@ -48,16 +48,21 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
 
   @override
   Stream<Command> openCommandStream(ServiceCall call, Stream<AgentStarted> request) async* {
-    final controller = StreamController<Command>();
-    _commandStreamControllers.add(controller);
+    await for (final agentStarted in request) {
+      print('Agent started with version ${agentStarted.version}');
+      _agentNetworkBridge.agentStarted(agentStarted.version);
 
-    try {
-      await for (final command in controller.stream) {
-        yield command;
+      final controller = StreamController<Command>();
+      _commandStreamControllers.add(controller);
+
+      try {
+        await for (final command in controller.stream) {
+          yield command;
+        }
+      } finally {
+        _commandStreamControllers.remove(controller);
+        await controller.close();
       }
-    } finally {
-      _commandStreamControllers.remove(controller);
-      await controller.close();
     }
   }
 

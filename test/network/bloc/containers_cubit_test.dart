@@ -49,7 +49,7 @@ void main() {
     group('heartbeat timeout', () {
       test('it emits AgentRunning(false) after 200ms of no updates', () async {
         // Send empty containers list to trigger heartbeat
-        cubit.containersUpdated([]);
+        cubit.containersUpdated(bridge.ContainersLoaded([], '1.0.0'));
 
         // Wait for heartbeat timeout
         final states = cubit.stream.take(1).toList();

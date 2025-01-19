@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../agent/container_observer.dart';
 import '../../agent/gen/api.pb.dart';
 import '../../common/bloc/agent_network_bridge.dart' as bridge;
 
@@ -12,9 +11,30 @@ abstract class ContainersState {}
 class ContainersInitial extends ContainersState {}
 
 class ContainersLoaded extends ContainersState {
-  final List<Container> containers;
+  static const minVersion = '0.2.0';
 
-  ContainersLoaded(this.containers);
+  final List<Container> containers;
+  final String? version;
+
+  ContainersLoaded(this.containers, this.version);
+
+  int getExtendedVersionNumber(String version) {
+    List versionCells = version.split('.');
+    versionCells = versionCells.map((i) => int.parse(i)).toList();
+    return versionCells[0] * 100000 + versionCells[1] * 1000 + versionCells[2];
+  }
+
+  bool versionOk() {
+    if (version == null) return false;
+
+    try {
+      final currentVersion = getExtendedVersionNumber(version!);
+      final minimum = getExtendedVersionNumber(minVersion);
+      return currentVersion >= minimum;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 class AgentRunning extends ContainersState {
@@ -23,7 +43,7 @@ class AgentRunning extends ContainersState {
   AgentRunning(this.running);
 }
 
-class ContainersCubit extends Cubit<ContainersState> implements ContainerObserver {
+class ContainersCubit extends Cubit<ContainersState> {
   final bridge.AgentNetworkBridge _agentNetworkBridge;
   bool _agentRunning = false;
   DateTime? _lastHeartbeatAt;
@@ -42,7 +62,7 @@ class ContainersCubit extends Cubit<ContainersState> implements ContainerObserve
     // Listen to AgentNetworkBridge state changes
     _agentNetworkBridge.stream.listen((state) {
       if (state is bridge.ContainersLoaded) {
-        containersUpdated(state.containers);
+        containersUpdated(state);
       }
     });
   }
@@ -56,7 +76,7 @@ class ContainersCubit extends Cubit<ContainersState> implements ContainerObserve
   void _checkHeartbeat() {
     if (_lastHeartbeatAt != null &&
         _agentRunning &&
-        DateTime.now().difference(_lastHeartbeatAt!) > const Duration(seconds: 1)) {
+        DateTime.now().difference(_lastHeartbeatAt!) > const Duration(seconds: 2)) {
       _agentRunning = false;
       print('Agent heartbeat check NOT RUNNING');
       emit(AgentRunning(false));
@@ -69,14 +89,14 @@ class ContainersCubit extends Cubit<ContainersState> implements ContainerObserve
   bool get agentRunning => _agentRunning;
   DateTime? get lastHeartbeatAt => _lastHeartbeatAt;
 
-  @override
-  void containersUpdated(List<Container> containers) {
+  void containersUpdated(bridge.ContainersLoaded state) {
     _lastHeartbeatAt = DateTime.now();
     if (!_agentRunning) {
       _agentRunning = true;
+      interceptContainers(_interceptedContainerIds.toList());
       emit(AgentRunning(true));
     }
-    emit(ContainersLoaded(containers));
+    emit(ContainersLoaded(state.containers, state.version));
   }
 
   void agentStopped() {

@@ -82,8 +82,6 @@ Future<void> test(WidgetTester tester, Database db) async {
 }
 
 List<pb.Flow> buildFlows() {
-  final uuid4 = Uuid().v4();
-
   return [
     //
     // Flow 3 (GRPC Request)

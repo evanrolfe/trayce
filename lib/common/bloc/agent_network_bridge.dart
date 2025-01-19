@@ -9,14 +9,9 @@ class AgentNetworkInitial extends AgentNetwork {}
 
 class ContainersLoaded extends AgentNetwork {
   final List<Container> containers;
+  final String? version;
 
-  ContainersLoaded(this.containers);
-}
-
-class AgentRunning extends AgentNetwork {
-  final bool running;
-
-  AgentRunning(this.running);
+  ContainersLoaded(this.containers, this.version);
 }
 
 class SendCommand extends AgentNetwork {
@@ -32,10 +27,12 @@ class FlowsObserved extends AgentNetwork {
 }
 
 class AgentNetworkBridge extends Cubit<AgentNetwork> {
+  String? version;
+
   AgentNetworkBridge() : super(AgentNetworkInitial());
 
   void containersUpdated(List<Container> containers) {
-    emit(ContainersLoaded(containers));
+    emit(ContainersLoaded(containers, version));
   }
 
   void flowsObserved(List<Flow> flows) {
@@ -44,5 +41,9 @@ class AgentNetworkBridge extends Cubit<AgentNetwork> {
 
   void sendCommandToAll(Command command) {
     emit(SendCommand(command));
+  }
+
+  void agentStarted(String version) {
+    this.version = version;
   }
 }

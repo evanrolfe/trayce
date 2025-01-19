@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ftrayce/agent/command_sender.dart';
 import 'package:ftrayce/agent/gen/api.pb.dart' as pb;
-import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
+import 'package:ftrayce/common/bloc/agent_network_bridge.dart' as bridge;
 import 'package:ftrayce/network/bloc/containers_cubit.dart';
 import 'package:ftrayce/network/widgets/containers_modal.dart';
 
@@ -16,7 +16,7 @@ void main() {
   late ContainersCubit containersCubit;
 
   setUp(() {
-    final agentNetworkBridge = AgentNetworkBridge();
+    final agentNetworkBridge = bridge.AgentNetworkBridge();
     containersCubit = ContainersCubit(agentNetworkBridge: agentNetworkBridge);
     TestWidgetsFlutterBinding.ensureInitialized();
   });
@@ -56,7 +56,7 @@ void main() {
 
       // Act
       await tester.pumpWidget(createWidgetUnderTest());
-      containersCubit.containersUpdated(containers);
+      containersCubit.containersUpdated(bridge.ContainersLoaded(containers, '1.0.0'));
       await tester.pumpAndSettle();
 
       // Assert

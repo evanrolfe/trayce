@@ -27,12 +27,13 @@ class _ContainersModalState extends State<ContainersModal> {
   final Map<String, bool> _interceptedStates = {};
   bool _initialized = false;
   String _machineIp = '127.0.0.1';
-  late final TextEditingController _commandController = TextEditingController();
+  late final TextEditingController _commandController;
   bool _showCopyCheck = false;
 
   @override
   void initState() {
     super.initState();
+    _commandController = TextEditingController();
     _updateCommandText();
     getMachineIp().then((ip) {
       setState(() {
@@ -43,12 +44,16 @@ class _ContainersModalState extends State<ContainersModal> {
   }
 
   void _updateCommandText() {
-    final text =
-        'docker run --pid=host --privileged -v /var/run/docker.sock:/var/run/docker.sock -t traycer/trayce_agent:latest -s $_machineIp:50051';
-    _commandController.text = text;
+    final state = context.read<ContainersCubit>().state;
+    if (state is ContainersLoaded && !state.versionOk()) {
+      _commandController.text = 'docker pull traycer/trayce_agent:latest';
+    } else {
+      _commandController.text =
+          'docker run -d --name trayce_agent -v /var/run/docker.sock:/var/run/docker.sock -e TRAYCE_HOST=$_machineIp traycer/trayce_agent:latest';
+    }
     _commandController.selection = TextSelection(
       baseOffset: 0,
-      extentOffset: text.length,
+      extentOffset: _commandController.text.length,
     );
   }
 
@@ -74,6 +79,12 @@ class _ContainersModalState extends State<ContainersModal> {
   }
 
   @override
+  void didUpdateWidget(ContainersModal oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _updateCommandText();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: const Color(0xFF252526),
@@ -86,168 +97,250 @@ class _ContainersModalState extends State<ContainersModal> {
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<ContainersCubit, ContainersState>(
           builder: (context, state) {
+            // Update command text whenever state changes
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _updateCommandText();
+            });
+
             if (state is ContainersLoaded) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Containers',
-                        style: TextStyle(
-                          color: Color(0xFFD4D4D4),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+              if (state.versionOk()) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Containers',
+                          style: TextStyle(
+                            color: Color(0xFFD4D4D4),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(
-                          Icons.close,
-                          color: Color(0xFFD4D4D4),
-                          size: 20,
+                        IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(
+                            Icons.close,
+                            color: Color(0xFFD4D4D4),
+                            size: 20,
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          splashRadius: 16,
                         ),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        splashRadius: 16,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Select which containers you want to monitor',
-                    style: TextStyle(
-                      color: Color(0xFFD4D4D4),
-                      fontSize: 14,
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E1E1E),
-                        border: Border.all(color: const Color(0xFF474747)),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Select which containers you want to monitor',
+                      style: TextStyle(
+                        color: Color(0xFFD4D4D4),
+                        fontSize: 14,
                       ),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 25,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(color: Color(0xFF474747)),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E1E1E),
+                          border: Border.all(color: const Color(0xFF474747)),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 25,
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: Color(0xFF474747)),
+                                ),
+                              ),
+                              child: const Row(
+                                children: [
+                                  _HeaderCell(text: 'ID', width: 100),
+                                  _HeaderCell(text: 'Image', width: 200),
+                                  _HeaderCell(text: 'IP', width: 120),
+                                  _HeaderCell(text: 'Name', width: 150),
+                                  _HeaderCell(text: 'Status', width: 100),
+                                  Expanded(child: _HeaderCell(text: 'Intercepted?', width: 100)),
+                                ],
                               ),
                             ),
-                            child: const Row(
-                              children: [
-                                _HeaderCell(text: 'ID', width: 100),
-                                _HeaderCell(text: 'Image', width: 200),
-                                _HeaderCell(text: 'IP', width: 120),
-                                _HeaderCell(text: 'Name', width: 150),
-                                _HeaderCell(text: 'Status', width: 100),
-                                Expanded(child: _HeaderCell(text: 'Intercepted?', width: 100)),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: state.containers.length,
-                              itemBuilder: (context, index) {
-                                final container = state.containers[index];
-                                return Container(
-                                  height: 25,
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(color: Color(0xFF474747)),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: state.containers.length,
+                                itemBuilder: (context, index) {
+                                  final container = state.containers[index];
+                                  return Container(
+                                    height: 25,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(color: Color(0xFF474747)),
+                                      ),
                                     ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      _Cell(text: container.id.substring(0, 6), width: 100),
-                                      _Cell(text: container.image, width: 200),
-                                      _Cell(text: container.ip, width: 120),
-                                      _Cell(text: container.name, width: 150),
-                                      _Cell(text: container.status, width: 100),
-                                      Expanded(
-                                        child: SizedBox(
-                                          width: 100,
-                                          child: Row(
-                                            children: [
-                                              Opacity(
-                                                opacity: container.image == 'trayce_agent:local' ? 0.25 : 1.0,
-                                                child: Container(
-                                                  padding: const EdgeInsets.only(left: 16),
-                                                  child: Row(
-                                                    children: [
-                                                      Checkbox(
-                                                        value: _interceptedStates[container.id] ?? false,
-                                                        onChanged: container.image == 'trayce_agent:local'
-                                                            ? null // null onChanged makes the checkbox disabled
-                                                            : (bool? value) {
-                                                                setState(() {
-                                                                  _interceptedStates[container.id] = value ?? false;
-                                                                });
-                                                              },
-                                                        side: const BorderSide(color: Color(0xFFD4D4D4)),
-                                                        fillColor: MaterialStateProperty.resolveWith(
-                                                          (states) {
-                                                            if (container.image == 'trayce_agent:local') {
-                                                              return Colors.grey; // greyed out when disabled
-                                                            }
-                                                            return states.contains(MaterialState.selected)
-                                                                ? const Color(0xFF4DB6AC)
-                                                                : Colors.transparent;
-                                                          },
+                                    child: Row(
+                                      children: [
+                                        _Cell(text: container.id.substring(0, 6), width: 100),
+                                        _Cell(text: container.image, width: 200),
+                                        _Cell(text: container.ip, width: 120),
+                                        _Cell(text: container.name, width: 150),
+                                        _Cell(text: container.status, width: 100),
+                                        Expanded(
+                                          child: SizedBox(
+                                            width: 100,
+                                            child: Row(
+                                              children: [
+                                                Opacity(
+                                                  opacity: container.image == 'trayce_agent:local' ? 0.25 : 1.0,
+                                                  child: Container(
+                                                    padding: const EdgeInsets.only(left: 16),
+                                                    child: Row(
+                                                      children: [
+                                                        Checkbox(
+                                                          value: _interceptedStates[container.id] ?? false,
+                                                          onChanged: container.image == 'trayce_agent:local'
+                                                              ? null // null onChanged makes the checkbox disabled
+                                                              : (bool? value) {
+                                                                  setState(() {
+                                                                    _interceptedStates[container.id] = value ?? false;
+                                                                  });
+                                                                },
+                                                          side: const BorderSide(color: Color(0xFFD4D4D4)),
+                                                          fillColor: MaterialStateProperty.resolveWith(
+                                                            (states) {
+                                                              if (container.image == 'trayce_agent:local') {
+                                                                return Colors.grey; // greyed out when disabled
+                                                              }
+                                                              return states.contains(MaterialState.selected)
+                                                                  ? const Color(0xFF4DB6AC)
+                                                                  : Colors.transparent;
+                                                            },
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Text(
-                                                        _interceptedStates[container.id] ?? false ? 'Yes' : 'No',
-                                                        style: const TextStyle(
-                                                          color: Color(0xFFD4D4D4),
+                                                        Text(
+                                                          _interceptedStates[container.id] ?? false ? 'Yes' : 'No',
+                                                          style: const TextStyle(
+                                                            color: Color(0xFFD4D4D4),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Get selected container IDs
-                          final selectedIds = state.containers
-                              .where((container) => _interceptedStates[container.id] ?? false)
-                              .map((container) => container.id)
-                              .toList();
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            // Get selected container IDs
+                            final selectedIds = state.containers
+                                .where((container) => _interceptedStates[container.id] ?? false)
+                                .map((container) => container.id)
+                                .toList();
 
-                          // Call interceptContainers on the cubit
-                          context.read<ContainersCubit>().interceptContainers(selectedIds);
+                            // Call interceptContainers on the cubit
+                            context.read<ContainersCubit>().interceptContainers(selectedIds);
 
-                          Navigator.of(context).pop();
-                        },
-                        style: commonButtonStyle,
-                        child: const Text('Save'),
+                            Navigator.of(context).pop();
+                          },
+                          style: commonButtonStyle,
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Manage your containers',
+                          style: TextStyle(
+                            color: Color(0xFFD4D4D4),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: Color(0xFFD4D4D4),
+                            size: 20,
+                          ),
+                          onPressed: () => Navigator.of(context).pop(),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          splashRadius: 16,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Trayce Agent is on an incompatible version. Please update it by running this command and then restarting the agent:',
+                      style: TextStyle(
+                        color: Color(0xFFD4D4D4),
+                        fontSize: 14,
                       ),
-                    ],
-                  ),
-                ],
-              );
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      height: 70, // Enough height for two lines plus padding
+                      child: TextField(
+                        readOnly: true,
+                        maxLines: null,
+                        expands: true,
+                        controller: _commandController,
+                        style: textFieldStyle,
+                        decoration: textFieldDecor,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        width: 70,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: _commandController.text));
+                            setState(() {
+                              _showCopyCheck = true;
+                            });
+                            Future.delayed(const Duration(seconds: 2), () {
+                              if (mounted) {
+                                setState(() {
+                                  _showCopyCheck = false;
+                                });
+                              }
+                            });
+                          },
+                          style: commonButtonStyle,
+                          child: _showCopyCheck ? const Icon(Icons.check, size: 16) : const Text('Copy'),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
             }
             // Default case: show agent not running message
             return Column(

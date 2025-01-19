@@ -37,7 +37,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Connect DB and create repos
-  final db = await connectDB('tmp.db');
+  final db = await connectDB();
   final flowRepo = FlowRepo(db: db);
   final protoDefRepo = ProtoDefRepo(db: db);
 
