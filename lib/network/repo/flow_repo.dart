@@ -45,7 +45,10 @@ class FlowRepo {
   }
 
   Future<List<Flow>> getAllFlows() async {
-    final List<Map<String, dynamic>> maps = await db.query('flows');
+    final List<Map<String, dynamic>> maps = await db.query(
+      'flows',
+      orderBy: 'id DESC',
+    );
     return maps.map((map) => Flow.fromMap(map)).toList();
   }
 }

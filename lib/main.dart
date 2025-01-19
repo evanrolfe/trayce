@@ -182,29 +182,29 @@ class _AppScaffoldState extends State<AppScaffold> {
                     ),
                   ),
                 ),
-                Listener(
-                  onPointerDown: (_) => _navigateToPage(1),
-                  child: MouseRegion(
-                    onEnter: (_) => setState(() => isHovering1 = true),
-                    onExit: (_) => setState(() => isHovering1 = false),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          left: BorderSide(
-                            color: widget.selectedIndex == 1 ? const Color(0xFF4DB6AC) : Colors.transparent,
-                            width: 2,
-                          ),
-                        ),
-                        color: widget.selectedIndex == 1 || isHovering1 ? const Color(0xFF3A3A3A) : Colors.transparent,
-                      ),
-                      child: const Icon(
-                        Icons.edit,
-                        color: textColor,
-                      ),
-                    ),
-                  ),
-                ),
+                // Listener(
+                //   onPointerDown: (_) => _navigateToPage(1),
+                //   child: MouseRegion(
+                //     onEnter: (_) => setState(() => isHovering1 = true),
+                //     onExit: (_) => setState(() => isHovering1 = false),
+                //     child: Container(
+                //       padding: const EdgeInsets.all(16),
+                //       decoration: BoxDecoration(
+                //         border: Border(
+                //           left: BorderSide(
+                //             color: widget.selectedIndex == 1 ? const Color(0xFF4DB6AC) : Colors.transparent,
+                //             width: 2,
+                //           ),
+                //         ),
+                //         color: widget.selectedIndex == 1 || isHovering1 ? const Color(0xFF3A3A3A) : Colors.transparent,
+                //       ),
+                //       child: const Icon(
+                //         Icons.edit,
+                //         color: textColor,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
