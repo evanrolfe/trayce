@@ -17,6 +17,7 @@ import 'network/widgets/network.dart';
 const Color backgroundColor = Color(0xFF1E1E1E);
 const Color textColor = Color(0xFFD4D4D4);
 const Color sidebarColor = Color(0xFF333333);
+const String appVersion = '1.0.0';
 
 class NoTransitionBuilder extends PageTransitionsBuilder {
   const NoTransitionBuilder();
@@ -33,7 +34,13 @@ class NoTransitionBuilder extends PageTransitionsBuilder {
   }
 }
 
-void main() async {
+void main(List<String> args) async {
+  // Check for --version flag
+  if (args.contains('--version')) {
+    stdout.writeln('trayce v$appVersion');
+    exit(0);
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
 
   // Connect DB and create repos
