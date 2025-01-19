@@ -1,7 +1,7 @@
-name: Unit Test
+name: Build and Test
 on: [push]
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
@@ -18,6 +18,9 @@ jobs:
 
       - name: Install Flutter dependencies
         run: flutter pub get
+
+      - name: Build
+        run: flutter build linux
 
       - name: Unit Test
         run: flutter test ./test -r github

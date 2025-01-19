@@ -25,7 +25,7 @@ void main() {
     }
 
     // Start the real app once for all tests
-    app.main();
+    app.main([]);
 
     // Add a longer initial pump and settle to ensure app is fully loaded
     await tester.pumpAndSettle(const Duration(seconds: 1));
