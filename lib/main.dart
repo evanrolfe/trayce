@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
 import 'package:ftrayce/common/database.dart';
@@ -38,7 +37,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Connect DB and create repos
-  final db = await connectDB(rootBundle, 'tmp.db');
+  final db = await connectDB('tmp.db');
   final flowRepo = FlowRepo(db: db);
   final protoDefRepo = ProtoDefRepo(db: db);
 

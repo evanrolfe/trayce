@@ -17,22 +17,31 @@ Function(Database db, int version) initSchema(String schema) {
   };
 }
 
-Future<Database> connectDB(AssetBundle rootBundle, String dbFile) async {
+Future<Database> connectDB([String? dbFile]) async {
+  final defaultDBFile = 'tmp.db';
+
   // Load schema.sql file
   final String schema = await rootBundle.loadString('schema.sql');
 
   // Connect DB
   sqfliteFfiInit();
   databaseFactory = databaseFactoryFfi;
-  // see also: inMemoryDatabasePath
-  // this stores the file in .dart_tool/sqflite_common_ffi/databases/
-  var databasesPath = await getDatabasesPath();
-  String dbPath = path.join(databasesPath, dbFile);
 
-  // Delete existing database file if it exists
-  if (await databaseFactory.databaseExists(dbPath)) {
-    await databaseFactory.deleteDatabase(dbPath);
+  // this stores the file in .dart_tool/sqflite_common_ffi/databases/
+  String dbPath;
+  if (dbFile != null) {
+    dbPath = dbFile;
+  } else {
+    var databasesPath = await getDatabasesPath();
+    dbPath = path.join(databasesPath, dbFile ?? defaultDBFile);
+
+    // Delete existing tmp.db database file if it exists
+    if (await databaseFactory.databaseExists(dbPath)) {
+      await databaseFactory.deleteDatabase(dbPath);
+    }
   }
+
+  print('loading db from: $dbPath');
 
   var db = await databaseFactory.openDatabase(dbPath,
       options: OpenDatabaseOptions(
