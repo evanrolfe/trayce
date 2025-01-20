@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
 import 'package:ftrayce/common/database.dart';
 import 'package:ftrayce/network/repo/proto_def_repo.dart';
+import 'package:ftrayce/status_bar.dart';
 import 'package:grpc/grpc.dart';
 
 import 'agent/server.dart';
@@ -113,6 +114,14 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
+      builder: (context, child) {
+        return Column(
+          children: [
+            Expanded(child: child ?? const SizedBox()),
+            const StatusBar(),
+          ],
+        );
+      },
       initialRoute: '/network',
       routes: {
         '/network': (context) => const AppScaffold(
