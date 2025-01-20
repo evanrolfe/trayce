@@ -114,25 +114,28 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      builder: (context, child) {
-        return Column(
-          children: [
-            Expanded(child: child ?? const SizedBox()),
-            const StatusBar(),
-          ],
-        );
-      },
-      initialRoute: '/network',
-      routes: {
-        '/network': (context) => const AppScaffold(
-              selectedIndex: 0,
-              child: Network(),
-            ),
-        '/editor': (context) => const AppScaffold(
-              selectedIndex: 1,
-              child: Editor(),
-            ),
-      },
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: Navigator(
+            onGenerateRoute: (settings) {
+              Widget page;
+              if (settings.name == '/editor') {
+                page = const AppScaffold(
+                  selectedIndex: 1,
+                  child: Editor(),
+                );
+              } else {
+                page = const AppScaffold(
+                  selectedIndex: 0,
+                  child: Network(),
+                );
+              }
+              return MaterialPageRoute(builder: (_) => page);
+            },
+          ),
+          bottomNavigationBar: const StatusBar(),
+        ),
+      ),
     );
   }
 }
