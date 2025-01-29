@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
 import 'package:ftrayce/common/database.dart';
+import 'package:ftrayce/menu_bar.dart';
 import 'package:ftrayce/network/repo/proto_def_repo.dart';
 import 'package:ftrayce/status_bar.dart';
 import 'package:grpc/grpc.dart';
@@ -115,44 +115,8 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      home: PlatformMenuBar(
-        menus: [
-          PlatformMenu(
-            label: 'File',
-            menus: [
-              PlatformMenuItem(
-                label: 'Open',
-                shortcut: const SingleActivator(LogicalKeyboardKey.keyO, meta: true),
-                onSelected: () {
-                  // TODO: Implement open
-                },
-              ),
-              PlatformMenuItem(
-                label: 'Save',
-                shortcut: const SingleActivator(LogicalKeyboardKey.keyS, meta: true),
-                onSelected: () {
-                  // TODO: Implement save
-                },
-              ),
-            ],
-          ),
-          PlatformMenu(
-            label: 'Help',
-            menus: [
-              PlatformMenuItem(
-                label: 'About',
-                onSelected: () {
-                  showAboutDialog(
-                    context: context,
-                    applicationName: 'Trayce',
-                    applicationVersion: appVersion,
-                    applicationIcon: const Icon(Icons.track_changes),
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
+      home: AppMenuBar(
+        appVersion: appVersion,
         child: Builder(
           builder: (context) => Scaffold(
             body: Navigator(

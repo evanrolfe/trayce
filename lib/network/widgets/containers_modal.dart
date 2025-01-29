@@ -49,7 +49,7 @@ class _ContainersModalState extends State<ContainersModal> {
       _commandController.text = 'docker pull traycer/trayce_agent:latest';
     } else {
       _commandController.text =
-          'docker run -d --name trayce_agent -v /var/run/docker.sock:/var/run/docker.sock -e TRAYCE_HOST=$_machineIp traycer/trayce_agent:latest';
+          'docker run --pid=host --privileged -v /var/run/docker.sock:/var/run/docker.sock -t traycer/trayce_agent:latest -s $_machineIp:50051';
     }
     _commandController.selection = TextSelection(
       baseOffset: 0,
