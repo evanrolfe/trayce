@@ -95,6 +95,44 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  // Helper function to handle database operations
+  static Future<void> _changeDatabase(BuildContext context, String path, {bool shouldCopy = false}) async {
+    try {
+      final flowRepo = context.read<FlowRepo>();
+      final protoDefRepo = context.read<ProtoDefRepo>();
+      final oldDb = flowRepo.db;
+      if (oldDb.path == path) {
+        return;
+      }
+
+      if (shouldCopy) {
+        await File(oldDb.path).copy(path);
+      }
+
+      final newDb = await connectDB(path);
+      flowRepo.db = newDb;
+      protoDefRepo.db = newDb;
+      await oldDb.close();
+
+      if (context.mounted) {
+        _navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => _createPage(0),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error ${shouldCopy ? 'saving' : 'opening'} database: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -128,38 +166,8 @@ class MyApp extends StatelessWidget {
       home: Builder(
         builder: (context) => AppMenuBar(
           appVersion: appVersion,
-          onFileOpen: (path) async {
-            try {
-              final flowRepo = context.read<FlowRepo>();
-              final protoDefRepo = context.read<ProtoDefRepo>();
-              final oldDb = flowRepo.db;
-              if (oldDb.path == path) {
-                return;
-              }
-              final newDb = await connectDB(path);
-              flowRepo.db = newDb;
-              protoDefRepo.db = newDb;
-              await oldDb.close();
-
-              // Navigate to network page using the navigator key
-              if (context.mounted) {
-                _navigatorKey.currentState?.pushReplacement(
-                  MaterialPageRoute(
-                    builder: (_) => _createPage(0),
-                  ),
-                );
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Error opening database: $e'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            }
-          },
+          onFileOpen: (path) => _changeDatabase(context, path),
+          onFileSave: (path) => _changeDatabase(context, path, shouldCopy: true),
           child: Scaffold(
             body: Navigator(
               key: _navigatorKey,

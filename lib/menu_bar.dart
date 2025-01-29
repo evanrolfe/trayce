@@ -9,18 +9,27 @@ class AppMenuBar extends StatelessWidget {
   final Widget child;
   final String appVersion;
   final void Function(String path)? onFileOpen;
+  final void Function(String path)? onFileSave;
 
   const AppMenuBar({
     super.key,
     required this.child,
     required this.appVersion,
     this.onFileOpen,
+    this.onFileSave,
   });
 
   Future<void> _handleOpen() async {
     final result = await FilePicker.platform.pickFiles();
     if (result != null && result.files.single.path != null) {
       onFileOpen?.call(result.files.single.path!);
+    }
+  }
+
+  Future<void> _handleSave() async {
+    final result = await FilePicker.platform.saveFile();
+    if (result != null) {
+      onFileSave?.call(result);
     }
   }
 
@@ -38,11 +47,9 @@ class AppMenuBar extends StatelessWidget {
                 onSelected: _handleOpen,
               ),
               PlatformMenuItem(
-                label: 'Save',
+                label: 'Save As',
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyS, meta: true),
-                onSelected: () {
-                  // TODO: Implement save
-                },
+                onSelected: _handleSave,
               ),
             ],
           ),
@@ -91,11 +98,9 @@ class AppMenuBar extends StatelessWidget {
                 ),
                 MenuItemButton(
                   style: menuItemStyle,
-                  onPressed: () {
-                    // TODO: Implement save
-                  },
+                  onPressed: _handleSave,
                   shortcut: const SingleActivator(LogicalKeyboardKey.keyS, control: true),
-                  child: const Text('Save'),
+                  child: const Text('Save As'),
                 ),
               ],
               child: const Text('File'),
