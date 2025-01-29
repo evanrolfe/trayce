@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
 import 'package:ftrayce/common/database.dart';
@@ -114,26 +115,65 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      home: Builder(
-        builder: (context) => Scaffold(
-          body: Navigator(
-            onGenerateRoute: (settings) {
-              Widget page;
-              if (settings.name == '/editor') {
-                page = const AppScaffold(
-                  selectedIndex: 1,
-                  child: Editor(),
-                );
-              } else {
-                page = const AppScaffold(
-                  selectedIndex: 0,
-                  child: Network(),
-                );
-              }
-              return MaterialPageRoute(builder: (_) => page);
-            },
+      home: PlatformMenuBar(
+        menus: [
+          PlatformMenu(
+            label: 'File',
+            menus: [
+              PlatformMenuItem(
+                label: 'Open',
+                shortcut: const SingleActivator(LogicalKeyboardKey.keyO, meta: true),
+                onSelected: () {
+                  // TODO: Implement open
+                },
+              ),
+              PlatformMenuItem(
+                label: 'Save',
+                shortcut: const SingleActivator(LogicalKeyboardKey.keyS, meta: true),
+                onSelected: () {
+                  // TODO: Implement save
+                },
+              ),
+            ],
           ),
-          bottomNavigationBar: const StatusBar(),
+          PlatformMenu(
+            label: 'Help',
+            menus: [
+              PlatformMenuItem(
+                label: 'About',
+                onSelected: () {
+                  showAboutDialog(
+                    context: context,
+                    applicationName: 'Trayce',
+                    applicationVersion: appVersion,
+                    applicationIcon: const Icon(Icons.track_changes),
+                  );
+                },
+              ),
+            ],
+          ),
+        ],
+        child: Builder(
+          builder: (context) => Scaffold(
+            body: Navigator(
+              onGenerateRoute: (settings) {
+                Widget page;
+                if (settings.name == '/editor') {
+                  page = const AppScaffold(
+                    selectedIndex: 1,
+                    child: Editor(),
+                  );
+                } else {
+                  page = const AppScaffold(
+                    selectedIndex: 0,
+                    child: Network(),
+                  );
+                }
+                return MaterialPageRoute(builder: (_) => page);
+              },
+            ),
+            bottomNavigationBar: const StatusBar(),
+          ),
         ),
       ),
     );
