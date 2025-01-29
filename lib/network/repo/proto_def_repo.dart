@@ -5,7 +5,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/proto_def.dart';
 
 class ProtoDefRepo {
-  final Database db;
+  Database db;
 
   ProtoDefRepo({required this.db});
 

@@ -85,6 +85,16 @@ void main(List<String> args) async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static final _navigatorKey = GlobalKey<NavigatorState>();
+
+  // Helper function to create AppScaffold instances
+  static Widget _createPage(int index) {
+    return AppScaffold(
+      selectedIndex: index,
+      child: index == 0 ? const Network() : const Editor(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -115,23 +125,50 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      home: AppMenuBar(
-        appVersion: appVersion,
-        child: Builder(
-          builder: (context) => Scaffold(
+      home: Builder(
+        builder: (context) => AppMenuBar(
+          appVersion: appVersion,
+          onFileOpen: (path) async {
+            try {
+              final flowRepo = context.read<FlowRepo>();
+              final protoDefRepo = context.read<ProtoDefRepo>();
+              final oldDb = flowRepo.db;
+              if (oldDb.path == path) {
+                return;
+              }
+              final newDb = await connectDB(path);
+              flowRepo.db = newDb;
+              protoDefRepo.db = newDb;
+              await oldDb.close();
+
+              // Navigate to network page using the navigator key
+              if (context.mounted) {
+                _navigatorKey.currentState?.pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => _createPage(0),
+                  ),
+                );
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error opening database: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
+          child: Scaffold(
             body: Navigator(
+              key: _navigatorKey,
               onGenerateRoute: (settings) {
                 Widget page;
                 if (settings.name == '/editor') {
-                  page = const AppScaffold(
-                    selectedIndex: 1,
-                    child: Editor(),
-                  );
+                  page = _createPage(1);
                 } else {
-                  page = const AppScaffold(
-                    selectedIndex: 0,
-                    child: Network(),
-                  );
+                  page = _createPage(0);
                 }
                 return MaterialPageRoute(builder: (_) => page);
               },
@@ -205,29 +242,29 @@ class _AppScaffoldState extends State<AppScaffold> {
                     ),
                   ),
                 ),
-                // Listener(
-                //   onPointerDown: (_) => _navigateToPage(1),
-                //   child: MouseRegion(
-                //     onEnter: (_) => setState(() => isHovering1 = true),
-                //     onExit: (_) => setState(() => isHovering1 = false),
-                //     child: Container(
-                //       padding: const EdgeInsets.all(16),
-                //       decoration: BoxDecoration(
-                //         border: Border(
-                //           left: BorderSide(
-                //             color: widget.selectedIndex == 1 ? const Color(0xFF4DB6AC) : Colors.transparent,
-                //             width: 2,
-                //           ),
-                //         ),
-                //         color: widget.selectedIndex == 1 || isHovering1 ? const Color(0xFF3A3A3A) : Colors.transparent,
-                //       ),
-                //       child: const Icon(
-                //         Icons.edit,
-                //         color: textColor,
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                Listener(
+                  onPointerDown: (_) => _navigateToPage(1),
+                  child: MouseRegion(
+                    onEnter: (_) => setState(() => isHovering1 = true),
+                    onExit: (_) => setState(() => isHovering1 = false),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(
+                            color: widget.selectedIndex == 1 ? const Color(0xFF4DB6AC) : Colors.transparent,
+                            width: 2,
+                          ),
+                        ),
+                        color: widget.selectedIndex == 1 || isHovering1 ? const Color(0xFF3A3A3A) : Colors.transparent,
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        color: textColor,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

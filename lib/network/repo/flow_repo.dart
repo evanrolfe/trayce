@@ -3,7 +3,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../models/flow.dart';
 
 class FlowRepo {
-  final Database db;
+  Database db;
 
   FlowRepo({required this.db});
 

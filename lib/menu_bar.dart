@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ftrayce/common/style.dart';
@@ -7,12 +8,21 @@ import 'package:ftrayce/common/style.dart';
 class AppMenuBar extends StatelessWidget {
   final Widget child;
   final String appVersion;
+  final void Function(String path)? onFileOpen;
 
   const AppMenuBar({
     super.key,
     required this.child,
     required this.appVersion,
+    this.onFileOpen,
   });
+
+  Future<void> _handleOpen() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.single.path != null) {
+      onFileOpen?.call(result.files.single.path!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +35,7 @@ class AppMenuBar extends StatelessWidget {
               PlatformMenuItem(
                 label: 'Open',
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyO, meta: true),
-                onSelected: () {
-                  // TODO: Implement open
-                },
+                onSelected: _handleOpen,
               ),
               PlatformMenuItem(
                 label: 'Save',
@@ -77,9 +85,7 @@ class AppMenuBar extends StatelessWidget {
               menuChildren: [
                 MenuItemButton(
                   style: menuItemStyle,
-                  onPressed: () {
-                    // TODO: Implement open
-                  },
+                  onPressed: _handleOpen,
                   shortcut: const SingleActivator(LogicalKeyboardKey.keyO, control: true),
                   child: const Text('Open'),
                 ),
