@@ -37,10 +37,10 @@ void main() {
 
         final dbFlow = results.first;
         expect(dbFlow['uuid'], flow.uuid);
-        expect(dbFlow['source_addr'], flow.sourceAddr);
-        expect(dbFlow['dest_addr'], flow.destAddr);
+        expect(dbFlow['source'], flow.source);
+        expect(dbFlow['dest'], flow.dest);
         expect(dbFlow['l4_protocol'], flow.l4Protocol);
-        expect(dbFlow['l7_protocol'], flow.l7Protocol);
+        expect(dbFlow['protocol'], flow.l7Protocol);
         expect(dbFlow['request_raw'], flow.requestRaw);
         expect(dbFlow['response_raw'], flow.responseRaw);
         expect(dbFlow['created_at'], flow.createdAt.toIso8601String());
@@ -66,10 +66,10 @@ void main() {
 
         final dbFlow = results.first;
         expect(dbFlow['uuid'], flow1.uuid);
-        expect(dbFlow['source_addr'], flow1.sourceAddr);
-        expect(dbFlow['dest_addr'], flow1.destAddr);
+        expect(dbFlow['source'], flow1.source);
+        expect(dbFlow['dest'], flow1.dest);
         expect(dbFlow['l4_protocol'], flow1.l4Protocol);
-        expect(dbFlow['l7_protocol'], flow1.l7Protocol);
+        expect(dbFlow['protocol'], flow1.l7Protocol);
         expect(dbFlow['request_raw'], flow1.requestRaw);
         expect(dbFlow['response_raw'], flow2.responseRaw);
         expect(dbFlow['created_at'], flow1.createdAt.toIso8601String());
@@ -89,8 +89,8 @@ void main() {
         expect(flows.length, 1);
         expect(flows.first.id, savedFlow.id);
         expect(flows.first.uuid, flow.uuid);
-        expect(flows.first.sourceAddr, flow.sourceAddr);
-        expect(flows.first.destAddr, flow.destAddr);
+        expect(flows.first.source, flow.source);
+        expect(flows.first.dest, flow.dest);
         expect(flows.first.l4Protocol, flow.l4Protocol);
         expect(flows.first.l7Protocol, flow.l7Protocol);
         expect(flows.first.requestRaw, flow.requestRaw);
@@ -121,8 +121,8 @@ void main() {
         expect(flows.length, 1);
         expect(flows.first.id, savedFlow.id);
         expect(flows.first.uuid, flow1.uuid);
-        expect(flows.first.sourceAddr, flow1.sourceAddr);
-        expect(flows.first.destAddr, flow1.destAddr);
+        expect(flows.first.source, flow1.source);
+        expect(flows.first.dest, flow1.dest);
         expect(flows.first.l4Protocol, flow1.l4Protocol);
         expect(flows.first.l7Protocol, flow1.l7Protocol);
         expect(flows.first.requestRaw, flow1.requestRaw);

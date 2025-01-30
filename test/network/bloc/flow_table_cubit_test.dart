@@ -122,8 +122,8 @@ void main() {
 
         expect(emittedFlows.length, 1);
         expect(emittedFlows[0].uuid, '123e4567-e89b-12d3-a456-426614174000');
-        expect(emittedFlows[0].sourceAddr, '192.168.0.1');
-        expect(emittedFlows[0].destAddr, '192.168.0.2');
+        expect(emittedFlows[0].source, '192.168.0.1');
+        expect(emittedFlows[0].dest, '192.168.0.2');
         expect(emittedFlows[0].l4Protocol, 'tcp');
         expect(emittedFlows[0].l7Protocol, 'http');
 
@@ -180,8 +180,8 @@ void main() {
 
         expect(emittedFlows.length, 1);
         expect(emittedFlows[0].uuid, '123e4567-e89b-12d3-a456-426614174000');
-        expect(emittedFlows[0].sourceAddr, '192.168.0.1');
-        expect(emittedFlows[0].destAddr, '192.168.0.2');
+        expect(emittedFlows[0].source, '192.168.0.1');
+        expect(emittedFlows[0].dest, '192.168.0.2');
         expect(emittedFlows[0].l4Protocol, 'tcp');
         expect(emittedFlows[0].l7Protocol, 'http');
 
@@ -229,8 +229,8 @@ void main() {
 
         expect(emittedFlows.length, 1);
         expect(emittedFlows[0].uuid, uuid);
-        expect(emittedFlows[0].sourceAddr, '192.168.0.1');
-        expect(emittedFlows[0].destAddr, '192.168.0.2');
+        expect(emittedFlows[0].source, '192.168.0.1');
+        expect(emittedFlows[0].dest, '192.168.0.2');
         expect(emittedFlows[0].l4Protocol, 'tcp');
         expect(emittedFlows[0].l7Protocol, 'grpc');
 
@@ -279,8 +279,8 @@ void main() {
 
         expect(emittedFlows.length, 1);
         expect(emittedFlows[0].uuid, uuid);
-        expect(emittedFlows[0].sourceAddr, '192.168.0.1');
-        expect(emittedFlows[0].destAddr, '192.168.0.2');
+        expect(emittedFlows[0].source, '192.168.0.1');
+        expect(emittedFlows[0].dest, '192.168.0.2');
         expect(emittedFlows[0].l4Protocol, 'tcp');
         expect(emittedFlows[0].l7Protocol, 'grpc');
 

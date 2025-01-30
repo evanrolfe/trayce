@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS flows(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     uuid TEXT NOT NULL UNIQUE,
-    source_addr TEXT NOT NULL,
-    dest_addr TEXT NOT NULL,
+    source TEXT NOT NULL,
+    dest TEXT NOT NULL,
     l4_protocol TEXT NOT NULL,
-    l7_protocol TEXT NOT NULL,
-    request_raw JSONB NOT NULL ,
+    protocol TEXT NOT NULL,
+    request_raw JSONB NOT NULL,
     response_raw JSONB NOT NULL,
     created_at TEXT NOT NULL
 );

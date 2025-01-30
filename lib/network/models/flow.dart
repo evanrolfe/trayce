@@ -13,8 +13,8 @@ import 'flow_request.dart';
 class Flow {
   final int? id;
   final String uuid;
-  final String sourceAddr;
-  final String destAddr;
+  final String source;
+  final String dest;
   final String l4Protocol;
   final String l7Protocol;
   final FlowRequest? request;
@@ -26,8 +26,8 @@ class Flow {
   Flow({
     this.id,
     String? uuid,
-    required this.sourceAddr,
-    required this.destAddr,
+    required this.source,
+    required this.dest,
     required this.l4Protocol,
     required this.l7Protocol,
     required this.requestRaw,
@@ -71,8 +71,8 @@ class Flow {
 
     return Flow(
       uuid: agentFlow.uuid,
-      sourceAddr: agentFlow.sourceAddr,
-      destAddr: agentFlow.destAddr,
+      source: agentFlow.sourceAddr,
+      dest: agentFlow.destAddr,
       l4Protocol: agentFlow.l4Protocol,
       l7Protocol: agentFlow.l7Protocol,
       request: request,
@@ -85,7 +85,7 @@ class Flow {
 
   // Create a Flow from a Map (database row)
   factory Flow.fromMap(Map<String, dynamic> map) {
-    final l7Protocol = map['l7_protocol'] as String;
+    final l7Protocol = map['protocol'] as String;
     final requestRaw = map['request_raw'] as Uint8List;
     final responseRaw = map['response_raw'] as Uint8List;
 
@@ -130,8 +130,8 @@ class Flow {
     return Flow(
       id: map['id'] as int?,
       uuid: map['uuid'] as String,
-      sourceAddr: map['source_addr'] as String,
-      destAddr: map['dest_addr'] as String,
+      source: map['source'] as String,
+      dest: map['dest'] as String,
       l4Protocol: map['l4_protocol'] as String,
       l7Protocol: l7Protocol,
       requestRaw: requestRaw,
@@ -147,10 +147,10 @@ class Flow {
     return {
       'id': id,
       'uuid': uuid,
-      'source_addr': sourceAddr,
-      'dest_addr': destAddr,
+      'source': source,
+      'dest': dest,
       'l4_protocol': l4Protocol,
-      'l7_protocol': l7Protocol,
+      'protocol': l7Protocol,
       'request_raw': requestRaw,
       'response_raw': responseRaw,
       'created_at': createdAt.toIso8601String(),
@@ -173,8 +173,8 @@ class Flow {
     return Flow(
       id: id ?? this.id,
       uuid: uuid ?? this.uuid,
-      sourceAddr: sourceAddr ?? this.sourceAddr,
-      destAddr: destAddr ?? this.destAddr,
+      source: sourceAddr ?? this.source,
+      dest: destAddr ?? this.dest,
       l4Protocol: l4Protocol ?? this.l4Protocol,
       l7Protocol: l7Protocol ?? this.l7Protocol,
       requestRaw: requestRaw ?? this.requestRaw,

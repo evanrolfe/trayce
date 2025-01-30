@@ -19,10 +19,10 @@ void main() {
 
         expect(map['id'], 1);
         expect(map['uuid'], 'test-uuid');
-        expect(map['source_addr'], '192.168.0.1');
-        expect(map['dest_addr'], '192.168.0.2');
+        expect(map['source'], '192.168.0.1');
+        expect(map['dest'], '192.168.0.2');
         expect(map['l4_protocol'], 'tcp');
-        expect(map['l7_protocol'], 'http');
+        expect(map['protocol'], 'http');
         expect((map['request_raw'] as Uint8List).length, 96);
         expect((map['response_raw'] as Uint8List).length, 0);
         expect(map['created_at'], testTime.toIso8601String());
@@ -38,10 +38,10 @@ void main() {
         final map = {
           'id': 1,
           'uuid': 'test-uuid',
-          'source_addr': '192.168.0.1',
-          'dest_addr': '192.168.0.2',
+          'source': '192.168.0.1',
+          'dest': '192.168.0.2',
           'l4_protocol': 'tcp',
-          'l7_protocol': 'http',
+          'protocol': 'http',
           'request_raw': request.toJson(),
           'response_raw': response.toJson(),
           'created_at': testTime.toIso8601String(),
@@ -52,8 +52,8 @@ void main() {
         final flowResp = flow.response as HttpResponse;
         expect(flow.id, 1);
         expect(flow.uuid, 'test-uuid');
-        expect(flow.sourceAddr, '192.168.0.1');
-        expect(flow.destAddr, '192.168.0.2');
+        expect(flow.source, '192.168.0.1');
+        expect(flow.dest, '192.168.0.2');
         expect(flow.l4Protocol, 'tcp');
         expect(flow.l7Protocol, 'http');
         expect(flow.requestRaw.length, 96);
@@ -90,14 +90,14 @@ void main() {
         );
 
         // Changed fields
-        expect(copied.sourceAddr, '192.168.1.2');
+        expect(copied.source, '192.168.1.2');
         expect(copied.responseRaw, newBytes);
         expect(copied.createdAt, newTime);
 
         // Unchanged fields
         expect(copied.id, original.id);
         expect(copied.uuid, original.uuid);
-        expect(copied.destAddr, original.destAddr);
+        expect(copied.dest, original.dest);
         expect(copied.l4Protocol, original.l4Protocol);
         expect(copied.l7Protocol, original.l7Protocol);
         expect(copied.requestRaw, original.requestRaw);

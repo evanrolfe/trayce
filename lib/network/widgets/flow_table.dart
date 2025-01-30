@@ -196,8 +196,8 @@ class _FlowTableState extends State<FlowTable> {
                                                   _buildCell(
                                                       totalWidth * widget.columnWidths[0], flow.id?.toString() ?? ''),
                                                   _buildCell(totalWidth * widget.columnWidths[1], flow.l7Protocol),
-                                                  _buildCell(totalWidth * widget.columnWidths[2], flow.sourceAddr),
-                                                  _buildCell(totalWidth * widget.columnWidths[3], flow.destAddr),
+                                                  _buildCell(totalWidth * widget.columnWidths[2], flow.source),
+                                                  _buildCell(totalWidth * widget.columnWidths[3], flow.dest),
                                                   _buildCell(totalWidth * widget.columnWidths[4],
                                                       flow.request?.operationCol() ?? ''),
                                                   _buildCell(totalWidth * widget.columnWidths[5],

@@ -32,10 +32,10 @@ class FlowRepo {
     // Insert new flow
     final id = await db.insert('flows', {
       'uuid': flow.uuid,
-      'source_addr': flow.sourceAddr,
-      'dest_addr': flow.destAddr,
+      'source': flow.source,
+      'dest': flow.dest,
       'l4_protocol': flow.l4Protocol,
-      'l7_protocol': flow.l7Protocol,
+      'protocol': flow.l7Protocol,
       'request_raw': flow.requestRaw,
       'response_raw': flow.responseRaw,
       'created_at': flow.createdAt.toIso8601String(),

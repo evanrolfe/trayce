@@ -19,8 +19,8 @@ Flow buildHttpReqFlow({
   return Flow(
     id: id,
     uuid: uuid,
-    sourceAddr: sourceAddr ?? '192.168.0.1',
-    destAddr: destAddr ?? '192.168.0.2',
+    source: sourceAddr ?? '192.168.0.1',
+    dest: destAddr ?? '192.168.0.2',
     l4Protocol: l4Protocol ?? 'tcp',
     l7Protocol: l7Protocol ?? 'http',
     request: request,
@@ -45,8 +45,8 @@ Flow buildHttpRespFlow({
   return Flow(
     id: id,
     uuid: uuid,
-    sourceAddr: sourceAddr ?? '192.168.0.1',
-    destAddr: destAddr ?? '192.168.0.2',
+    source: sourceAddr ?? '192.168.0.1',
+    dest: destAddr ?? '192.168.0.2',
     l4Protocol: l4Protocol ?? 'tcp',
     l7Protocol: l7Protocol ?? 'http',
     response: response,
