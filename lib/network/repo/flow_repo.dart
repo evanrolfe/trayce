@@ -22,6 +22,7 @@ class FlowRepo {
         'flows',
         {
           'response_raw': flow.responseRaw,
+          'status': flow.status,
         },
         where: 'uuid = ?',
         whereArgs: [flow.uuid],
@@ -36,6 +37,8 @@ class FlowRepo {
       'dest': flow.dest,
       'l4_protocol': flow.l4Protocol,
       'protocol': flow.l7Protocol,
+      'operation': flow.operation,
+      'status': flow.status,
       'request_raw': flow.requestRaw,
       'response_raw': flow.responseRaw,
       'created_at': flow.createdAt.toIso8601String(),

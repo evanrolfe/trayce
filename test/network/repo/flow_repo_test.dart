@@ -41,6 +41,8 @@ void main() {
         expect(dbFlow['dest'], flow.dest);
         expect(dbFlow['l4_protocol'], flow.l4Protocol);
         expect(dbFlow['protocol'], flow.l7Protocol);
+        expect(dbFlow['operation'], flow.operation);
+        expect(dbFlow['status'], flow.status);
         expect(dbFlow['request_raw'], flow.requestRaw);
         expect(dbFlow['response_raw'], flow.responseRaw);
         expect(dbFlow['created_at'], flow.createdAt.toIso8601String());
@@ -70,6 +72,8 @@ void main() {
         expect(dbFlow['dest'], flow1.dest);
         expect(dbFlow['l4_protocol'], flow1.l4Protocol);
         expect(dbFlow['protocol'], flow1.l7Protocol);
+        expect(dbFlow['operation'], flow1.operation);
+        expect(dbFlow['status'], flow2.status);
         expect(dbFlow['request_raw'], flow1.requestRaw);
         expect(dbFlow['response_raw'], flow2.responseRaw);
         expect(dbFlow['created_at'], flow1.createdAt.toIso8601String());

@@ -23,6 +23,8 @@ void main() {
         expect(map['dest'], '192.168.0.2');
         expect(map['l4_protocol'], 'tcp');
         expect(map['protocol'], 'http');
+        expect(map['operation'], 'GET /');
+        expect(map['status'], null);
         expect((map['request_raw'] as Uint8List).length, 96);
         expect((map['response_raw'] as Uint8List).length, 0);
         expect(map['created_at'], testTime.toIso8601String());
@@ -42,6 +44,8 @@ void main() {
           'dest': '192.168.0.2',
           'l4_protocol': 'tcp',
           'protocol': 'http',
+          'operation': request.operationCol(),
+          'status': '200 OK',
           'request_raw': request.toJson(),
           'response_raw': response.toJson(),
           'created_at': testTime.toIso8601String(),
@@ -56,6 +60,8 @@ void main() {
         expect(flow.dest, '192.168.0.2');
         expect(flow.l4Protocol, 'tcp');
         expect(flow.l7Protocol, 'http');
+        expect(flow.operation, 'GET /');
+        expect(flow.status, '200 OK');
         expect(flow.requestRaw.length, 96);
         expect(flow.responseRaw.length, 93);
 
@@ -86,12 +92,14 @@ void main() {
         final copied = original.copyWith(
           sourceAddr: '192.168.1.2',
           responseRaw: newBytes,
+          status: '200 OK',
           createdAt: newTime,
         );
 
         // Changed fields
         expect(copied.source, '192.168.1.2');
         expect(copied.responseRaw, newBytes);
+        expect(copied.status, '200 OK');
         expect(copied.createdAt, newTime);
 
         // Unchanged fields
@@ -100,6 +108,7 @@ void main() {
         expect(copied.dest, original.dest);
         expect(copied.l4Protocol, original.l4Protocol);
         expect(copied.l7Protocol, original.l7Protocol);
+        expect(copied.operation, original.operation);
         expect(copied.requestRaw, original.requestRaw);
       });
     });

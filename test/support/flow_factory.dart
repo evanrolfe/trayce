@@ -12,6 +12,7 @@ Flow buildHttpReqFlow({
   String? l4Protocol,
   String? l7Protocol,
   HttpRequest? request,
+  String? status,
   DateTime? createdAt,
 }) {
   request ??= HttpRequest(method: 'GET', host: '172.17.0.3', path: '/', httpVersion: 'HTTP/1.1', headers: {}, body: '');
@@ -23,6 +24,8 @@ Flow buildHttpReqFlow({
     dest: destAddr ?? '192.168.0.2',
     l4Protocol: l4Protocol ?? 'tcp',
     l7Protocol: l7Protocol ?? 'http',
+    operation: request.operationCol(),
+    status: status,
     request: request,
     requestRaw: request.toJson(),
     responseRaw: Uint8List(0),
@@ -49,6 +52,8 @@ Flow buildHttpRespFlow({
     dest: destAddr ?? '192.168.0.2',
     l4Protocol: l4Protocol ?? 'tcp',
     l7Protocol: l7Protocol ?? 'http',
+    operation: '',
+    status: response.responseCol(),
     response: response,
     requestRaw: Uint8List(0),
     responseRaw: response.toJson(),

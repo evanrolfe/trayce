@@ -17,6 +17,8 @@ class Flow {
   final String dest;
   final String l4Protocol;
   final String l7Protocol;
+  final String operation;
+  final String? status;
   final FlowRequest? request;
   final FlowResponse? response;
   final Uint8List requestRaw;
@@ -30,6 +32,8 @@ class Flow {
     required this.dest,
     required this.l4Protocol,
     required this.l7Protocol,
+    required this.operation,
+    this.status,
     required this.requestRaw,
     required this.responseRaw,
     required this.createdAt,
@@ -44,6 +48,8 @@ class Flow {
 
     FlowResponse? response;
     Uint8List responseRaw = Uint8List(0);
+
+    String? status;
 
     // Parse HTTP request if present
     if (agentFlow.hasHttpRequest()) {
@@ -61,12 +67,14 @@ class Flow {
     if (agentFlow.hasHttpResponse()) {
       response = HttpResponse.fromProto(agentFlow.httpResponse);
       responseRaw = response.toJson();
+      status = response.responseCol();
     }
 
     // Parse GRPC response if present
     if (agentFlow.hasGrpcResponse()) {
       response = GrpcResponse.fromProto(agentFlow.grpcResponse);
       responseRaw = response.toJson();
+      status = response.responseCol();
     }
 
     return Flow(
@@ -75,6 +83,8 @@ class Flow {
       dest: agentFlow.destAddr,
       l4Protocol: agentFlow.l4Protocol,
       l7Protocol: agentFlow.l7Protocol,
+      operation: request?.operationCol() ?? '',
+      status: status,
       request: request,
       response: response,
       requestRaw: requestRaw,
@@ -134,6 +144,8 @@ class Flow {
       dest: map['dest'] as String,
       l4Protocol: map['l4_protocol'] as String,
       l7Protocol: l7Protocol,
+      operation: map['operation'] as String,
+      status: map['status'] as String?,
       requestRaw: requestRaw,
       responseRaw: responseRaw,
       request: request,
@@ -151,6 +163,8 @@ class Flow {
       'dest': dest,
       'l4_protocol': l4Protocol,
       'protocol': l7Protocol,
+      'operation': operation,
+      'status': status,
       'request_raw': requestRaw,
       'response_raw': responseRaw,
       'created_at': createdAt.toIso8601String(),
@@ -165,6 +179,8 @@ class Flow {
     String? destAddr,
     String? l4Protocol,
     String? l7Protocol,
+    String? operation,
+    String? status,
     Uint8List? requestRaw,
     Uint8List? responseRaw,
     DateTime? createdAt,
@@ -177,6 +193,8 @@ class Flow {
       dest: destAddr ?? this.dest,
       l4Protocol: l4Protocol ?? this.l4Protocol,
       l7Protocol: l7Protocol ?? this.l7Protocol,
+      operation: operation ?? this.operation,
+      status: status ?? this.status,
       requestRaw: requestRaw ?? this.requestRaw,
       responseRaw: responseRaw ?? this.responseRaw,
       createdAt: createdAt ?? this.createdAt,
