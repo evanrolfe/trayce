@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../network/models/flow.dart' as models;
 import '../network/models/grpc_request.dart';
@@ -10,6 +11,26 @@ import '../network/repo/proto_def_repo.dart';
 import '../network/widgets/proto_def_modal.dart';
 
 const Color textColor = Color(0xFFD4D4D4);
+const String topPaneHeightKey = 'flow_view_top_pane_height';
+const double defaultTopPaneHeight = 0.5;
+
+class FlowViewCache {
+  static double? _cachedHeight;
+
+  static Future<void> preloadHeight() async {
+    if (_cachedHeight != null) return;
+    final prefs = await SharedPreferences.getInstance();
+    _cachedHeight = prefs.getDouble(topPaneHeightKey);
+  }
+
+  static double get height => _cachedHeight ?? defaultTopPaneHeight;
+
+  static Future<void> saveHeight(double height) async {
+    _cachedHeight = height;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(topPaneHeightKey, height);
+  }
+}
 
 class FlowView extends StatefulWidget {
   final models.Flow? selectedFlow;
@@ -24,7 +45,7 @@ class FlowView extends StatefulWidget {
 }
 
 class _FlowViewState extends State<FlowView> {
-  double _topPaneHeight = 0.5;
+  final ValueNotifier<double> _heightNotifier = ValueNotifier(FlowViewCache.height);
   bool isDividerHovered = false;
   int _selectedTopTab = 0;
   int _selectedBottomTab = 0;
@@ -40,6 +61,9 @@ class _FlowViewState extends State<FlowView> {
     super.initState();
     _loadProtoDefs();
     _selectedProtoDefName = 'select';
+    FlowViewCache.preloadHeight().then((_) {
+      _heightNotifier.value = FlowViewCache.height;
+    });
   }
 
   Future<void> _loadProtoDefs() async {
@@ -90,9 +114,15 @@ class _FlowViewState extends State<FlowView> {
 
   @override
   void dispose() {
+    _heightNotifier.dispose();
     _topController.dispose();
     _bottomController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveHeight(double height) async {
+    await FlowViewCache.saveHeight(height);
+    _heightNotifier.value = height;
   }
 
   Widget _buildTabs(int selectedIndex, Function(int) onTabChanged, bool isTopTabs) {
@@ -269,124 +299,127 @@ class _FlowViewState extends State<FlowView> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final totalHeight = constraints.maxHeight;
-        return Stack(
-          children: [
-            Column(
+        return ValueListenableBuilder<double>(
+          valueListenable: _heightNotifier,
+          builder: (context, topPaneHeight, _) {
+            return Stack(
               children: [
-                SizedBox(
-                  height: totalHeight * _topPaneHeight,
-                  child: Column(
-                    children: [
-                      _buildTabs(_selectedTopTab, (index) {
-                        setState(() => _selectedTopTab = index);
-                      }, true),
-                      Container(
-                        height: 1,
-                        color: const Color(0xFF474747),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.zero,
-                          child: TextField(
-                            controller: _topController,
-                            maxLines: null,
-                            expands: true,
-                            readOnly: true,
-                            textAlignVertical: TextAlignVertical.top,
-                            style: const TextStyle(
-                              color: textColor,
-                              fontSize: 13,
-                              fontFamily: 'monospace',
-                            ),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                              contentPadding: EdgeInsets.all(8),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: totalHeight * topPaneHeight,
+                      child: Column(
+                        children: [
+                          _buildTabs(_selectedTopTab, (index) {
+                            setState(() => _selectedTopTab = index);
+                          }, true),
+                          Container(
+                            height: 1,
+                            color: const Color(0xFF474747),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.zero,
+                              child: TextField(
+                                controller: _topController,
+                                maxLines: null,
+                                expands: true,
+                                readOnly: true,
+                                textAlignVertical: TextAlignVertical.top,
+                                style: const TextStyle(
+                                  color: textColor,
+                                  fontSize: 13,
+                                  fontFamily: 'monospace',
+                                ),
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(borderSide: BorderSide.none),
+                                  focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                                  enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                                  contentPadding: EdgeInsets.all(8),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: totalHeight * (1 - topPaneHeight),
+                      child: Column(
+                        children: [
+                          _buildTabs(_selectedBottomTab, (index) {
+                            setState(() => _selectedBottomTab = index);
+                          }, false),
+                          Container(
+                            height: 1,
+                            color: const Color(0xFF474747),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.zero,
+                              child: TextField(
+                                controller: _bottomController,
+                                maxLines: null,
+                                expands: true,
+                                readOnly: true,
+                                textAlignVertical: TextAlignVertical.top,
+                                style: const TextStyle(
+                                  color: textColor,
+                                  fontSize: 13,
+                                  fontFamily: 'monospace',
+                                ),
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(borderSide: BorderSide.none),
+                                  focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                                  enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+                                  contentPadding: EdgeInsets.all(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: totalHeight * (1 - _topPaneHeight),
-                  child: Column(
-                    children: [
-                      _buildTabs(_selectedBottomTab, (index) {
-                        setState(() => _selectedBottomTab = index);
-                      }, false),
-                      Container(
-                        height: 1,
-                        color: const Color(0xFF474747),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.zero,
-                          child: TextField(
-                            controller: _bottomController,
-                            maxLines: null,
-                            expands: true,
-                            readOnly: true,
-                            textAlignVertical: TextAlignVertical.top,
-                            style: const TextStyle(
-                              color: textColor,
-                              fontSize: 13,
-                              fontFamily: 'monospace',
-                            ),
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(borderSide: BorderSide.none),
-                              focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                              enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-                              contentPadding: EdgeInsets.all(8),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: totalHeight * topPaneHeight - 1.5,
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeRow,
+                    onEnter: (_) => setState(() => isDividerHovered = true),
+                    onExit: (_) => setState(() => isDividerHovered = false),
+                    child: GestureDetector(
+                      onPanUpdate: (details) {
+                        final newTopHeight = topPaneHeight + (details.delta.dy / totalHeight);
+                        if (newTopHeight > 0.1 && newTopHeight < 0.9) {
+                          _saveHeight(newTopHeight);
+                        }
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 3,
+                            color: Colors.transparent,
+                          ),
+                          Positioned(
+                            top: 1,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              height: 1,
+                              color: isDividerHovered ? const Color(0xFF4DB6AC) : const Color(0xFF474747),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              top: totalHeight * _topPaneHeight - 1.5,
-              child: MouseRegion(
-                cursor: SystemMouseCursors.resizeRow,
-                onEnter: (_) => setState(() => isDividerHovered = true),
-                onExit: (_) => setState(() => isDividerHovered = false),
-                child: GestureDetector(
-                  onPanUpdate: (details) {
-                    setState(() {
-                      final newTopHeight = _topPaneHeight + (details.delta.dy / totalHeight);
-                      if (newTopHeight > 0.1 && newTopHeight < 0.9) {
-                        _topPaneHeight = newTopHeight;
-                      }
-                    });
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 3,
-                        color: Colors.transparent,
-                      ),
-                      Positioned(
-                        top: 1,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          height: 1,
-                          color: isDividerHovered ? const Color(0xFF4DB6AC) : const Color(0xFF474747),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
