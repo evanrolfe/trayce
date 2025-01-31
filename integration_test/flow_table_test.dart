@@ -95,6 +95,34 @@ Future<void> test(WidgetTester tester) async {
   expect(find.textContaining('content-type: application/grpc'), findsOneWidget);
 
   expect(find.textContaining('testheader: ok'), findsOneWidget);
+
+  // --------------------------------------------------------------------------
+  // Search
+  // --------------------------------------------------------------------------
+  // Find and enter "http" in the search field
+  final searchField = find.byKey(const Key('flow_table_search_input'));
+  await tester.enterText(searchField, 'http');
+  await tester.testTextInput.receiveAction(TextInputAction.done);
+  await tester.pumpAndSettle();
+
+  // Verify only HTTP flows are shown
+  expect(find.text('10.0.0.1'), findsOneWidget);
+  expect(find.text('20.0.0.1'), findsOneWidget);
+  expect(find.text('30.0.0.1'), findsNothing);
+  expect(find.text('40.0.0.1'), findsNothing);
+
+  // Search for "POST"
+  await tester.tap(searchField);
+  await tester.pumpAndSettle();
+  await tester.enterText(searchField, 'POST');
+  await tester.testTextInput.receiveAction(TextInputAction.done);
+  await tester.pumpAndSettle();
+
+  // Verify only POST flows are shown
+  expect(find.text('10.0.0.1'), findsOneWidget);
+  expect(find.text('20.0.0.1'), findsNothing);
+  expect(find.text('30.0.0.1'), findsNothing);
+  expect(find.text('40.0.0.1'), findsNothing);
 }
 
 List<pb.Flow> buildFlows() {

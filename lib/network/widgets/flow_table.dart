@@ -29,12 +29,19 @@ class FlowTable extends StatefulWidget {
 
 class _FlowTableState extends State<FlowTable> {
   int? selectedRow;
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     // Load flows when widget initializes
     context.read<FlowTableCubit>().reloadFlows();
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,10 +61,16 @@ class _FlowTableState extends State<FlowTable> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Expanded(
+              Expanded(
                 child: TextField(
+                  key: const Key('flow_table_search_input'),
+                  focusNode: _searchFocusNode,
                   style: textFieldStyle,
                   decoration: textFieldDecor,
+                  onSubmitted: (value) {
+                    context.read<FlowTableCubit>().setSearchTerm(value);
+                    _searchFocusNode.requestFocus(); // dont loose focus when you hit enter
+                  },
                 ),
               ),
               const SizedBox(width: 8),

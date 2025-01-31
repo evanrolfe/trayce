@@ -19,6 +19,7 @@ class DisplayFlows extends FlowTableState {
 class FlowTableCubit extends Cubit<FlowTableState> {
   final FlowRepo _flowRepo;
   final bridge.AgentNetworkBridge _agentNetworkBridge;
+  String? _searchTerm;
 
   FlowTableCubit({
     required FlowRepo flowRepo,
@@ -44,8 +45,14 @@ class FlowTableCubit extends Cubit<FlowTableState> {
   }
 
   Future<void> reloadFlows() async {
-    final flows = await _flowRepo.getFlows();
+    print('Reloading flows with search term: $_searchTerm');
+    final flows = await _flowRepo.getFlows(_searchTerm);
     emit(DisplayFlows(flows));
+  }
+
+  Future<void> setSearchTerm(String term) async {
+    _searchTerm = term.isEmpty ? null : term;
+    await reloadFlows();
   }
 }
 
