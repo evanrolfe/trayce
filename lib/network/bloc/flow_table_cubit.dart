@@ -44,7 +44,7 @@ class FlowTableCubit extends Cubit<FlowTableState> {
   }
 
   Future<void> reloadFlows() async {
-    final flows = await _flowRepo.getAllFlows();
+    final flows = await _flowRepo.getFlows();
     emit(DisplayFlows(flows));
   }
 }

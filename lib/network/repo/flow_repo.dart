@@ -47,7 +47,33 @@ class FlowRepo {
     return flow.copyWith(id: id);
   }
 
-  Future<List<Flow>> getAllFlows() async {
+  Future<List<Flow>> getFlows([String? searchTerm]) async {
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      // First get matching flow IDs from FTS
+      final List<Map<String, dynamic>> ftsResults = await db.query(
+        'flows_fts',
+        columns: ['id'],
+        where: 'flows_fts MATCH ?',
+        // Escape special characters and wrap in quotes for exact matching
+        whereArgs: ['"${searchTerm.replaceAll('"', '""')}"'],
+      );
+
+      final List<int> matchingIds = ftsResults.map((row) => row['id'] as int).toList();
+      if (matchingIds.isEmpty) {
+        return [];
+      }
+
+      // Then get the actual flows using the matching IDs
+      final List<Map<String, dynamic>> maps = await db.query(
+        'flows',
+        where: 'id IN (${List.filled(matchingIds.length, '?').join(',')})',
+        whereArgs: matchingIds,
+        orderBy: 'id DESC',
+      );
+      return maps.map((map) => Flow.fromMap(map)).toList();
+    }
+
+    // No search term, get all flows
     final List<Map<String, dynamic>> maps = await db.query(
       'flows',
       orderBy: 'id DESC',

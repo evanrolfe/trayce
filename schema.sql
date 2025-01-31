@@ -25,7 +25,6 @@ CREATE VIRTUAL TABLE flows_fts USING fts5(
     uuid,
     source,
     dest,
-    l4_protocol,
     protocol,
     operation,
     status,

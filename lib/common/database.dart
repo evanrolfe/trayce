@@ -15,12 +15,17 @@ Function(Database db, int version) initSchema(String schema) {
 
     // These can't be part of schema.sql for some reason
     batch.execute("""CREATE TRIGGER flow_insert AFTER INSERT ON flows BEGIN
-      INSERT INTO flows_fts (id, uuid, source, dest, protocol, operation, status)
+      INSERT INTO flows_fts (rowid, uuid, source, dest, protocol, operation, status)
       VALUES (new.id, new.uuid, new.source, new.dest, new.protocol, new.operation, new.status);
     END;""");
 
     batch.execute("""CREATE TRIGGER flow_update AFTER UPDATE ON flows BEGIN
       INSERT INTO flows_fts (flows_fts) VALUES ('rebuild');
+    END;""");
+
+    batch.execute("""CREATE TRIGGER flow_delete AFTER DELETE ON flows BEGIN
+      INSERT INTO flows_fts(flows_fts, rowid , uuid, source, dest, protocol, operation, status)
+      VALUES('delete', old.id, old.uuid, old.source, old.dest, old.protocol, old.operation, old.status);
     END;""");
 
     return batch.commit();

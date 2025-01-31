@@ -80,14 +80,14 @@ void main() {
       });
     });
 
-    group('getAllFlows()', () {
+    group('getFlows()', () {
       test('it returns a single HTTP request flow', () async {
         // Save a test flow
         final flow = buildHttpReqFlow();
         final savedFlow = await flowRepo.save(flow);
 
         // Get all flows
-        final flows = await flowRepo.getAllFlows();
+        final flows = await flowRepo.getFlows();
         final flowReq = flows.first.request as HttpRequest;
 
         expect(flows.length, 1);
@@ -118,7 +118,7 @@ void main() {
         await flowRepo.save(flow2);
 
         // Get all flows
-        final flows = await flowRepo.getAllFlows();
+        final flows = await flowRepo.getFlows();
         final flowReq = flows.first.request as HttpRequest;
         final flowResp = flows.first.response as HttpResponse;
 
@@ -145,6 +145,47 @@ void main() {
         expect(flowResp.statusMsg, 'OK');
         expect(flowResp.headers, {});
         expect(flowResp.body, 'Hello World!');
+      });
+
+      test('it returns flows matching the search term', () async {
+        // Save test flows with different operations
+        final flow1 = buildHttpReqFlow(
+            uuid: "test-1",
+            request: HttpRequest(
+              method: 'GET',
+              host: '172.17.0.3',
+              path: '/users',
+              httpVersion: 'HTTP/1.1',
+              headers: {},
+              body: '',
+            ));
+        await flowRepo.save(flow1);
+
+        final flow2 = buildHttpReqFlow(
+            uuid: "test-2",
+            request: HttpRequest(
+              method: 'POST',
+              host: '172.17.0.3',
+              path: '/posts',
+              httpVersion: 'HTTP/1.1',
+              headers: {},
+              body: '',
+            ));
+        await flowRepo.save(flow2);
+
+        // Search for flows with 'users' in the operation
+        final flows = await flowRepo.getFlows('/users');
+        expect(flows.length, 1);
+        expect(flows.first.operation, 'GET /users');
+
+        // Search for flows with 'POST' in the operation
+        final postFlows = await flowRepo.getFlows('POST');
+        expect(postFlows.length, 1);
+        expect(postFlows.first.operation, 'POST /posts');
+
+        // Search for non-existent term
+        final noFlows = await flowRepo.getFlows('nonexistent');
+        expect(noFlows.length, 0);
       });
     });
   });
