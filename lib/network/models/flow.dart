@@ -5,6 +5,8 @@ import 'package:ftrayce/network/models/grpc_request.dart';
 import 'package:ftrayce/network/models/grpc_response.dart';
 import 'package:ftrayce/network/models/http_request.dart';
 import 'package:ftrayce/network/models/http_response.dart';
+import 'package:ftrayce/network/models/sql_query.dart';
+import 'package:ftrayce/network/models/sql_response.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
@@ -63,6 +65,12 @@ class Flow {
       requestRaw = request.toJson();
     }
 
+    // Parse SQL query if present
+    if (agentFlow.hasSqlQuery()) {
+      request = SQLQuery.fromProto(agentFlow.sqlQuery);
+      requestRaw = request.toJson();
+    }
+
     // Parse HTTP response if present
     if (agentFlow.hasHttpResponse()) {
       response = HttpResponse.fromProto(agentFlow.httpResponse);
@@ -73,6 +81,13 @@ class Flow {
     // Parse GRPC response if present
     if (agentFlow.hasGrpcResponse()) {
       response = GrpcResponse.fromProto(agentFlow.grpcResponse);
+      responseRaw = response.toJson();
+      status = response.responseCol();
+    }
+
+    // Parse SQL response if present
+    if (agentFlow.hasSqlResponse()) {
+      response = SQLResponse.fromProto(agentFlow.sqlResponse);
       responseRaw = response.toJson();
       status = response.responseCol();
     }
@@ -118,6 +133,15 @@ class Flow {
       }
     }
 
+    // Parse MySQL/PostgresSQL query
+    if (['psql', 'mysql'].contains(l7Protocol) && requestRaw.isNotEmpty) {
+      try {
+        request = SQLQuery.fromJson(requestRaw);
+      } catch (e) {
+        print('Failed to parse SQL query: $e');
+      }
+    }
+
     // Parse HTTP response
     FlowResponse? response;
     if (l7Protocol == 'http' && responseRaw.isNotEmpty) {
@@ -134,6 +158,15 @@ class Flow {
         response = GrpcResponse.fromJson(responseRaw);
       } catch (e) {
         print('Failed to parse GRPC response: $e');
+      }
+    }
+
+    // Parse PostgresSQL response
+    if (['psql', 'mysql'].contains(l7Protocol) && responseRaw.isNotEmpty) {
+      try {
+        response = SQLResponse.fromJson(responseRaw);
+      } catch (e) {
+        print('Failed to parse SQL response: $e');
       }
     }
 

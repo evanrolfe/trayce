@@ -94,7 +94,6 @@ class ContainersCubit extends Cubit<ContainersState> {
     if (!_agentRunning) {
       _agentRunning = true;
       interceptContainers(_interceptedContainerIds.toList());
-      print('====> EMITTING Agent running: true');
       emit(AgentRunning(true));
     }
     emit(ContainersLoaded(state.containers, state.version));

@@ -6,6 +6,8 @@ import 'package:ftrayce/network/models/grpc_request.dart';
 import 'package:ftrayce/network/models/grpc_response.dart';
 import 'package:ftrayce/network/models/http_request.dart';
 import 'package:ftrayce/network/models/http_response.dart';
+import 'package:ftrayce/network/models/sql_query.dart';
+import 'package:ftrayce/network/models/sql_response.dart';
 import 'package:ftrayce/network/repo/flow_repo.dart';
 import 'package:uuid/uuid.dart';
 
@@ -199,6 +201,96 @@ void main() {
         expect(flowResp.statusMsg, 'OK');
         expect(flowResp.headers, {});
         expect(flowResp.body, 'hello world');
+      });
+
+      test('it saves an SQL query Flow and emits DisplayFlows', () async {
+        final flows = [
+          pb.Flow(
+            uuid: '123e4567-e89b-12d3-a456-426614174000',
+            sourceAddr: '192.168.0.1',
+            destAddr: '192.168.0.2',
+            l4Protocol: 'tcp',
+            l7Protocol: 'mysql',
+            sqlQuery: pb.SQLQuery(
+              query: 'SELECT * FROM users WHERE id = ?',
+              params: pb.StringList(values: ["123"]),
+            ),
+          ),
+        ];
+
+        // Start listening to the stream before emitting
+        final states = cubit.stream.take(1).toList();
+
+        agentNetworkBridge.flowsObserved(flows);
+
+        final emittedStates = await states;
+        final displayFlows = emittedStates[0] as DisplayFlows;
+        final emittedFlows = displayFlows.flows;
+
+        expect(emittedFlows.length, 1);
+        expect(emittedFlows[0].uuid, '123e4567-e89b-12d3-a456-426614174000');
+        expect(emittedFlows[0].source, '192.168.0.1');
+        expect(emittedFlows[0].dest, '192.168.0.2');
+        expect(emittedFlows[0].l4Protocol, 'tcp');
+        expect(emittedFlows[0].l7Protocol, 'mysql');
+
+        final flowReq = emittedFlows[0].request as SQLQuery;
+        expect(flowReq.query, 'SELECT * FROM users WHERE id = ?');
+        expect(flowReq.params, ["123"]);
+      });
+
+      test('it saves an SQL query Flow + response Flow and emits DisplayFlows', () async {
+        final flows = [
+          pb.Flow(
+            uuid: '123e4567-e89b-12d3-a456-426614174000',
+            sourceAddr: '192.168.0.1',
+            destAddr: '192.168.0.2',
+            l4Protocol: 'tcp',
+            l7Protocol: 'mysql',
+            sqlQuery: pb.SQLQuery(
+              query: 'SELECT * FROM users WHERE id = ?',
+              params: pb.StringList(values: ["123"]),
+            ),
+          ),
+          pb.Flow(
+            uuid: '123e4567-e89b-12d3-a456-426614174000',
+            sourceAddr: '192.168.0.1',
+            destAddr: '192.168.0.2',
+            l4Protocol: 'tcp',
+            l7Protocol: 'mysql',
+            sqlResponse: pb.SQLResponse(
+              columns: pb.StringList(values: ["id", "name", "email"]),
+              rows: [
+                pb.StringList(values: ["123", "John Doe", "john@example.com"])
+              ],
+            ),
+          ),
+        ];
+
+        // Start listening to the stream before emitting
+        final states = cubit.stream.take(1).toList();
+
+        agentNetworkBridge.flowsObserved(flows);
+
+        final emittedStates = await states;
+        final displayFlows = emittedStates[0] as DisplayFlows;
+        final emittedFlows = displayFlows.flows;
+
+        expect(emittedFlows.length, 1);
+        expect(emittedFlows[0].uuid, '123e4567-e89b-12d3-a456-426614174000');
+        expect(emittedFlows[0].source, '192.168.0.1');
+        expect(emittedFlows[0].dest, '192.168.0.2');
+        expect(emittedFlows[0].l4Protocol, 'tcp');
+        expect(emittedFlows[0].l7Protocol, 'mysql');
+
+        final flowReq = emittedFlows[0].request as SQLQuery;
+        expect(flowReq.query, 'SELECT * FROM users WHERE id = ?');
+        expect(flowReq.params, ["123"]);
+
+        final flowResp = emittedFlows[0].response as SQLResponse;
+        expect(flowResp.columns, ["id", "name", "email"]);
+        expect(flowResp.rows.length, 1);
+        expect(flowResp.rows[0], ["123", "John Doe", "john@example.com"]);
       });
 
       test('it saves a GRPC request Flow and emits DisplayFlows', () async {

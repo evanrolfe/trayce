@@ -97,6 +97,53 @@ Future<void> test(WidgetTester tester) async {
   expect(find.textContaining('testheader: ok'), findsOneWidget);
 
   // --------------------------------------------------------------------------
+  // Click on the 5th row
+  // --------------------------------------------------------------------------
+  final flowRow5 = find.text('50.0.0.1').first;
+  await tester.tap(flowRow5);
+  await tester.pumpAndSettle();
+
+  // Verify the request text appears in the top pane
+  expect(find.textContaining('SELECT * FROM users WHERE id = ?'), findsOneWidget);
+  expect(find.textContaining('123'), findsOneWidget);
+
+  // --------------------------------------------------------------------------
+  // Click on the 6th row
+  // --------------------------------------------------------------------------
+  final flowRow6 = find.text('60.0.0.1').first;
+  await tester.tap(flowRow6);
+  await tester.pumpAndSettle();
+
+  // Verify the request text appears in the top pane
+  expect(find.textContaining('SELECT * FROM users'), findsOneWidget);
+  expect(find.textContaining('alice@example.com'), findsOneWidget);
+  expect(find.textContaining('bob@example.com'), findsOneWidget);
+
+  // --------------------------------------------------------------------------
+  // Click on the 7th row
+  // --------------------------------------------------------------------------
+  final flowRow7 = find.text('70.0.0.1').first;
+  await tester.tap(flowRow7);
+  await tester.pumpAndSettle();
+
+  // Verify the request text appears in the top pane
+  expect(find.textContaining('SELECT * FROM things WHERE id = ?'), findsOneWidget);
+  expect(find.textContaining('123'), findsOneWidget);
+
+  // --------------------------------------------------------------------------
+  // Click on the 8th row
+  // --------------------------------------------------------------------------
+  final flowRow8 = find.text('80.0.0.1').first;
+  await tester.tap(flowRow8);
+  await tester.pumpAndSettle();
+  await tester.pump(const Duration(seconds: 5));
+
+  // Verify the request text appears in the top pane
+  expect(find.textContaining('SELECT * FROM things'), findsOneWidget);
+  expect(find.textContaining('widget'), findsOneWidget);
+  expect(find.textContaining('doodah'), findsOneWidget);
+  expect(find.textContaining('gadget'), findsOneWidget);
+  // --------------------------------------------------------------------------
   // Search
   // --------------------------------------------------------------------------
   // Find and enter "http" in the search field
@@ -128,6 +175,8 @@ Future<void> test(WidgetTester tester) async {
 List<pb.Flow> buildFlows() {
   final uuid2 = Uuid().v4();
   final uuid4 = Uuid().v4();
+  final uuid6 = Uuid().v4();
+  final uuid8 = Uuid().v4();
 
   return [
     //
@@ -236,6 +285,88 @@ List<pb.Flow> buildFlows() {
           "testheader": pb.StringList(values: ["ok"])
         },
         payload: grpcRespPayload,
+      ),
+    ),
+
+    // Flow 5 (MySQL Query)
+    pb.Flow(
+      uuid: Uuid().v4(),
+      sourceAddr: '50.0.0.1',
+      destAddr: '50.0.0.2',
+      l4Protocol: 'tcp',
+      l7Protocol: 'mysql',
+      sqlQuery: pb.SQLQuery(
+        query: 'SELECT * FROM users WHERE id = ?',
+        params: pb.StringList(values: ["123"]),
+      ),
+    ),
+    // Flow 6 (MySQL Query)
+    pb.Flow(
+      uuid: uuid6,
+      sourceAddr: '60.0.0.1',
+      destAddr: '60.0.0.2',
+      l4Protocol: 'tcp',
+      l7Protocol: 'mysql',
+      sqlQuery: pb.SQLQuery(
+        query: 'SELECT * FROM users',
+        params: pb.StringList(values: []),
+      ),
+    ),
+
+    // Flow 6 (MySQL Response)
+    pb.Flow(
+      uuid: uuid6,
+      sourceAddr: '60.0.0.1',
+      destAddr: '60.0.0.2',
+      l4Protocol: 'tcp',
+      l7Protocol: 'mysql',
+      sqlResponse: pb.SQLResponse(
+        columns: pb.StringList(values: ["id", "name", "email"]),
+        rows: List<StringList>.from([
+          StringList(values: ['1', 'alice', 'alice@example.com']),
+          StringList(values: ['2', 'bob', 'bob@example.com']),
+        ]),
+      ),
+    ),
+    // Flow 7 (Postgres Query)
+    pb.Flow(
+      uuid: Uuid().v4(),
+      sourceAddr: '70.0.0.1',
+      destAddr: '70.0.0.2',
+      l4Protocol: 'tcp',
+      l7Protocol: 'psql',
+      sqlQuery: pb.SQLQuery(
+        query: 'SELECT * FROM things WHERE id = ?',
+        params: pb.StringList(values: ["123"]),
+      ),
+    ),
+    // Flow 8 (Postgres Query)
+    pb.Flow(
+      uuid: uuid8,
+      sourceAddr: '80.0.0.1',
+      destAddr: '80.0.0.2',
+      l4Protocol: 'tcp',
+      l7Protocol: 'psql',
+      sqlQuery: pb.SQLQuery(
+        query: 'SELECT * FROM things',
+        params: pb.StringList(values: []),
+      ),
+    ),
+
+    // Flow 8 (Postgres Response)
+    pb.Flow(
+      uuid: uuid8,
+      sourceAddr: '80.0.0.1',
+      destAddr: '80.0.0.2',
+      l4Protocol: 'tcp',
+      l7Protocol: 'psql',
+      sqlResponse: pb.SQLResponse(
+        columns: pb.StringList(values: ["id", "name"]),
+        rows: List<StringList>.from([
+          StringList(values: ['1', 'widget']),
+          StringList(values: ['2', 'doodah']),
+          StringList(values: ['3', 'gadget']),
+        ]),
       ),
     ),
   ];
