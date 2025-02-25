@@ -116,7 +116,8 @@ class Flow {
 
     // Parse HTTP requests
     FlowRequest? request;
-    if (l7Protocol == 'http' && requestRaw.isNotEmpty) {
+    if ((l7Protocol == 'http' || l7Protocol == 'http2') &&
+        requestRaw.isNotEmpty) {
       try {
         request = HttpRequest.fromJson(requestRaw);
       } catch (e) {
@@ -144,7 +145,8 @@ class Flow {
 
     // Parse HTTP response
     FlowResponse? response;
-    if (l7Protocol == 'http' && responseRaw.isNotEmpty) {
+    if ((l7Protocol == 'http' || l7Protocol == 'http2') &&
+        responseRaw.isNotEmpty) {
       try {
         response = HttpResponse.fromJson(responseRaw);
       } catch (e) {
