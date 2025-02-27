@@ -2,10 +2,16 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ftrayce/network/models/proto_def.dart';
+import 'package:trayce/network/models/proto_def.dart';
+import 'package:trayce/utils/executable_helper.dart';
 
 void main() {
   group('ProtoDef', () {
+    setUpAll(() async {
+      // Initialize the ExecutableHelper before running tests
+      await ExecutableHelper.initialize();
+    });
+
     group('parseGRPCMessage', () {
       test('it parses a SendContainersObserved message', () async {
         // Get the proto file content
@@ -65,7 +71,7 @@ void main() {
         ]);
 
         print(msg);
-        final result = protoDef.parseGRPCMessage(
+        final result = await protoDef.parseGRPCMessage(
           msg,
           '/api.TrayceAgent/SendContainersObserved',
           false,

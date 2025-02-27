@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ftrayce/network/bloc/containers_cubit.dart';
-import 'package:ftrayce/network/widgets/containers_modal.dart';
+import 'package:trayce/network/bloc/containers_cubit.dart';
+import 'package:trayce/network/widgets/containers_modal.dart';
 
 class StatusBar extends StatefulWidget {
   const StatusBar({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ftrayce/agent/gen/api.pb.dart' as pb;
-import 'package:ftrayce/agent/gen/api.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
+import 'package:trayce/agent/gen/api.pb.dart' as pb;
+import 'package:trayce/agent/gen/api.pbgrpc.dart';
 import 'package:uuid/uuid.dart';
 
 import '../test/network/bloc/flow_table_cubit_test.dart';

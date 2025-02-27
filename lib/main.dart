@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ftrayce/common/bloc/agent_network_bridge.dart';
-import 'package:ftrayce/common/database.dart';
-import 'package:ftrayce/menu_bar.dart';
-import 'package:ftrayce/network/repo/proto_def_repo.dart';
-import 'package:ftrayce/status_bar.dart';
 import 'package:grpc/grpc.dart';
+import 'package:trayce/common/bloc/agent_network_bridge.dart';
+import 'package:trayce/common/database.dart';
+import 'package:trayce/menu_bar.dart';
+import 'package:trayce/network/repo/proto_def_repo.dart';
+import 'package:trayce/status_bar.dart';
+import 'package:trayce/utils/executable_helper.dart';
 
 import 'agent/server.dart';
 import 'editor/editor.dart';
@@ -44,6 +45,9 @@ void main(List<String> args) async {
   }
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize the grpc_parser executable
+  await ExecutableHelper.initialize();
 
   // Connect DB and create repos
   final db = await connectDB();

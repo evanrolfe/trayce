@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:ftrayce/network/models/flow_response.dart';
-import 'package:ftrayce/network/models/grpc_request.dart';
-import 'package:ftrayce/network/models/grpc_response.dart';
-import 'package:ftrayce/network/models/http_request.dart';
-import 'package:ftrayce/network/models/http_response.dart';
-import 'package:ftrayce/network/models/sql_query.dart';
-import 'package:ftrayce/network/models/sql_response.dart';
+import 'package:trayce/network/models/flow_response.dart';
+import 'package:trayce/network/models/grpc_request.dart';
+import 'package:trayce/network/models/grpc_response.dart';
+import 'package:trayce/network/models/http_request.dart';
+import 'package:trayce/network/models/http_response.dart';
+import 'package:trayce/network/models/sql_query.dart';
+import 'package:trayce/network/models/sql_response.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
@@ -116,8 +116,7 @@ class Flow {
 
     // Parse HTTP requests
     FlowRequest? request;
-    if ((l7Protocol == 'http' || l7Protocol == 'http2') &&
-        requestRaw.isNotEmpty) {
+    if ((l7Protocol == 'http' || l7Protocol == 'http2') && requestRaw.isNotEmpty) {
       try {
         request = HttpRequest.fromJson(requestRaw);
       } catch (e) {
@@ -145,8 +144,7 @@ class Flow {
 
     // Parse HTTP response
     FlowResponse? response;
-    if ((l7Protocol == 'http' || l7Protocol == 'http2') &&
-        responseRaw.isNotEmpty) {
+    if ((l7Protocol == 'http' || l7Protocol == 'http2') && responseRaw.isNotEmpty) {
       try {
         response = HttpResponse.fromJson(responseRaw);
       } catch (e) {

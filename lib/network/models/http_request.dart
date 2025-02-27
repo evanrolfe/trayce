@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:ftrayce/common/utils.dart';
-import 'package:ftrayce/network/models/flow_request.dart';
+import 'package:trayce/common/utils.dart';
+import 'package:trayce/network/models/flow_request.dart';
 
 import '../../agent/gen/api.pb.dart' as pb;
 

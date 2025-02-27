@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ftrayce/network/models/http_request.dart';
-import 'package:ftrayce/network/models/http_response.dart';
-import 'package:ftrayce/network/repo/flow_repo.dart';
+import 'package:trayce/network/models/http_request.dart';
+import 'package:trayce/network/models/http_response.dart';
+import 'package:trayce/network/repo/flow_repo.dart';
 
 import '../../support/database.dart';
 import '../../support/flow_factory.dart';

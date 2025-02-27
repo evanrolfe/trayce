@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ftrayce/common/database.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:trayce/common/database.dart';
 
 class TestDatabase {
   static TestDatabase? _instance;

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ftrayce/network/models/proto_def.dart';
-import 'package:ftrayce/network/repo/proto_def_repo.dart';
+import 'package:trayce/network/models/proto_def.dart';
+import 'package:trayce/network/repo/proto_def_repo.dart';
 
 import '../../support/database.dart';
 

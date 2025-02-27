@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ftrayce/main.dart' as app;
 import 'package:integration_test/integration_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:trayce/main.dart' as app;
 
 import 'containers_modal_test.dart' as containers_modal_test;
 import 'flow_table_test.dart' as flow_table_test;

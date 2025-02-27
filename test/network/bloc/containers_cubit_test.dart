@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ftrayce/agent/gen/api.pb.dart' as pb;
-import 'package:ftrayce/common/bloc/agent_network_bridge.dart' as bridge;
-import 'package:ftrayce/network/bloc/containers_cubit.dart';
+import 'package:trayce/agent/gen/api.pb.dart' as pb;
+import 'package:trayce/common/bloc/agent_network_bridge.dart' as bridge;
+import 'package:trayce/network/bloc/containers_cubit.dart';
 
 void main() {
   group('ContainersCubit', () {

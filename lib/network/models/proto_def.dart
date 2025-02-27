@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:trayce/utils/executable_helper.dart';
+
 class ProtoDef {
   final int? id;
   final String name;
@@ -69,12 +71,12 @@ class ProtoDef {
         cmdArgs.add('-response');
       }
 
-      // print(cmdArgs.join(' '));
-
       // Run grpc_parser
       // May want to look at calling the Go code directly from Dart using ffi:
       // https://dev.to/leehack/how-to-use-golang-in-flutter-application-golang-ffi-1950
-      final result = Process.runSync('./grpc_parser', cmdArgs);
+      final gprcParserPath = ExecutableHelper.getExecutablePath();
+
+      final result = Process.runSync(gprcParserPath, cmdArgs);
 
       if (result.exitCode != 0) {
         throw Exception('Failed to parse gRPC message: ${result.stderr}');
