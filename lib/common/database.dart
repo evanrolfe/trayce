@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 // Return a function that matches the onCreate callback signature: void Function(Database db, int version)
 Function(Database db, int version) initSchema(String schema) {
@@ -38,8 +41,21 @@ Future<Database> connectDB([String? dbFile]) async {
   // Load schema.sql file
   final String schema = await rootBundle.loadString('schema.sql');
 
-  // Connect DB
+  // Initialize SQLite with sqlite3_flutter_libs
   sqfliteFfiInit();
+
+  // Ensure that the SQLite library from sqlite3_flutter_libs is used
+  if (Platform.isAndroid || Platform.isIOS || Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    // This ensures the bundled sqlite3 library is loaded and used
+    // For Android 6.0 compatibility, you might need to use:
+    // await sqlite3_flutter_libs.applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+    try {
+      await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+    } catch (e) {
+      print('Warning: Could not apply Android 6.0 workaround: $e');
+    }
+  }
+
   databaseFactory = databaseFactoryFfi;
 
   // this stores the file in .dart_tool/sqflite_common_ffi/databases/

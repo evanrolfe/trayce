@@ -11,6 +11,7 @@ void main() {
   late FlowRepo flowRepo;
 
   setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
     testDb = await TestDatabase.instance;
     flowRepo = FlowRepo(db: testDb.db);
   });

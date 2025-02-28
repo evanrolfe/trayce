@@ -58,9 +58,18 @@ class ExecutableHelper {
 
   // Internal implementation of prepare executable
   static Future<String> _prepareExecutableInternal() async {
-    // Get the application documents directory
-    final appDir = await getApplicationSupportDirectory();
-    final executablePath = path.join(appDir.path, 'grpc_parser');
+    String executablePath;
+
+    try {
+      // Try to get the application documents directory
+      final appDir = await getApplicationSupportDirectory();
+      executablePath = path.join(appDir.path, 'grpc_parser');
+    } catch (e) {
+      // Fallback to current directory if getApplicationSupportDirectory fails, as it does in unit tests
+      print('Warning: getApplicationSupportDirectory failed, using current directory instead: $e');
+      executablePath = path.join(Directory.current.path, 'grpc_parser/grpc_parser');
+    }
+
     final executableFile = File(executablePath);
 
     // Check if the executable already exists

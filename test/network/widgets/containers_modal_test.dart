@@ -18,11 +18,10 @@ void main() {
   setUp(() {
     final agentNetworkBridge = bridge.AgentNetworkBridge();
     containersCubit = ContainersCubit(agentNetworkBridge: agentNetworkBridge);
-    TestWidgetsFlutterBinding.ensureInitialized();
   });
 
   setUpAll(() {
-    final view = TestWidgetsFlutterBinding.ensureInitialized().platformDispatcher.views.first;
+    final view = TestWidgetsFlutterBinding.instance.platformDispatcher.views.first;
     view.physicalSize = const Size(1024, 768);
     view.devicePixelRatio = 1.0;
   });

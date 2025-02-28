@@ -5,7 +5,7 @@ build_grpc_parser:
 
 test:
 	rm -f coverage/lcov.info
-	flutter test ./test -r github --coverage
+	flutter test ./test -r github --coverage --concurrency=1
 
 integration_test:
 	flutter test ./integration_test/main.dart --coverage --coverage-path=coverage/integration_test_coverage.info

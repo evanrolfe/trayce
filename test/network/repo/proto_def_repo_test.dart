@@ -9,6 +9,7 @@ void main() {
   late ProtoDefRepo protoDefRepo;
 
   setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
     testDb = await TestDatabase.instance;
     protoDefRepo = ProtoDefRepo(db: testDb.db);
   });
