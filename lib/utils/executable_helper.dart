@@ -18,7 +18,6 @@ class ExecutableHelper {
 
     _isInitializing = true;
     _initializationFuture = _prepareExecutableInternal().then((path) {
-      print('grpc_parser path: $path');
       _preparedExecutablePath = path;
       _isInitializing = false;
     });
@@ -36,7 +35,8 @@ class ExecutableHelper {
   // Get the executable path synchronously, throws an exception if not ready
   static String getExecutablePath() {
     if (_preparedExecutablePath == null) {
-      throw StateError('Executable path not initialized. Call ExecutableHelper.initialize() first.');
+      throw StateError(
+          'Executable path not initialized. Call ExecutableHelper.initialize() first.');
     }
     return _preparedExecutablePath!;
   }
@@ -62,12 +62,14 @@ class ExecutableHelper {
 
     try {
       // Try to get the application documents directory
-      final appDir = await getApplicationSupportDirectory();
+      final appDir = await getApplicationCacheDirectory();
       executablePath = path.join(appDir.path, 'grpc_parser');
     } catch (e) {
-      // Fallback to current directory if getApplicationSupportDirectory fails, as it does in unit tests
-      print('Warning: getApplicationSupportDirectory failed, using current directory instead: $e');
-      executablePath = path.join(Directory.current.path, 'grpc_parser/grpc_parser');
+      // Fallback to current directory if getApplicationDocumentsDirectory fails, as it does in unit tests
+      print(
+          'Warning: getApplicationDocumentsDirectory failed, using current directory instead: $e');
+      executablePath =
+          path.join(Directory.current.path, 'grpc_parser/grpc_parser');
     }
 
     final executableFile = File(executablePath);
@@ -83,11 +85,6 @@ class ExecutableHelper {
 
       // Write the executable to the file system
       await executableFile.writeAsBytes(bytes);
-
-      // Make the file executable (chmod +x)
-      if (!Platform.isWindows) {
-        await Process.run('chmod', ['+x', executablePath]);
-      }
     }
 
     return executablePath;

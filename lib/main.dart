@@ -1,8 +1,10 @@
+import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grpc/grpc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:trayce/common/bloc/agent_network_bridge.dart';
 import 'package:trayce/common/database.dart';
 import 'package:trayce/menu_bar.dart';
@@ -21,6 +23,13 @@ const Color backgroundColor = Color(0xFF1E1E1E);
 const Color textColor = Color(0xFFD4D4D4);
 const Color sidebarColor = Color(0xFF333333);
 const String appVersion = '1.0.0';
+
+String getFrameworksPath() {
+  String appPath =
+      Platform.resolvedExecutable; // Path to YourApp.app/Contents/MacOS/YourApp
+  String frameworksPath = '${File(appPath).parent.parent.path}/Frameworks';
+  return frameworksPath;
+}
 
 class NoTransitionBuilder extends PageTransitionsBuilder {
   const NoTransitionBuilder();
@@ -46,8 +55,15 @@ void main(List<String> args) async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize the grpc_parser executable
   await ExecutableHelper.initialize();
+
+  final dyLibPath = '${getFrameworksPath()}/grpc_parser';
+  final dylib = ffi.DynamicLibrary.open(dyLibPath);
+  print("----------> dy lib path: $dyLibPath");
+
+  Directory appDocDirectory = await getApplicationSupportDirectory();
+  print("App Directory: ${appDocDirectory.path}");
+  print("Exec dir: ${Platform.resolvedExecutable}");
 
   // Connect DB and create repos
   final db = await connectDB();
@@ -59,10 +75,13 @@ void main(List<String> args) async {
 
   // Create Business logic cubits & services
   // Agent
-  final grpcService = TrayceAgentService(agentNetworkBridge: agentNetworkBridge);
+  final grpcService =
+      TrayceAgentService(agentNetworkBridge: agentNetworkBridge);
   // Network
-  final containersCubit = ContainersCubit(agentNetworkBridge: agentNetworkBridge);
-  final flowTableCubit = FlowTableCubit(agentNetworkBridge: agentNetworkBridge, flowRepo: flowRepo);
+  final containersCubit =
+      ContainersCubit(agentNetworkBridge: agentNetworkBridge);
+  final flowTableCubit = FlowTableCubit(
+      agentNetworkBridge: agentNetworkBridge, flowRepo: flowRepo);
 
   runApp(
     MultiRepositoryProvider(
@@ -82,7 +101,8 @@ void main(List<String> args) async {
 
   // Start the gRPC server
   final server = await Server.create(services: [grpcService]);
-  await server.serve(address: InternetAddress.anyIPv4, port: 50051, shared: true);
+  await server.serve(
+      address: InternetAddress.anyIPv4, port: 50051, shared: true);
   print('Server listening on port 50051');
 }
 
@@ -100,7 +120,8 @@ class MyApp extends StatelessWidget {
   }
 
   // Helper function to handle database operations
-  static Future<void> _changeDatabase(BuildContext context, String path, {bool shouldCopy = false}) async {
+  static Future<void> _changeDatabase(BuildContext context, String path,
+      {bool shouldCopy = false}) async {
     try {
       final flowRepo = context.read<FlowRepo>();
       final protoDefRepo = context.read<ProtoDefRepo>();
@@ -129,7 +150,8 @@ class MyApp extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error ${shouldCopy ? 'saving' : 'opening'} database: $e'),
+            content:
+                Text('Error ${shouldCopy ? 'saving' : 'opening'} database: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -171,7 +193,8 @@ class MyApp extends StatelessWidget {
         builder: (context) => AppMenuBar(
           appVersion: appVersion,
           onFileOpen: (path) => _changeDatabase(context, path),
-          onFileSave: (path) => _changeDatabase(context, path, shouldCopy: true),
+          onFileSave: (path) =>
+              _changeDatabase(context, path, shouldCopy: true),
           child: Scaffold(
             body: Navigator(
               key: _navigatorKey,
@@ -241,11 +264,15 @@ class _AppScaffoldState extends State<AppScaffold> {
                       decoration: BoxDecoration(
                         border: Border(
                           left: BorderSide(
-                            color: widget.selectedIndex == 0 ? const Color(0xFF4DB6AC) : Colors.transparent,
+                            color: widget.selectedIndex == 0
+                                ? const Color(0xFF4DB6AC)
+                                : Colors.transparent,
                             width: 2,
                           ),
                         ),
-                        color: widget.selectedIndex == 0 || isHovering0 ? const Color(0xFF3A3A3A) : Colors.transparent,
+                        color: widget.selectedIndex == 0 || isHovering0
+                            ? const Color(0xFF3A3A3A)
+                            : Colors.transparent,
                       ),
                       child: const Icon(
                         Icons.format_list_numbered,
@@ -264,11 +291,15 @@ class _AppScaffoldState extends State<AppScaffold> {
                       decoration: BoxDecoration(
                         border: Border(
                           left: BorderSide(
-                            color: widget.selectedIndex == 1 ? const Color(0xFF4DB6AC) : Colors.transparent,
+                            color: widget.selectedIndex == 1
+                                ? const Color(0xFF4DB6AC)
+                                : Colors.transparent,
                             width: 2,
                           ),
                         ),
-                        color: widget.selectedIndex == 1 || isHovering1 ? const Color(0xFF3A3A3A) : Colors.transparent,
+                        color: widget.selectedIndex == 1 || isHovering1
+                            ? const Color(0xFF3A3A3A)
+                            : Colors.transparent,
                       ),
                       child: const Icon(
                         Icons.edit,

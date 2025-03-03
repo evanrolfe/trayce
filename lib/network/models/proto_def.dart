@@ -1,6 +1,11 @@
+import 'dart:ffi' as ffi;
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:ffi/ffi.dart' as ffi_allocator;
+import 'package:ffi/ffi.dart' show Utf8;
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
+import 'package:trayce/grpc_parser.dart';
 import 'package:trayce/utils/executable_helper.dart';
 
 class ProtoDef {
@@ -59,30 +64,29 @@ class ProtoDef {
 
   String parseGRPCMessage(Uint8List msg, String grpcMsgPath, bool isResponse) {
     // Create a temporary file with the proto content
-    final tempFile = File('${Directory.systemTemp.path}/trayce_protodef_${id ?? 'new'}.proto');
+    final tempFile = File(
+        '${Directory.systemTemp.path}/trayce_protodef_${id ?? 'new'}.proto');
     tempFile.writeAsStringSync(protoFile);
 
     try {
-      // Convert message bytes to hex string
-      final hexMsg = msg.map((b) => '\\x${b.toRadixString(16).padLeft(2, '0')}').join('');
-      final cmdArgs = ['-method', grpcMsgPath, '-proto', tempFile.path, '-message', hexMsg];
+      final dyLibPath = ExecutableHelper.getExecutablePath();
+      print("----------> dy lib path: $dyLibPath");
+      final dylib = ffi.DynamicLibrary.open(dyLibPath);
 
+      int isResponseInt = 0;
       if (isResponse) {
-        cmdArgs.add('-response');
+        isResponseInt = 1;
       }
+      final grpcParser = NativeLibrary(dylib);
+      final res = grpcParser.ParseProtoMessage(
+        _toCString(tempFile.path),
+        _toCString(grpcMsgPath),
+        convertUint8ListToPointer(msg),
+        msg.length,
+        isResponseInt,
+      );
 
-      // Run grpc_parser
-      // May want to look at calling the Go code directly from Dart using ffi:
-      // https://dev.to/leehack/how-to-use-golang-in-flutter-application-golang-ffi-1950
-      final gprcParserPath = ExecutableHelper.getExecutablePath();
-
-      final result = Process.runSync(gprcParserPath, cmdArgs);
-
-      if (result.exitCode != 0) {
-        throw Exception('Failed to parse gRPC message: ${result.stderr}');
-      }
-
-      return result.stdout as String;
+      return pointerToDartString(res);
     } finally {
       // Clean up the temporary file
       if (tempFile.existsSync()) {
@@ -90,4 +94,42 @@ class ProtoDef {
       }
     }
   }
+}
+
+String replaceLastSegment(String pathInput, String replacement) {
+  return path.join(path.dirname(pathInput), replacement);
+}
+
+ffi.Pointer<ffi.Char> _toCString(String dartString) {
+  // Allocate memory and copy the Dart string into the C memory
+  final ffi.Pointer<ffi.Char> cString =
+      ffi_allocator.malloc.allocate<ffi.Char>(dartString.length + 1);
+  final cStringList =
+      cString.cast<ffi.Uint8>().asTypedList(dartString.length + 1);
+
+  for (int i = 0; i < dartString.length; i++) {
+    cStringList[i] = dartString.codeUnitAt(i);
+  }
+  cStringList[dartString.length] = 0; // Null-terminate the string
+
+  return cString;
+}
+
+String pointerToDartString(ffi.Pointer<ffi.Char> pointer) {
+  // Cast the pointer to a Pointer<Utf8> and convert it to a Dart string
+  return pointer.cast<Utf8>().toDartString();
+}
+
+ffi.Pointer<ffi.Uint8> convertUint8ListToPointer(Uint8List list) {
+  // Allocate memory for the byte array in native memory
+  ffi.Pointer<ffi.Uint8> pointer =
+      ffi_allocator.malloc.allocate<ffi.Uint8>(list.length);
+
+  // Copy the contents of the Uint8List into the allocated memory
+  for (int i = 0; i < list.length; i++) {
+    pointer[i] = list[i];
+  }
+
+  // Return the pointer to the memory containing the Uint8List data
+  return pointer;
 }

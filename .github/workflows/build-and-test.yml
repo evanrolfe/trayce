@@ -20,7 +20,7 @@ jobs:
         run: flutter pub get
 
       - name: Build
-        run: make build
+        run: make build-linux
 
       - name: Unit Test
         run: make test

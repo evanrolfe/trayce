@@ -1,8 +1,5 @@
 .PHONY: test integration_test generate coverage build
 
-build_grpc_parser:
-	cd grpc_parser && go build .
-
 test:
 	rm -f coverage/lcov.info
 	flutter test ./test -r github --coverage --concurrency=1
@@ -18,8 +15,17 @@ coverage:
 	lcov --ignore-errors unused --remove coverage/lcov.info $$(cat .coveragefilter) -o coverage/lcov.info
 	genhtml coverage/lcov.info -o coverage/html
 
-build: build_grpc_parser
+build-grpc_parser:
+	cd grpc_parser && go build -buildmode=c-shared .
+	flutter pub run ffigen --config ffigen.yaml
+
+build-linux: build-grpc_parser
 	flutter build linux
+
+build-mac: build-grpc_parser
+	flutter clean; \
+    cp grpc_parser/grpc_parser macos/Frameworks/grpc_parser; \
+	flutter build macos
 
 pkg-deb:
 	rm -f dist/trayce.deb && rm -rf dist/trayce; \
@@ -31,3 +37,17 @@ pkg-deb:
 	cp include/icon_128x128.png dist/trayce/usr/local/lib/trayce/; \
 	cp dist/trayce/DEBIAN/trayce.desktop dist/trayce/usr/share/applications/; \
 	dpkg-deb --build dist/trayce
+
+pkg-dmg:
+	rm -f dist/trayce.dmg; \
+	create-dmg \
+		--volname "Trayce" \
+		--volicon "./include/icon.icns" \
+		--window-pos 200 120 \
+		--window-size 600 300 \
+		--icon-size 100 \
+		--icon "./include/icon.icns" 175 120 \
+		--hide-extension "trayce.app" \
+		--app-drop-link 425 120 \
+		"dist/trayce.dmg" \
+		"build/macos/Build/Products/Release/trayce.app"
