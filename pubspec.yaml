@@ -70,12 +70,3 @@ flutter:
   uses-material-design: true
   assets:
     - schema.sql
-    - grpc_parser/grpc_parser
-  plugin:
-    platforms:
-      linux:
-        ffiPlugin: true
-      macos:
-        ffiPlugin: true
-      windows:
-        ffiPlugin: true
