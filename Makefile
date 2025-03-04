@@ -10,6 +10,9 @@ integration_test:
 generate:
 	protoc --dart_out=grpc:lib/agent/gen -Ilib/agent lib/agent/api.proto
 
+generate-grpc_parser:
+	flutter pub run ffigen --config ffigen.yaml
+
 coverage:
 	rm -rf coverage/html
 	lcov --ignore-errors unused --remove coverage/lcov.info $$(cat .coveragefilter) -o coverage/lcov.info
@@ -17,7 +20,6 @@ coverage:
 
 build-grpc_parser:
 	cd grpc_parser && go build -buildmode=c-shared .
-	flutter pub run ffigen --config ffigen.yaml
 
 build-linux: build-grpc_parser
 	flutter build linux
