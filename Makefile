@@ -47,6 +47,7 @@ pkg-deb:
 	dpkg-deb --build dist/trayce
 
 pkg-dmg:
+	mkdir -p dist; \
 	rm -f dist/trayce.dmg; \
 	create-dmg \
 		--volname "Trayce" \
