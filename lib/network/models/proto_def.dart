@@ -6,7 +6,7 @@ import 'package:ffi/ffi.dart' show Utf8;
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:trayce/grpc_parser.dart';
-import 'package:trayce/utils/executable_helper.dart';
+import 'package:trayce/utils/grpc_parser_lib.dart';
 
 class ProtoDef {
   final int? id;
@@ -64,13 +64,11 @@ class ProtoDef {
 
   String parseGRPCMessage(Uint8List msg, String grpcMsgPath, bool isResponse) {
     // Create a temporary file with the proto content
-    final tempFile = File(
-        '${Directory.systemTemp.path}/trayce_protodef_${id ?? 'new'}.proto');
+    final tempFile = File('${Directory.systemTemp.path}/trayce_protodef_${id ?? 'new'}.proto');
     tempFile.writeAsStringSync(protoFile);
 
     try {
-      final dyLibPath = ExecutableHelper.getExecutablePath();
-      print("----------> dy lib path: $dyLibPath");
+      final dyLibPath = GrpcParserLib.getPath();
       final dylib = ffi.DynamicLibrary.open(dyLibPath);
 
       int isResponseInt = 0;
@@ -102,10 +100,8 @@ String replaceLastSegment(String pathInput, String replacement) {
 
 ffi.Pointer<ffi.Char> _toCString(String dartString) {
   // Allocate memory and copy the Dart string into the C memory
-  final ffi.Pointer<ffi.Char> cString =
-      ffi_allocator.malloc.allocate<ffi.Char>(dartString.length + 1);
-  final cStringList =
-      cString.cast<ffi.Uint8>().asTypedList(dartString.length + 1);
+  final ffi.Pointer<ffi.Char> cString = ffi_allocator.malloc.allocate<ffi.Char>(dartString.length + 1);
+  final cStringList = cString.cast<ffi.Uint8>().asTypedList(dartString.length + 1);
 
   for (int i = 0; i < dartString.length; i++) {
     cStringList[i] = dartString.codeUnitAt(i);
@@ -122,8 +118,7 @@ String pointerToDartString(ffi.Pointer<ffi.Char> pointer) {
 
 ffi.Pointer<ffi.Uint8> convertUint8ListToPointer(Uint8List list) {
   // Allocate memory for the byte array in native memory
-  ffi.Pointer<ffi.Uint8> pointer =
-      ffi_allocator.malloc.allocate<ffi.Uint8>(list.length);
+  ffi.Pointer<ffi.Uint8> pointer = ffi_allocator.malloc.allocate<ffi.Uint8>(list.length);
 
   // Copy the contents of the Uint8List into the allocated memory
   for (int i = 0; i < list.length; i++) {
