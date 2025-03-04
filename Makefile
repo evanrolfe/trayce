@@ -40,6 +40,7 @@ pkg-deb:
 	mkdir -p dist/trayce/usr/local/lib/trayce; \
 	mkdir -p dist/trayce/usr/share/applications; \
 	cp -a build/linux/x64/release/bundle/. dist/trayce/usr/local/lib/trayce/; \
+	cp -a build/linux/x64/release/Frameworks/. dist/trayce/usr/local/lib/trayce/; \
 	cp include/DEBIAN/* dist/trayce/DEBIAN/; \
 	cp include/icon_128x128.png dist/trayce/usr/local/lib/trayce/; \
 	cp dist/trayce/DEBIAN/trayce.desktop dist/trayce/usr/share/applications/; \
