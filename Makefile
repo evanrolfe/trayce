@@ -28,7 +28,8 @@ build-linux: build-grpc_parser
 
 build-mac: build-grpc_parser
 	flutter clean; \
-    cp grpc_parser/grpc_parser macos/Frameworks/grpc_parser; \
+	mkdir -p macos/Frameworks; \
+    cp grpc_parser/grpc_parser macos/Frameworks/; \
 	flutter build macos
 
 pkg-deb:
