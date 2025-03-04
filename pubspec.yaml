@@ -48,6 +48,7 @@ dependencies:
   path_provider: ^2.1.2
   dropdown_button2: ^2.3.9
   ffigen: ^17.0.0
+  window_manager: ^0.4.3
 
 dev_dependencies:
   flutter_test:
