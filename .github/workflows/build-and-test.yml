@@ -98,7 +98,7 @@ jobs:
       - name: Codesign
         run: |
           security unlock-keychain -p "" build.keychain
-          codesign --deep --force --verbose --options=runtime --keychain build.keychain --sign "Developer ID Application: Evan Rolfe (KS7QN3G38M)" build/macos/Build/Products/Release/trayce.app
+          codesign --deep --force --verbose --options=runtime --keychain build.keychain --entitlements macos/Runner/Release.entitlements  --sign "Developer ID Application: Evan Rolfe (KS7QN3G38M)" build/macos/Build/Products/Release/trayce.app
 
       - name: Package .dmg
         run: make pkg-dmg
