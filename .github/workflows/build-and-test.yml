@@ -110,6 +110,7 @@ jobs:
         run: |
           security unlock-keychain -p "" build.keychain
           xcrun notarytool submit ./dist/trayce.dmg --wait --keychain-profile "trayce-profile" --keychain ~/Library/Keychains/build.keychain-db
+          xcrun stapler staple ./dist/trayce.dmg
 
       - name: Upload .dmg
         env:
