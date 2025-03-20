@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 const Color textColor = Color(0xFF1E1E1E);
+const Color backgroundColor = Color(0xFF1E1E1E);
+const Color sidebarColor = Color(0xFF333333);
 
 final commonButtonStyle = ElevatedButton.styleFrom(
   backgroundColor: const Color(0xFF4DB6AC),
@@ -86,3 +88,44 @@ const menuStyle = MenuStyle(
   padding: WidgetStatePropertyAll(EdgeInsets.zero),
   alignment: AlignmentDirectional.topStart,
 );
+
+var appTheme = ThemeData(
+  colorScheme: ColorScheme.fromSeed(seedColor: Colors.tealAccent),
+  useMaterial3: true,
+  scaffoldBackgroundColor: backgroundColor,
+  scrollbarTheme: ScrollbarThemeData(
+    thumbColor: WidgetStateProperty.all(Colors.teal),
+    thickness: WidgetStateProperty.all(8),
+    radius: const Radius.circular(4),
+  ),
+  navigationRailTheme: const NavigationRailThemeData(
+    backgroundColor: sidebarColor,
+    indicatorColor: Colors.teal,
+    unselectedIconTheme: IconThemeData(color: textColor),
+    selectedIconTheme: IconThemeData(color: textColor),
+    unselectedLabelTextStyle: TextStyle(color: textColor),
+    selectedLabelTextStyle: TextStyle(color: textColor),
+  ),
+  pageTransitionsTheme: const PageTransitionsTheme(
+    builders: {
+      TargetPlatform.windows: NoTransitionBuilder(),
+      TargetPlatform.linux: NoTransitionBuilder(),
+      TargetPlatform.macOS: NoTransitionBuilder(),
+    },
+  ),
+);
+
+class NoTransitionBuilder extends PageTransitionsBuilder {
+  const NoTransitionBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return child;
+  }
+}
