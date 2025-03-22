@@ -145,6 +145,17 @@ class _AppScaffoldState extends State<AppScaffold> {
     );
   }
 
+  Widget _getSidebarItem(bool isHovering, bool isSelected, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _getSidebarItemDecoration(isSelected, isHovering),
+      child: Icon(
+        icon,
+        color: textColor,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,14 +170,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                   child: MouseRegion(
                     onEnter: (_) => setState(() => isHovering0 = true),
                     onExit: (_) => setState(() => isHovering0 = false),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: _getSidebarItemDecoration(widget.selectedIndex == 0, isHovering0),
-                      child: const Icon(
-                        Icons.format_list_numbered,
-                        color: textColor,
-                      ),
-                    ),
+                    child: _getSidebarItem(isHovering0, widget.selectedIndex == 0, Icons.format_list_numbered),
                   ),
                 ),
                 Listener(
@@ -174,14 +178,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                   child: MouseRegion(
                     onEnter: (_) => setState(() => isHovering1 = true),
                     onExit: (_) => setState(() => isHovering1 = false),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: _getSidebarItemDecoration(widget.selectedIndex == 1, isHovering1),
-                      child: const Icon(
-                        Icons.edit,
-                        color: textColor,
-                      ),
-                    ),
+                    child: _getSidebarItem(isHovering1, widget.selectedIndex == 1, Icons.edit),
                   ),
                 ),
               ],

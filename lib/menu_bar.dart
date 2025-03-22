@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trayce/common/style.dart';
+import 'package:trayce/settings.dart';
 
 class AppMenuBar extends StatelessWidget {
   final Widget child;
@@ -50,6 +51,10 @@ class AppMenuBar extends StatelessWidget {
                 label: 'Save As',
                 shortcut: const SingleActivator(LogicalKeyboardKey.keyS, meta: true),
                 onSelected: _handleSave,
+              ),
+              PlatformMenuItem(
+                label: 'Settings',
+                onSelected: () => showSettingsModal(context),
               ),
             ],
           ),
@@ -101,6 +106,11 @@ class AppMenuBar extends StatelessWidget {
                   onPressed: _handleSave,
                   shortcut: const SingleActivator(LogicalKeyboardKey.keyS, control: true),
                   child: const Text('Save As'),
+                ),
+                MenuItemButton(
+                  style: menuItemStyle,
+                  onPressed: () => showSettingsModal(context),
+                  child: const Text('Settings'),
                 ),
               ],
               child: const Text('File'),

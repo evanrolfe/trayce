@@ -242,6 +242,20 @@ const AgentStarted$json = {
 final $typed_data.Uint8List agentStartedDescriptor = $convert.base64Decode(
     'CgxBZ2VudFN0YXJ0ZWQSGAoHdmVyc2lvbhgBIAEoCVIHdmVyc2lvbg==');
 
+@$core.Deprecated('Use agentVerifiedDescriptor instead')
+const AgentVerified$json = {
+  '1': 'AgentVerified',
+  '2': [
+    {'1': 'valid', '3': 1, '4': 1, '5': 8, '10': 'valid'},
+    {'1': 'message', '3': 2, '4': 1, '5': 9, '10': 'message'},
+  ],
+};
+
+/// Descriptor for `AgentVerified`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List agentVerifiedDescriptor = $convert.base64Decode(
+    'Cg1BZ2VudFZlcmlmaWVkEhQKBXZhbGlkGAEgASgIUgV2YWxpZBIYCgdtZXNzYWdlGAIgASgJUg'
+    'dtZXNzYWdl');
+
 @$core.Deprecated('Use commandDescriptor instead')
 const Command$json = {
   '1': 'Command',
@@ -261,12 +275,14 @@ const Settings$json = {
   '1': 'Settings',
   '2': [
     {'1': 'container_ids', '3': 1, '4': 3, '5': 9, '10': 'containerIds'},
+    {'1': 'license_key', '3': 2, '4': 1, '5': 9, '10': 'licenseKey'},
   ],
 };
 
 /// Descriptor for `Settings`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List settingsDescriptor = $convert.base64Decode(
-    'CghTZXR0aW5ncxIjCg1jb250YWluZXJfaWRzGAEgAygJUgxjb250YWluZXJJZHM=');
+    'CghTZXR0aW5ncxIjCg1jb250YWluZXJfaWRzGAEgAygJUgxjb250YWluZXJJZHMSHwoLbGljZW'
+    '5zZV9rZXkYAiABKAlSCmxpY2Vuc2VLZXk=');
 
 @$core.Deprecated('Use requestDescriptor instead')
 const Request$json = {

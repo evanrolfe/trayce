@@ -907,6 +907,70 @@ class AgentStarted extends $pb.GeneratedMessage {
   void clearVersion() => clearField(1);
 }
 
+class AgentVerified extends $pb.GeneratedMessage {
+  factory AgentVerified({
+    $core.bool? valid,
+    $core.String? message,
+  }) {
+    final $result = create();
+    if (valid != null) {
+      $result.valid = valid;
+    }
+    if (message != null) {
+      $result.message = message;
+    }
+    return $result;
+  }
+  AgentVerified._() : super();
+  factory AgentVerified.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AgentVerified.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AgentVerified', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOB(1, _omitFieldNames ? '' : 'valid')
+    ..aOS(2, _omitFieldNames ? '' : 'message')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  AgentVerified clone() => AgentVerified()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  AgentVerified copyWith(void Function(AgentVerified) updates) => super.copyWith((message) => updates(message as AgentVerified)) as AgentVerified;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static AgentVerified create() => AgentVerified._();
+  AgentVerified createEmptyInstance() => create();
+  static $pb.PbList<AgentVerified> createRepeated() => $pb.PbList<AgentVerified>();
+  @$core.pragma('dart2js:noInline')
+  static AgentVerified getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AgentVerified>(create);
+  static AgentVerified? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.bool get valid => $_getBF(0);
+  @$pb.TagNumber(1)
+  set valid($core.bool v) { $_setBool(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasValid() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearValid() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get message => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set message($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasMessage() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearMessage() => clearField(2);
+}
+
 class Command extends $pb.GeneratedMessage {
   factory Command({
     $core.String? type,
@@ -976,10 +1040,14 @@ class Command extends $pb.GeneratedMessage {
 class Settings extends $pb.GeneratedMessage {
   factory Settings({
     $core.Iterable<$core.String>? containerIds,
+    $core.String? licenseKey,
   }) {
     final $result = create();
     if (containerIds != null) {
       $result.containerIds.addAll(containerIds);
+    }
+    if (licenseKey != null) {
+      $result.licenseKey = licenseKey;
     }
     return $result;
   }
@@ -989,6 +1057,7 @@ class Settings extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Settings', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..pPS(1, _omitFieldNames ? '' : 'containerIds')
+    ..aOS(2, _omitFieldNames ? '' : 'licenseKey')
     ..hasRequiredFields = false
   ;
 
@@ -1015,6 +1084,15 @@ class Settings extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $core.List<$core.String> get containerIds => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.String get licenseKey => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set licenseKey($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasLicenseKey() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearLicenseKey() => clearField(2);
 }
 
 class Request extends $pb.GeneratedMessage {

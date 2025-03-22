@@ -26,6 +26,12 @@ class FlowsObserved extends AgentNetwork {
   FlowsObserved(this.flows);
 }
 
+class AgentVerifiedState extends AgentNetwork {
+  final bool valid;
+
+  AgentVerifiedState(this.valid);
+}
+
 class AgentNetworkBridge extends Cubit<AgentNetwork> {
   String? version;
 
@@ -45,5 +51,9 @@ class AgentNetworkBridge extends Cubit<AgentNetwork> {
 
   void agentStarted(String version) {
     this.version = version;
+  }
+
+  void agentVerified(bool valid) {
+    emit(AgentVerifiedState(valid));
   }
 }

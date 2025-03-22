@@ -70,7 +70,7 @@ void main(List<String> args) async {
   );
 
   // Start the gRPC server
-  final server = await Server.create(services: [grpcService]);
+  final server = Server.create(services: [grpcService]);
   await server.serve(address: InternetAddress.anyIPv4, port: 50051, shared: true);
   print('Server listening on port 50051');
 }

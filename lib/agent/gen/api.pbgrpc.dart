@@ -29,9 +29,9 @@ class TrayceAgentClient extends $grpc.Client {
       '/api.TrayceAgent/SendContainersObserved',
       ($0.Containers value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Reply.fromBuffer(value));
-  static final _$sendAgentStarted = $grpc.ClientMethod<$0.AgentStarted, $0.Reply>(
-      '/api.TrayceAgent/SendAgentStarted',
-      ($0.AgentStarted value) => value.writeToBuffer(),
+  static final _$sendAgentVerified = $grpc.ClientMethod<$0.AgentVerified, $0.Reply>(
+      '/api.TrayceAgent/SendAgentVerified',
+      ($0.AgentVerified value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Reply.fromBuffer(value));
   static final _$openCommandStream = $grpc.ClientMethod<$0.AgentStarted, $0.Command>(
       '/api.TrayceAgent/OpenCommandStream',
@@ -52,8 +52,8 @@ class TrayceAgentClient extends $grpc.Client {
     return $createUnaryCall(_$sendContainersObserved, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.Reply> sendAgentStarted($0.AgentStarted request, {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$sendAgentStarted, request, options: options);
+  $grpc.ResponseFuture<$0.Reply> sendAgentVerified($0.AgentVerified request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$sendAgentVerified, request, options: options);
   }
 
   $grpc.ResponseStream<$0.Command> openCommandStream($async.Stream<$0.AgentStarted> request, {$grpc.CallOptions? options}) {
@@ -80,12 +80,12 @@ abstract class TrayceAgentServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Containers.fromBuffer(value),
         ($0.Reply value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.AgentStarted, $0.Reply>(
-        'SendAgentStarted',
-        sendAgentStarted_Pre,
+    $addMethod($grpc.ServiceMethod<$0.AgentVerified, $0.Reply>(
+        'SendAgentVerified',
+        sendAgentVerified_Pre,
         false,
         false,
-        ($core.List<$core.int> value) => $0.AgentStarted.fromBuffer(value),
+        ($core.List<$core.int> value) => $0.AgentVerified.fromBuffer(value),
         ($0.Reply value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.AgentStarted, $0.Command>(
         'OpenCommandStream',
@@ -104,12 +104,12 @@ abstract class TrayceAgentServiceBase extends $grpc.Service {
     return sendContainersObserved(call, await request);
   }
 
-  $async.Future<$0.Reply> sendAgentStarted_Pre($grpc.ServiceCall call, $async.Future<$0.AgentStarted> request) async {
-    return sendAgentStarted(call, await request);
+  $async.Future<$0.Reply> sendAgentVerified_Pre($grpc.ServiceCall call, $async.Future<$0.AgentVerified> request) async {
+    return sendAgentVerified(call, await request);
   }
 
   $async.Future<$0.Reply> sendFlowsObserved($grpc.ServiceCall call, $0.Flows request);
   $async.Future<$0.Reply> sendContainersObserved($grpc.ServiceCall call, $0.Containers request);
-  $async.Future<$0.Reply> sendAgentStarted($grpc.ServiceCall call, $0.AgentStarted request);
+  $async.Future<$0.Reply> sendAgentVerified($grpc.ServiceCall call, $0.AgentVerified request);
   $async.Stream<$0.Command> openCommandStream($grpc.ServiceCall call, $async.Stream<$0.AgentStarted> request);
 }

@@ -41,8 +41,9 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
   }
 
   @override
-  Future<Reply> sendAgentStarted(ServiceCall call, AgentStarted request) async {
-    print('Agent started');
+  Future<Reply> sendAgentVerified(ServiceCall call, AgentVerified request) async {
+    print('Agent verified: ${request.valid}');
+    _agentNetworkBridge.agentVerified(request.valid);
     return Reply(status: 'success');
   }
 
