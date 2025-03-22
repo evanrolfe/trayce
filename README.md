@@ -2,6 +2,9 @@
 
 TrayceGUI is a cross-platform desktop application which lets you interface with the TrayceAgent to monitor network requests in Docker containers.
 
+## Build
+
+Run `make build-linux` or `make build-mac`
 
 ## Develop
 
@@ -17,10 +20,7 @@ make generate
 ## Test
 
 Run widget tests:
-`flutter test ./test`
+`make test`
 
 Run integration tests:
-`flutter test ./integration_test`
-
-Update screenshots:
-`flutter test ./integration_test/ --update-goldens`
+`make integration_test`
