@@ -14,6 +14,12 @@ class EventContainersObserved {
   EventContainersObserved(this.containers);
 }
 
+class EventFlowsObserved {
+  final List<Flow> flows;
+
+  EventFlowsObserved(this.flows);
+}
+
 class EventAgentStarted {
   final String version;
 
@@ -52,7 +58,8 @@ class TrayceAgentService extends TrayceAgentServiceBase implements CommandSender
 
   @override
   Future<Reply> sendFlowsObserved(ServiceCall call, Flows request) async {
-    _agentNetworkBridge.flowsObserved(request.flows);
+    _eventBus.fire(EventFlowsObserved(request.flows));
+
     return Reply(status: 'success');
   }
 

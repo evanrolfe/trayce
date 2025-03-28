@@ -1,11 +1,40 @@
+import 'package:event_bus/event_bus.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:trayce/agent/server.dart';
 
 import '../models/flow.dart';
 
+class EventDisplayFlows {
+  final List<Flow> flows;
+
+  EventDisplayFlows(this.flows);
+}
+
 class FlowRepo {
   Database db;
+  final EventBus _eventBus;
+  String? _searchTerm;
 
-  FlowRepo({required this.db});
+  FlowRepo({required this.db, required EventBus eventBus}) : _eventBus = eventBus {
+    _eventBus.on<EventFlowsObserved>().listen((event) async {
+      for (final agentFlow in event.flows) {
+        final flow = Flow.fromProto(agentFlow);
+        await save(flow);
+        displayFlows();
+      }
+    });
+  }
+
+  Future<void> displayFlows() async {
+    print('Reloading flows with search term: $_searchTerm');
+    final flows = await getFlows(_searchTerm);
+    _eventBus.fire(EventDisplayFlows(flows));
+  }
+
+  Future<void> setSearchTerm(String term) async {
+    _searchTerm = term.isEmpty ? null : term;
+    await displayFlows();
+  }
 
   Future<Flow> save(Flow flow) async {
     // First check if flow exists

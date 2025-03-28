@@ -1,9 +1,12 @@
+import 'dart:async';
+
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trayce/network/repo/flow_repo.dart';
 
 import '../../common/style.dart';
-import '../bloc/flow_table_cubit.dart';
 import '../models/flow.dart' as models;
 import 'containers_modal.dart';
 
@@ -30,17 +33,29 @@ class FlowTable extends StatefulWidget {
 class _FlowTableState extends State<FlowTable> {
   int? selectedRow;
   final FocusNode _searchFocusNode = FocusNode();
+  late final StreamSubscription _flowsSub;
+  List<models.Flow> _flows = [];
 
   @override
   void initState() {
     super.initState();
-    // Load flows when widget initializes
-    context.read<FlowTableCubit>().reloadFlows();
+
+    // Subscribe to verification events
+    _flowsSub = context.read<EventBus>().on<EventDisplayFlows>().listen((event) {
+      print('EventDisplayFlows received: ${event.flows.length}');
+      setState(() {
+        _flows = event.flows;
+      });
+    });
+
+    // Trigger this event initially to display the flows on load
+    context.read<FlowRepo>().displayFlows();
   }
 
   @override
   void dispose() {
     _searchFocusNode.dispose();
+    _flowsSub.cancel();
     super.dispose();
   }
 
@@ -68,7 +83,7 @@ class _FlowTableState extends State<FlowTable> {
                   style: textFieldStyle,
                   decoration: textFieldDecor,
                   onSubmitted: (value) {
-                    context.read<FlowTableCubit>().setSearchTerm(value);
+                    context.read<FlowRepo>().setSearchTerm(value);
                     _searchFocusNode.requestFocus(); // dont loose focus when you hit enter
                   },
                 ),
@@ -122,121 +137,113 @@ class _FlowTableState extends State<FlowTable> {
               ),
               // Scrollable Grid
               Expanded(
-                child: BlocBuilder<FlowTableCubit, FlowTableState>(
-                  builder: (context, state) {
-                    if (state is DisplayFlows) {
-                      return Focus(
-                        autofocus: true,
-                        onKeyEvent: (node, event) {
-                          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                            if (selectedRow == null && state.flows.length > 0) {
-                              setState(() {
-                                selectedRow = 0;
-                                widget.onFlowSelected(state.flows[0]);
-                              });
-                            } else if (selectedRow != null && selectedRow! > 0) {
-                              setState(() {
-                                selectedRow = selectedRow! - 1;
-                                widget.onFlowSelected(state.flows[selectedRow!]);
-                              });
-                            }
-                            return KeyEventResult.handled;
-                          } else if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                            if (selectedRow == null && state.flows.isNotEmpty) {
-                              setState(() {
-                                selectedRow = 0;
-                                widget.onFlowSelected(state.flows[0]);
-                              });
-                            } else if (selectedRow != null && selectedRow! < state.flows.length - 1) {
-                              setState(() {
-                                selectedRow = selectedRow! + 1;
-                                widget.onFlowSelected(state.flows[selectedRow!]);
-                              });
-                            }
-                            return KeyEventResult.handled;
-                          }
-                          return KeyEventResult.ignored;
-                        },
-                        child: Scrollbar(
-                          thumbVisibility: true,
-                          controller: widget.controller,
-                          thickness: 8,
-                          radius: const Radius.circular(4),
-                          child: ListView.builder(
-                            controller: widget.controller,
-                            itemCount: state.flows.length,
-                            cacheExtent: 1000,
-                            itemExtent: 25,
-                            addAutomaticKeepAlives: false,
-                            addRepaintBoundaries: false,
-                            itemBuilder: (context, index) {
-                              final flow = state.flows[index];
-                              bool isHovered = false;
-                              return StatefulBuilder(
-                                builder: (context, setState) => MouseRegion(
-                                  onEnter: (_) => setState(() => isHovered = true),
-                                  onExit: (_) => setState(() => isHovered = false),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      this.setState(() {
-                                        if (selectedRow == index) {
-                                          selectedRow = null;
-                                          widget.onFlowSelected(null);
-                                        } else {
-                                          selectedRow = index;
-                                          widget.onFlowSelected(flow);
-                                        }
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(color: Colors.black),
-                                        ),
-                                        color: selectedRow == index
-                                            ? const Color(0xFF4DB6AC).withAlpha(77)
-                                            : isHovered
-                                                ? const Color(0xFF2D2D2D).withAlpha(77)
-                                                : null,
-                                      ),
-                                      child: LayoutBuilder(
-                                        builder: (context, constraints) {
-                                          final totalWidth = constraints.maxWidth;
-                                          return Stack(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  _buildCell(
-                                                      totalWidth * widget.columnWidths[0], flow.id?.toString() ?? ''),
-                                                  _buildCell(totalWidth * widget.columnWidths[1], flow.l7Protocol),
-                                                  _buildCell(totalWidth * widget.columnWidths[2], flow.source),
-                                                  _buildCell(totalWidth * widget.columnWidths[3], flow.dest),
-                                                  _buildCell(totalWidth * widget.columnWidths[4],
-                                                      flow.request?.operationCol() ?? ''),
-                                                  _buildCell(totalWidth * widget.columnWidths[5],
-                                                      flow.response?.responseCol() ?? '', true),
-                                                ],
-                                              ),
-                                              ...List.generate(5, (i) {
-                                                double leftOffset = totalWidth *
-                                                    widget.columnWidths.take(i + 1).reduce((a, b) => a + b);
-                                                return _buildDivider(i, totalWidth, leftOffset);
-                                              }),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
+                child: Focus(
+                  autofocus: true,
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                      if (selectedRow == null && _flows.isNotEmpty) {
+                        setState(() {
+                          selectedRow = 0;
+                          widget.onFlowSelected(_flows[0]);
+                        });
+                      } else if (selectedRow != null && selectedRow! > 0) {
+                        setState(() {
+                          selectedRow = selectedRow! - 1;
+                          widget.onFlowSelected(_flows[selectedRow!]);
+                        });
+                      }
+                      return KeyEventResult.handled;
+                    } else if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                      if (selectedRow == null && _flows.isNotEmpty) {
+                        setState(() {
+                          selectedRow = 0;
+                          widget.onFlowSelected(_flows[0]);
+                        });
+                      } else if (selectedRow != null && selectedRow! < _flows.length - 1) {
+                        setState(() {
+                          selectedRow = selectedRow! + 1;
+                          widget.onFlowSelected(_flows[selectedRow!]);
+                        });
+                      }
+                      return KeyEventResult.handled;
                     }
-                    return const Center(child: CircularProgressIndicator());
+                    return KeyEventResult.ignored;
                   },
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    controller: widget.controller,
+                    thickness: 8,
+                    radius: const Radius.circular(4),
+                    child: ListView.builder(
+                      controller: widget.controller,
+                      itemCount: _flows.length,
+                      cacheExtent: 1000,
+                      itemExtent: 25,
+                      addAutomaticKeepAlives: false,
+                      addRepaintBoundaries: false,
+                      itemBuilder: (context, index) {
+                        final flow = _flows[index];
+                        bool isHovered = false;
+                        return StatefulBuilder(
+                          builder: (context, setState) => MouseRegion(
+                            onEnter: (_) => setState(() => isHovered = true),
+                            onExit: (_) => setState(() => isHovered = false),
+                            child: GestureDetector(
+                              onTap: () {
+                                this.setState(() {
+                                  if (selectedRow == index) {
+                                    selectedRow = null;
+                                    widget.onFlowSelected(null);
+                                  } else {
+                                    selectedRow = index;
+                                    widget.onFlowSelected(flow);
+                                  }
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: Colors.black),
+                                  ),
+                                  color: selectedRow == index
+                                      ? const Color(0xFF4DB6AC).withAlpha(77)
+                                      : isHovered
+                                          ? const Color(0xFF2D2D2D).withAlpha(77)
+                                          : null,
+                                ),
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final totalWidth = constraints.maxWidth;
+                                    return Stack(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            _buildCell(totalWidth * widget.columnWidths[0], flow.id?.toString() ?? ''),
+                                            _buildCell(totalWidth * widget.columnWidths[1], flow.l7Protocol),
+                                            _buildCell(totalWidth * widget.columnWidths[2], flow.source),
+                                            _buildCell(totalWidth * widget.columnWidths[3], flow.dest),
+                                            _buildCell(totalWidth * widget.columnWidths[4],
+                                                flow.request?.operationCol() ?? ''),
+                                            _buildCell(totalWidth * widget.columnWidths[5],
+                                                flow.response?.responseCol() ?? '', true),
+                                          ],
+                                        ),
+                                        ...List.generate(5, (i) {
+                                          double leftOffset =
+                                              totalWidth * widget.columnWidths.take(i + 1).reduce((a, b) => a + b);
+                                          return _buildDivider(i, totalWidth, leftOffset);
+                                        }),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             ],

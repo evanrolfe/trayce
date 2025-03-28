@@ -5,7 +5,7 @@ import 'package:trayce/agent/gen/api.pb.dart' as pb;
 import 'package:trayce/agent/gen/api.pbgrpc.dart';
 import 'package:uuid/uuid.dart';
 
-import '../test/network/bloc/flow_table_cubit_test.dart';
+import 'const.dart';
 
 Future<void> test(WidgetTester tester) async {
   await tester.pumpAndSettle();

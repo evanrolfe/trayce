@@ -12,7 +12,6 @@ import 'package:trayce/utils/grpc_parser_lib.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'agent/server.dart';
-import 'network/bloc/flow_table_cubit.dart';
 import 'network/repo/containers_repo.dart';
 import 'network/repo/flow_repo.dart';
 
@@ -38,21 +37,16 @@ void main(List<String> args) async {
     await windowManager.show();
     await windowManager.focus();
   });
+
+  // Connect DB, EventBus & GRPC server
   EventBus eventBus = EventBus();
-
-  // Connect DB and create repos
   final db = await connectDB();
-  final flowRepo = FlowRepo(db: db);
-  final protoDefRepo = ProtoDefRepo(db: db);
-
-  // Create bridge cubits
   final agentNetworkBridge = AgentNetworkBridge();
-
-  // Create Business logic cubits & services
-  // Agent
   final grpcService = TrayceAgentService(agentNetworkBridge: agentNetworkBridge, eventBus: eventBus);
-  // Network
-  final flowTableCubit = FlowTableCubit(agentNetworkBridge: agentNetworkBridge, flowRepo: flowRepo);
+
+  // Init repos
+  final flowRepo = FlowRepo(db: db, eventBus: eventBus);
+  final protoDefRepo = ProtoDefRepo(db: db);
   final containersRepo = ContainersRepo(eventBus: eventBus);
 
   runApp(
@@ -63,12 +57,7 @@ void main(List<String> args) async {
         RepositoryProvider<EventBus>(create: (context) => eventBus),
         RepositoryProvider<ContainersRepo>(create: (context) => containersRepo),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<FlowTableCubit>(create: (context) => flowTableCubit),
-        ],
-        child: const App(appVersion: appVersion),
-      ),
+      child: const App(appVersion: appVersion),
     ),
   );
 

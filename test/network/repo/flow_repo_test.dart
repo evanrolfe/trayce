@@ -1,3 +1,4 @@
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trayce/network/models/http_request.dart';
 import 'package:trayce/network/models/http_response.dart';
@@ -13,7 +14,7 @@ void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     testDb = await TestDatabase.instance;
-    flowRepo = FlowRepo(db: testDb.db);
+    flowRepo = FlowRepo(db: testDb.db, eventBus: EventBus());
   });
 
   tearDownAll(() async {});
