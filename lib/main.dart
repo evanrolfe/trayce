@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grpc/grpc.dart';
 import 'package:trayce/app.dart';
-import 'package:trayce/common/bloc/agent_network_bridge.dart';
 import 'package:trayce/common/database.dart';
 import 'package:trayce/network/repo/proto_def_repo.dart';
 import 'package:trayce/utils/grpc_parser_lib.dart';
@@ -41,8 +40,7 @@ void main(List<String> args) async {
   // Connect DB, EventBus & GRPC server
   EventBus eventBus = EventBus();
   final db = await connectDB();
-  final agentNetworkBridge = AgentNetworkBridge();
-  final grpcService = TrayceAgentService(agentNetworkBridge: agentNetworkBridge, eventBus: eventBus);
+  final grpcService = TrayceAgentService(eventBus: eventBus);
 
   // Init repos
   final flowRepo = FlowRepo(db: db, eventBus: eventBus);
